@@ -21,10 +21,26 @@ from ..wm import AcceptGate, risk_score, sample_disagreement
 from .tasks import grade, load_tasks
 
 
-def collect(family: str, n: int, seed: int) -> tuple[list[float], list[int]]:
-    scores: list[float] = []
-    harms: list[int] = []
+from pathlib import Path
+
+_PAIRS = Path(__file__).resolve().parents[3] / "data" / "calibration_pairs.jsonl"
+
+
+def _done_ids() -> set[str]:
+    if not _PAIRS.exists():
+        return set()
+    return {json.loads(line)["uid"] for line in _PAIRS.read_text().splitlines() if line}
+
+
+def collect(family: str, n: int, seed: int) -> None:
+    """Appends one JSONL pair per task; already-collected (family, seed, id)
+    tuples are skipped so a killed run resumes for free."""
+    done = _done_ids()
+    _PAIRS.parent.mkdir(parents=True, exist_ok=True)
     for task in load_tasks(family, n, seed):
+        uid = f"{family}:{seed}:{task.task_id}"
+        if uid in done:
+            continue
         ledger = Ledger()
         board = BeliefBoard()
         for fact in extract_facts(task, ledger, MODEL_FAST):
@@ -41,10 +57,9 @@ def collect(family: str, n: int, seed: int) -> tuple[list[float], list[int]]:
         score = risk_score(max(support.values(), default=0.0),
                            disagreement, proposal.confidence)
         harm = 0 if grade(task, proposal.answer) else 1
-        scores.append(score)
-        harms.append(harm)
-        print(f"{task.task_id}: score={score:.3f} harm={harm}")
-    return scores, harms
+        with _PAIRS.open("a") as fh:
+            fh.write(json.dumps({"uid": uid, "score": score, "harm": harm}) + "\n")
+        print(f"{task.task_id}: score={score:.3f} harm={harm}", flush=True)
 
 
 def main() -> None:
@@ -55,18 +70,15 @@ def main() -> None:
     args = ap.parse_args()
     assert args.seed >= 100, "calibration seeds live at 100+; eval uses 0-99"
 
-    all_scores: list[float] = []
-    all_harms: list[int] = []
     for family in args.families.split(","):
-        s, h = collect(family, args.n, args.seed)
-        all_scores += s
-        all_harms += h
+        collect(family, args.n, args.seed)
 
-    AcceptGate.save_calibration(all_scores, all_harms)
-    n = len(all_scores)
-    print(f"\nsaved {n} calibration pairs "
-          f"(base harm rate {sum(all_harms) / n:.1%})" if n else "no pairs")
-    print(json.dumps({"n": n, "harm_rate": sum(all_harms) / max(1, n)}))
+    pairs = [json.loads(line) for line in _PAIRS.read_text().splitlines() if line]
+    scores = [p["score"] for p in pairs]
+    harms = [p["harm"] for p in pairs]
+    AcceptGate.save_calibration(scores, harms)
+    print(f"\nsaved {len(pairs)} calibration pairs "
+          f"(base harm rate {sum(harms) / len(pairs):.1%})" if pairs else "no pairs")
 
 
 if __name__ == "__main__":
