@@ -36,11 +36,14 @@ def run_arm(arm: str, family: str, n: int, seed: int) -> dict:
             correct += ok
             tokens += result.ledger.total_tokens
             latency += time.monotonic() - t0
+            gate = next((m.get("gate") for m in result.transcript
+                         if isinstance(m, dict) and m.get("gate")), None)
             fh.write(json.dumps({
                 "task_id": task.task_id,
                 "gold": task.gold,
                 "answer": result.answer,
                 "correct": ok,
+                "gate": gate,
                 **result.ledger.as_dict(),
             }) + "\n")
     return {

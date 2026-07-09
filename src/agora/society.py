@@ -18,11 +18,11 @@ from .bench.tasks import Task
 from .config import MODEL_FAST, MODEL_STRONG
 from .handoffs import Challenge, DebateTrace, Proposal, Verdict, parse_json_block
 from .llm import Ledger, chat
+from .wm import AcceptGate, rank_targets
 
-# Gate thresholds — v1 heuristics, replaced by calibrated versions in wm.py.
-DOUBT_GATE = 0.35
-CONFIDENCE_GATE = 0.60
 MAX_DEBATES_PER_TASK = 2
+
+_GATE = AcceptGate()
 
 
 # --- Roles (each is one prompt, one artifact) --------------------------------
@@ -143,19 +143,15 @@ def run_agora(task: Task, *, seed: int = 0,
     trace.log("proposal", answer=proposal.answer,
               support=proposal.support_keys, confidence=proposal.confidence)
 
-    # 3. Gate: is a debate worth the tokens? (v1 heuristic seam for wm.py)
-    support_doubts = {k: board.doubt(k) for k in proposal.support_keys
-                      if board.current(k) is not None}
-    max_doubt = max(support_doubts.values(), default=0.0)
-    fire = max_doubt >= DOUBT_GATE or proposal.confidence < CONFIDENCE_GATE
-    trace.gate = {"fired": fire, "max_doubt": round(max_doubt, 3),
-                  "confidence": proposal.confidence,
-                  "support_doubts": {k: round(v, 3) for k, v in support_doubts.items()}}
+    # 3. Gate: is a debate worth the tokens? Calibrated accept decision
+    #    (E[error | accepted] <= alpha once gate_calibration.json exists).
+    decision = _GATE.decide(task, board, proposal, ledger, model_fast, seed=seed)
+    trace.gate = decision.as_dict()
 
-    # 4. Debate the doubted beliefs, most doubted first, bounded.
-    if fire and support_doubts:
-        targets = sorted(support_doubts, key=support_doubts.get,  # type: ignore[arg-type]
-                         reverse=True)[:MAX_DEBATES_PER_TASK]
+    # 4. Debate the most informative doubted beliefs, EIG-ordered, bounded.
+    targets = rank_targets(board, proposal.support_keys,
+                           max_targets=MAX_DEBATES_PER_TASK)
+    if decision.fire and targets:
         adjudications = []
         for key in targets:
             challenge = skeptic_challenge(task, board, key, proposal, ledger, model_strong)
