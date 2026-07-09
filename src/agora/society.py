@@ -123,7 +123,9 @@ def adjudicate(task: Task, board: BeliefBoard, proposal: Proposal,
 
 def run_agora(task: Task, *, seed: int = 0,
               model_strong: str = MODEL_STRONG,
-              model_fast: str = MODEL_FAST) -> ArmResult:
+              model_fast: str = MODEL_FAST,
+              gate_mode: str = "wm",  # wm | always | never (ablations)
+              eig_targeting: bool = True) -> ArmResult:
     ledger = Ledger()
     trace = DebateTrace(task_id=task.task_id)
     board = BeliefBoard()
@@ -146,11 +148,19 @@ def run_agora(task: Task, *, seed: int = 0,
     # 3. Gate: is a debate worth the tokens? Calibrated accept decision
     #    (E[error | accepted] <= alpha once gate_calibration.json exists).
     decision = _GATE.decide(task, board, proposal, ledger, model_fast, seed=seed)
+    if gate_mode == "always":
+        decision.fire, decision.reason = True, "ablation:always-debate"
+    elif gate_mode == "never":
+        decision.fire, decision.reason = False, "ablation:never-debate"
     trace.gate = decision.as_dict()
 
     # 4. Debate the most informative doubted beliefs, EIG-ordered, bounded.
-    targets = rank_targets(board, proposal.support_keys,
-                           max_targets=MAX_DEBATES_PER_TASK)
+    if eig_targeting:
+        targets = rank_targets(board, proposal.support_keys,
+                               max_targets=MAX_DEBATES_PER_TASK)
+    else:  # ablation: naive order, no information-gain ranking
+        targets = [k for k in proposal.support_keys
+                   if board.current(k) is not None][:MAX_DEBATES_PER_TASK]
     if decision.fire and targets:
         adjudications = []
         for key in targets:
@@ -186,3 +196,8 @@ def _agora_arm(task: Task, *, seed: int = 0) -> ArmResult:
 
 
 ARMS["agora"] = _agora_arm
+# Ablations: isolate the value of the gate (sparsity), of debate itself
+# (belief board perception only), and of EIG targeting.
+ARMS["agora-nogate"] = lambda task, *, seed=0: run_agora(task, seed=seed, gate_mode="always")
+ARMS["agora-nodebate"] = lambda task, *, seed=0: run_agora(task, seed=seed, gate_mode="never")
+ARMS["agora-noeig"] = lambda task, *, seed=0: run_agora(task, seed=seed, eig_targeting=False)
