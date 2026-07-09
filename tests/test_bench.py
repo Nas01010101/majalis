@@ -1,5 +1,26 @@
+import re
+
+from agora.beliefs import parse_date_ord
 from agora.bench.stats import wilson_ci
 from agora.bench.tasks import grade, load_tasks
+
+
+def test_churn_gold_matches_latest_dated_evidence():
+    """Property: gold must equal comparing the claim against the latest-dated
+    line about the asked (entity, attr). Guards the generator's date math —
+    a naive month-cycling version produced echoes dated after later filings."""
+    for t in load_tasks("churn", 150, seed=3):
+        ent, attr = t.meta["entity"], t.meta["attr"]
+        latest, latest_val = -1, None
+        for line in t.context.splitlines():
+            if f"{ent}'s {attr}" in line:
+                m = re.search(r"\b(?:is|as) (.+?)\.$", line)
+                d = parse_date_ord(line)
+                if m and d > latest:
+                    latest, latest_val = d, m.group(1)
+        claim = re.search(r'currently ([^."]+)', t.question).group(1).strip()
+        truth = "true" if claim.lower() == (latest_val or "").lower() else "false"
+        assert truth == t.gold, t.task_id
 
 
 def test_tasks_deterministic():

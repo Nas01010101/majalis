@@ -87,7 +87,7 @@ class AcceptGate:
     Uncalibrated => fail-safe: everything above a conservative floor debates.
     """
 
-    def __init__(self, alpha: float = 0.10):
+    def __init__(self, alpha: float = 0.05):
         self.alpha = alpha
         self.gate = CalibratedGate()
         self.calibrated = False
