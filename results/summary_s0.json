@@ -1,11 +1,11 @@
 [
   {
-    "arm": "single",
+    "arm": "agora",
     "family": "churn",
     "n": 3,
     "seed": 0,
     "correct": 3,
-    "tokens": 3100,
-    "latency_s": 45.3
+    "tokens": 18948,
+    "latency_s": 276.7
   }
 ]

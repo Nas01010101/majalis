@@ -1,0 +1,192 @@
+"""The Agora society: star-topology orchestrator over role agents.
+
+The orchestrator is deterministic Python — the only component that touches
+the belief board (sole-writer, mirrors Tenet's single-writer constraint).
+Roles never talk to each other; they exchange typed artifacts through the
+orchestrator (author≠validator enforced by construction: the Skeptic and
+Judge never see the Proposer's identity, only its artifact).
+
+v1 gate = doubt/confidence heuristic; the conformal control points
+(CalibratedGate acceptance, CSD disagreement, EIG targeting, AnytimeAlarm)
+land in wm.py and replace the heuristics behind the same seams.
+"""
+from __future__ import annotations
+
+from .beliefs import BeliefBoard, parse_date_ord
+from .bench.arms import ARMS, ArmResult
+from .bench.tasks import Task
+from .config import MODEL_FAST, MODEL_STRONG
+from .handoffs import Challenge, DebateTrace, Proposal, Verdict, parse_json_block
+from .llm import Ledger, chat
+
+# Gate thresholds — v1 heuristics, replaced by calibrated versions in wm.py.
+DOUBT_GATE = 0.35
+CONFIDENCE_GATE = 0.60
+MAX_DEBATES_PER_TASK = 2
+
+
+# --- Roles (each is one prompt, one artifact) --------------------------------
+
+def extract_facts(task: Task, ledger: Ledger, model: str) -> list[dict]:
+    prompt = (
+        "Extract every dated factual assertion from the evidence as JSON.\n"
+        f"Evidence:\n{task.context}\n\n"
+        'Return a JSON list of objects: {"entity": str, "attribute": str, '
+        '"value": str, "date": str}. Use the date exactly as written; if a '
+        'line has no date, use "". No commentary.'
+    )
+    out = chat(model, [{"role": "user", "content": prompt}],
+               ledger=ledger, temperature=0.0, max_tokens=2048)
+    parsed = parse_json_block(out)
+    return parsed if isinstance(parsed, list) else []
+
+
+def propose(task: Task, board: BeliefBoard, ledger: Ledger, model: str,
+            correction_note: str = "") -> Proposal:
+    prompt = (
+        f"Question:\n{task.question}\n\n"
+        f"Current belief state (most recent value per fact, extracted from "
+        f"the dated evidence):\n{board.summary()}\n\n"
+        f"{correction_note}"
+        'Answer the question using the CURRENT beliefs. Return JSON: '
+        '{"answer": str (short), "rationale": str, "support_keys": [str], '
+        '"confidence": float 0..1}. support_keys must be keys from the '
+        "belief state your answer rests on."
+    )
+    out = chat(model, [{"role": "user", "content": prompt}],
+               ledger=ledger, temperature=0.0, max_tokens=1024)
+    parsed = parse_json_block(out) or {}
+    return Proposal(
+        answer=str(parsed.get("answer", "")).strip(),
+        rationale=str(parsed.get("rationale", "")),
+        support_keys=[str(k).lower() for k in parsed.get("support_keys", [])],
+        confidence=float(parsed.get("confidence", 0.5) or 0.5),
+        author="proposer",
+    )
+
+
+def skeptic_challenge(task: Task, board: BeliefBoard, key: str,
+                      proposal: Proposal, ledger: Ledger, model: str) -> Challenge:
+    cur = board.current(key)
+    prompt = (
+        "You are an adversarial fact-checker. A proposed answer rests on a "
+        "belief you must attack.\n"
+        f"Belief under challenge: {key} = {cur.value if cur else '?'} "
+        f"(doubt={board.doubt(key):.2f})\n"
+        f"Evidence:\n{task.context}\n\n"
+        f"Proposed answer: {proposal.answer}\nRationale: {proposal.rationale}\n\n"
+        "Attack the belief: is the value stale, contradicted, or misread from "
+        'the evidence? Return JSON: {"attack": str, "sub_questions": [str]} '
+        "where sub_questions are 2-4 binary-checkable questions whose answers "
+        "settle the challenge (each answerable by pointing at a dated line)."
+    )
+    out = chat(model, [{"role": "user", "content": prompt}],
+               ledger=ledger, temperature=0.7, max_tokens=1024)
+    parsed = parse_json_block(out) or {}
+    return Challenge(
+        target_key=key,
+        attack=str(parsed.get("attack", out[:300])),
+        sub_questions=[str(q) for q in parsed.get("sub_questions", [])][:4],
+        author="skeptic",
+    )
+
+
+def adjudicate(task: Task, board: BeliefBoard, proposal: Proposal,
+               challenge: Challenge, ledger: Ledger, model: str) -> Verdict:
+    cur = board.current(challenge.target_key)
+    subq = "\n".join(f"- {q}" for q in challenge.sub_questions)
+    prompt = (
+        "You are a judge. Settle a challenge by answering each sub-question "
+        "ONLY from dated lines in the evidence (quote the deciding line), "
+        "most recent date wins.\n"
+        f"Evidence:\n{task.context}\n\n"
+        f"Belief: {challenge.target_key} = {cur.value if cur else '?'}\n"
+        f"Attack: {challenge.attack}\nSub-questions:\n{subq}\n\n"
+        'Return JSON: {"upheld": bool (true if the belief survives), '
+        '"corrected_value": str|null (the correct current value if it does '
+        'not), "rationale": str (cite the deciding dated lines)}.'
+    )
+    out = chat(model, [{"role": "user", "content": prompt}],
+               ledger=ledger, temperature=0.0, max_tokens=1024)
+    parsed = parse_json_block(out) or {}
+    corrected = parsed.get("corrected_value")
+    return Verdict(
+        target_key=challenge.target_key,
+        upheld=bool(parsed.get("upheld", True)),
+        corrected_value=str(corrected).strip().lower() if corrected else None,
+        rationale=str(parsed.get("rationale", "")),
+        author="judge",
+    )
+
+
+# --- Orchestrator -------------------------------------------------------------
+
+def run_agora(task: Task, *, seed: int = 0,
+              model_strong: str = MODEL_STRONG,
+              model_fast: str = MODEL_FAST) -> ArmResult:
+    ledger = Ledger()
+    trace = DebateTrace(task_id=task.task_id)
+    board = BeliefBoard()
+
+    # 1. Perception: evidence -> keyed beliefs (supersession by date).
+    for fact in extract_facts(task, ledger, model_fast):
+        try:
+            key = BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"]))
+            outcome = board.assert_fact(key, str(fact["value"]),
+                                        parse_date_ord(str(fact.get("date", ""))))
+            trace.log("assert", key=key, value=str(fact["value"]), outcome=outcome)
+        except (KeyError, TypeError):
+            continue
+
+    # 2. Proposal.
+    proposal = propose(task, board, ledger, model_strong)
+    trace.log("proposal", answer=proposal.answer,
+              support=proposal.support_keys, confidence=proposal.confidence)
+
+    # 3. Gate: is a debate worth the tokens? (v1 heuristic seam for wm.py)
+    support_doubts = {k: board.doubt(k) for k in proposal.support_keys
+                      if board.current(k) is not None}
+    max_doubt = max(support_doubts.values(), default=0.0)
+    fire = max_doubt >= DOUBT_GATE or proposal.confidence < CONFIDENCE_GATE
+    trace.gate = {"fired": fire, "max_doubt": round(max_doubt, 3),
+                  "confidence": proposal.confidence,
+                  "support_doubts": {k: round(v, 3) for k, v in support_doubts.items()}}
+
+    # 4. Debate the doubted beliefs, most doubted first, bounded.
+    if fire and support_doubts:
+        targets = sorted(support_doubts, key=support_doubts.get,  # type: ignore[arg-type]
+                         reverse=True)[:MAX_DEBATES_PER_TASK]
+        adjudications = []
+        for key in targets:
+            challenge = skeptic_challenge(task, board, key, proposal, ledger, model_strong)
+            trace.log("challenge", key=key, attack=challenge.attack[:200])
+            verdict = adjudicate(task, board, proposal, challenge, ledger, model_strong)
+            trace.log("verdict", key=key, upheld=verdict.upheld,
+                      corrected=verdict.corrected_value)
+            if not verdict.upheld and verdict.corrected_value:
+                # Write-back: adjudicated correction supersedes (moderator seam).
+                board.assert_fact(key, verdict.corrected_value,
+                                  board._now_ord + 1, source="debate")
+                adjudications.append(f"{key}: CORRECTED to {verdict.corrected_value}")
+            else:
+                adjudications.append(f"{key}: belief UPHELD as stated")
+        # Always re-propose after a debate: the original proposal may
+        # contradict a belief the judge just upheld (observed failure mode).
+        note = ("Adjudication results for the challenged beliefs:\n"
+                + "\n".join(f"- {a}" for a in adjudications)
+                + "\nAnswer strictly from the belief state below.\n\n")
+        proposal = propose(task, board, ledger, model_strong, correction_note=note)
+        trace.log("reproposal", answer=proposal.answer)
+
+    result = ArmResult(proposal.answer, ledger,
+                       [{"role": "trace", "text": ""}])
+    result.transcript = [{"role": "trace", "gate": trace.gate,
+                          "events": trace.events}]
+    return result
+
+
+def _agora_arm(task: Task, *, seed: int = 0) -> ArmResult:
+    return run_agora(task, seed=seed)
+
+
+ARMS["agora"] = _agora_arm
