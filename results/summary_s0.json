@@ -1,0 +1,20 @@
+[
+  {
+    "arm": "agora",
+    "family": "churn",
+    "n": 3,
+    "seed": 0,
+    "correct": 3,
+    "tokens": 22990,
+    "latency_s": 346.1
+  },
+  {
+    "arm": "agora",
+    "family": "multihop",
+    "n": 3,
+    "seed": 0,
+    "correct": 3,
+    "tokens": 15182,
+    "latency_s": 247.7
+  }
+]
