@@ -15,7 +15,7 @@ from __future__ import annotations
 from .beliefs import BeliefBoard, parse_date_ord
 from .bench.arms import ARMS, ArmResult
 from .bench.tasks import Task
-from .config import MODEL_FAST, MODEL_STRONG
+from .config import MODEL_FAST, MODEL_MID, MODEL_STRONG
 from .handoffs import Challenge, DebateTrace, Proposal, Verdict, parse_json_block
 from .llm import Ledger, chat
 from .wm import AcceptGate, rank_targets
@@ -164,7 +164,10 @@ def run_agora(task: Task, *, seed: int = 0,
     if decision.fire and targets:
         adjudications = []
         for key in targets:
-            challenge = skeptic_challenge(task, board, key, proposal, ledger, model_strong)
+            # Skeptic runs on a DIFFERENT backbone than the proposer/judge:
+            # model heterogeneity is the one debate lever with robust evidence
+            # (arXiv:2502.08788 calls it the "universal antidote").
+            challenge = skeptic_challenge(task, board, key, proposal, ledger, MODEL_MID)
             trace.log("challenge", key=key, attack=challenge.attack[:200])
             verdict = adjudicate(task, board, proposal, challenge, ledger, model_strong)
             trace.log("verdict", key=key, upheld=verdict.upheld,
