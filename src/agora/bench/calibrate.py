@@ -58,7 +58,15 @@ def collect(family: str, n: int, seed: int) -> None:
                            disagreement, proposal.confidence)
         harm = 0 if grade(task, proposal.answer) else 1
         with _PAIRS.open("a") as fh:
-            fh.write(json.dumps({"uid": uid, "score": score, "harm": harm}) + "\n")
+            fh.write(json.dumps({
+                "uid": uid, "score": score, "harm": harm,
+                # Raw features so the risk blend can be refit offline
+                # without re-spending LLM calls.
+                "max_doubt": round(max(support.values(), default=0.0), 4),
+                "disagreement": round(disagreement, 4),
+                "confidence": round(proposal.confidence, 4),
+                "family": family,
+            }) + "\n")
         print(f"{task.task_id}: score={score:.3f} harm={harm}", flush=True)
 
 

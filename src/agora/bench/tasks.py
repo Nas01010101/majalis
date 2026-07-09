@@ -110,9 +110,14 @@ def _multihop_task(rng: random.Random, idx: int) -> Task:
         f"{e2} is headquartered in {city}.",
         f"{e2}'s ceo is {ceo}.",
     ]
+    # Distractors: never about the bridge entities, and never 'headquarters'
+    # (a second company planted in the bridge city would make the by-value
+    # city->company hop ambiguous; measured 12% of tasks before this guard).
+    others = [e for e in _ENTITIES if e not in (e1, e2)]
+    distractor_attrs = [a for a in _ATTRS if a != "headquarters"]
     for _ in range(rng.randint(4, 6)):
-        other = rng.choice(_ENTITIES)
-        oattr = rng.choice(list(_ATTRS))
+        other = rng.choice(others)
+        oattr = rng.choice(distractor_attrs)
         facts.append(f"{other}'s {oattr} is {rng.choice(_ATTRS[oattr])}.")
     rng.shuffle(facts)
     question = (
