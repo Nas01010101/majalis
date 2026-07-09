@@ -46,33 +46,55 @@ _ATTRS = {
 }
 
 
-def _churn_task(rng: random.Random, idx: int) -> Task:
+_MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def _fmt_month(month_index: int) -> str:
+    """Absolute month index (0 = Jan 2025) -> 'Mar 2025'."""
+    return f"{_MONTH_NAMES[month_index % 12]} {2025 + month_index // 12}"
+
+
+def _churn_stream(rng: random.Random, entity: str, attr: str,
+                  values: list[str], start_month: int) -> tuple[list[str], int]:
+    """Dated filings for each value in order, with stale echoes of superseded
+    values strictly BEFORE the next filing (monotonic date math — the naive
+    month-cycling version produced echoes dated after later filings once
+    updates exceeded 3, silently corrupting gold)."""
+    lines: list[str] = []
+    cursor = start_month
+    for i, value in enumerate(values):
+        filing = cursor
+        lines.append(f"[{_fmt_month(filing)}] Filing: {entity}'s {attr} is {value}.")
+        cursor += rng.randint(2, 3)
+        if i < len(values) - 1:
+            for offset in range(1, rng.randint(1, 2) + 1):
+                if filing + offset < cursor and rng.random() < 0.8:
+                    lines.append(
+                        f"[{_fmt_month(filing + offset)}] Blog recap: sources "
+                        f"describe {entity}'s {attr} as {value}.")
+    return lines, cursor
+
+
+def _churn_task(rng: random.Random, idx: int, *, min_updates: int = 3,
+                max_updates: int = 5, n_distractor_streams: int = 3) -> Task:
     entity = rng.choice(_ENTITIES)
     attr = rng.choice(list(_ATTRS))
-    values = rng.sample(_ATTRS[attr], k=min(3, len(_ATTRS[attr])))
-    months = ["Jan", "Mar", "May", "Jul", "Sep", "Nov"]
-    snippets: list[tuple[int, str]] = []  # (order_key, text)
+    n_updates = rng.randint(min_updates, min(max_updates, len(_ATTRS[attr])))
+    values = rng.sample(_ATTRS[attr], k=n_updates)
+    snippets, _ = _churn_stream(rng, entity, attr, values, rng.randint(0, 3))
 
-    for i, value in enumerate(values):
-        date = f"{months[i * 2 % len(months)]} 202{5 + i // 3}"
-        snippets.append((i * 10, f"[{date}] Filing: {entity}'s {attr} is {value}."))
-        # Stale echo: a later snippet repeating an already-superseded value.
-        if i < len(values) - 1 and rng.random() < 0.7:
-            echo_date = f"{months[(i * 2 + 1) % len(months)]} 202{5 + (i + 1) // 3}"
-            snippets.append(
-                (i * 10 + 5,
-                 f"[{echo_date}] Blog recap: sources describe {entity}'s {attr} as {value}.")
-            )
-
-    # Distractor facts about other entities.
-    for j in range(rng.randint(3, 5)):
+    # Distractor streams: OTHER entities also churn, so extraction and
+    # supersession have to work at volume, not just on the asked-about key.
+    for _ in range(n_distractor_streams):
         other = rng.choice([e for e in _ENTITIES if e != entity])
         oattr = rng.choice(list(_ATTRS))
-        oval = rng.choice(_ATTRS[oattr])
-        snippets.append((100 + j, f"[Jun 2026] Note: {other}'s {oattr} is {oval}."))
+        ovals = rng.sample(_ATTRS[oattr], k=rng.randint(2, min(3, len(_ATTRS[oattr]))))
+        lines, _ = _churn_stream(rng, other, oattr, ovals, rng.randint(0, 6))
+        snippets += lines
 
     rng.shuffle(snippets)  # presentation order is scrambled; dates carry the truth
-    context = "\n".join(text for _, text in snippets)
+    context = "\n".join(snippets)
     current = values[-1]
 
     if rng.random() < 0.5:
