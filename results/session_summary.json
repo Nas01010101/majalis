@@ -1,0 +1,20 @@
+[
+  {
+    "arm": "single",
+    "seed": 0,
+    "n": 16,
+    "correct": 16,
+    "tokens": 19970,
+    "cost_usd": 0.101,
+    "latency_s": 201.8
+  },
+  {
+    "arm": "agora",
+    "seed": 0,
+    "n": 16,
+    "correct": 16,
+    "tokens": 47879,
+    "cost_usd": 0.0844,
+    "latency_s": 322.0
+  }
+]
