@@ -1,0 +1,62 @@
+[
+  {
+    "arm": "single",
+    "seed": 0,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 23464,
+    "cost_usd": 0.1254,
+    "latency_s": 261.4
+  },
+  {
+    "arm": "agora",
+    "seed": 0,
+    "steps": 8,
+    "n": 16,
+    "correct": 15,
+    "tokens": 66965,
+    "cost_usd": 0.1363,
+    "latency_s": 608.3
+  },
+  {
+    "arm": "single",
+    "seed": 1,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 24198,
+    "cost_usd": 0.1315,
+    "latency_s": 279.5
+  },
+  {
+    "arm": "agora",
+    "seed": 1,
+    "steps": 8,
+    "n": 16,
+    "correct": 15,
+    "tokens": 74421,
+    "cost_usd": 0.1616,
+    "latency_s": 797.9
+  },
+  {
+    "arm": "single",
+    "seed": 2,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 21686,
+    "cost_usd": 0.1105,
+    "latency_s": 233.0
+  },
+  {
+    "arm": "agora",
+    "seed": 2,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 87951,
+    "cost_usd": 0.1819,
+    "latency_s": 1040.3
+  }
+]

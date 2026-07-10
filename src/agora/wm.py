@@ -43,11 +43,13 @@ class GateDecision:
     disagreement: float  # 1 - modal answer frequency over K samples
     max_doubt: float
     reason: str
+    weak_current: bool = False
 
     def as_dict(self) -> dict:
         return {"fired": self.fire, "p_wrong": round(self.p_wrong, 3),
                 "disagreement": round(self.disagreement, 3),
-                "max_doubt": round(self.max_doubt, 3), "reason": self.reason}
+                "max_doubt": round(self.max_doubt, 3),
+                "weak_current": self.weak_current, "reason": self.reason}
 
 
 def sample_disagreement(task: Task, board: BeliefBoard, ledger: Ledger,
@@ -70,14 +72,18 @@ def sample_disagreement(task: Task, board: BeliefBoard, ledger: Ledger,
     return 1.0 - modal / len(votes)
 
 
-def risk_score(max_doubt: float, disagreement: float, confidence: float) -> float:
+def risk_score(max_doubt: float, disagreement: float, confidence: float,
+               weak_current: bool = False) -> float:
     """Monotone risk feature in [0,1]: P(the committed answer is wrong).
 
     Simple logistic blend — the FEATURE can be crude because the ACCEPT
     guarantee comes from conformal calibration of the threshold, not from
-    the feature being a true probability.
+    the feature being a true probability. weak_current carries a large
+    weight: it flags board corruption that sampling-based disagreement is
+    structurally blind to (all samples read the same corrupted board).
     """
-    z = 2.2 * max_doubt + 2.8 * disagreement + 1.2 * (1.0 - confidence) - 2.5
+    z = (2.2 * max_doubt + 2.8 * disagreement + 1.2 * (1.0 - confidence)
+         + 3.0 * float(weak_current) - 2.5)
     return 1.0 / (1.0 + math.exp(-z))
 
 
@@ -105,8 +111,9 @@ class AcceptGate:
         support = {k: board.doubt(k) for k in proposal.support_keys
                    if board.current(k) is not None}
         max_doubt = max(support.values(), default=0.0)
+        weak = any(board.weak_current(k) for k in proposal.support_keys)
         disagreement = sample_disagreement(task, board, ledger, model, seed=seed)
-        p_wrong = risk_score(max_doubt, disagreement, proposal.confidence)
+        p_wrong = risk_score(max_doubt, disagreement, proposal.confidence, weak)
 
         if self.calibrated:
             accept = self.gate.trust(p_wrong)
@@ -125,7 +132,7 @@ class AcceptGate:
 
         return GateDecision(fire=not accept, p_wrong=p_wrong,
                             disagreement=disagreement, max_doubt=max_doubt,
-                            reason=reason)
+                            reason=reason, weak_current=weak)
 
     @staticmethod
     def save_calibration(scores: list[float], harms: list[int]) -> None:
