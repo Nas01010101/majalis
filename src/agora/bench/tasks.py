@@ -77,7 +77,7 @@ def _churn_stream(rng: random.Random, entity: str, attr: str,
 
 
 def _churn_task(rng: random.Random, idx: int, *, min_updates: int = 3,
-                max_updates: int = 5, n_distractor_streams: int = 3) -> Task:
+                max_updates: int = 6, n_distractor_streams: int = 12) -> Task:
     entity = rng.choice(_ENTITIES)
     attr = rng.choice(list(_ATTRS))
     n_updates = rng.randint(min_updates, min(max_updates, len(_ATTRS[attr])))
@@ -115,6 +115,48 @@ def _churn_task(rng: random.Random, idx: int, *, min_updates: int = 3,
         question=question,
         gold=gold,
         meta={"entity": entity, "attr": attr, "n_updates": len(values)},
+    )
+
+
+# --- Family A2: cross-key comparison under churn ------------------------------
+
+def _compare_task(rng: random.Random, idx: int) -> Task:
+    """Claim spans TWO churned numeric keys: both supersession chains must be
+    resolved correctly, so per-key errors compound — the regime where
+    targeted debate on the weaker belief should pay."""
+    e1, e2 = rng.sample(_ENTITIES, k=2)
+    snippets: list[str] = []
+    finals: list[int] = []
+    for entity in (e1, e2):
+        n_updates = rng.randint(3, 6)
+        values = rng.sample(_ATTRS["headcount"], k=n_updates)
+        lines, _ = _churn_stream(rng, entity, "headcount", values, rng.randint(0, 3))
+        snippets += lines
+        finals.append(int(values[-1]))
+    for _ in range(10):
+        other = rng.choice([e for e in _ENTITIES if e not in (e1, e2)])
+        oattr = rng.choice([a for a in _ATTRS if a != "headcount"])
+        ovals = rng.sample(_ATTRS[oattr], k=rng.randint(2, min(3, len(_ATTRS[oattr]))))
+        lines, _ = _churn_stream(rng, other, oattr, ovals, rng.randint(0, 6))
+        snippets += lines
+    rng.shuffle(snippets)
+
+    truly_bigger = finals[0] > finals[1]
+    claim_bigger = rng.random() < 0.5
+    gold = "true" if claim_bigger == truly_bigger else "false"
+    question = (
+        f'Claim: "{e1}\'s current headcount is '
+        f'{"larger" if claim_bigger else "smaller"} than {e2}\'s current '
+        f'headcount." Based on the most recent dated evidence for each '
+        "company, is this claim true or false? Answer 'true' or 'false'."
+    )
+    return Task(
+        task_id=f"compare-{idx}",
+        family="compare",
+        context="\n".join(snippets),
+        question=question,
+        gold=gold,
+        meta={"entities": [e1, e2], "finals": finals},
     )
 
 
@@ -158,7 +200,8 @@ def _multihop_task(rng: random.Random, idx: int) -> Task:
 
 def load_tasks(family: str, n: int, seed: int) -> list[Task]:
     rng = random.Random(seed)
-    maker = {"churn": _churn_task, "multihop": _multihop_task}[family]
+    maker = {"churn": _churn_task, "compare": _compare_task,
+             "multihop": _multihop_task}[family]
     return [maker(rng, i) for i in range(n)]
 
 

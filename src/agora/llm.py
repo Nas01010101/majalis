@@ -15,6 +15,19 @@ from .config import QWEN_BASE_URL, require
 _RETRIES = 3
 _BACKOFF_S = 2.0
 
+# USD per 1M tokens (input, output) — Qwen Cloud base rates, <=256K tier
+# (docs.qwencloud.com/developer-guides/getting-started/pricing, 2026-07).
+PRICES = {
+    "qwen3.7-max": (2.50, 7.50),
+    "qwen3.7-plus": (0.40, 1.60),
+    "qwen3.6-flash": (0.25, 1.50),
+}
+
+
+def call_cost_usd(model: str, prompt_tokens: int, completion_tokens: int) -> float:
+    p_in, p_out = PRICES.get(model, (0.0, 0.0))
+    return (prompt_tokens * p_in + completion_tokens * p_out) / 1e6
+
 
 @dataclass
 class Call:
@@ -40,12 +53,18 @@ class Ledger:
     def wall_latency_s(self) -> float:
         return sum(c.latency_s for c in self.calls)
 
+    @property
+    def cost_usd(self) -> float:
+        return sum(call_cost_usd(c.model, c.prompt_tokens, c.completion_tokens)
+                   for c in self.calls)
+
     def as_dict(self) -> dict:
         return {
             "n_calls": len(self.calls),
             "total_tokens": self.total_tokens,
             "completion_tokens": self.completion_tokens,
             "latency_s": round(self.wall_latency_s, 2),
+            "cost_usd": round(self.cost_usd, 6),
         }
 
 
