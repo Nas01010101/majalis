@@ -198,5 +198,55 @@
     "tokens": 260731,
     "cost_usd": 1.1991,
     "latency_s": 2147.5
+  },
+  {
+    "arm": "agora-nodebate",
+    "seed": 0,
+    "steps": 8,
+    "n": 16,
+    "correct": 14,
+    "tokens": 55814,
+    "cost_usd": 0.0998,
+    "latency_s": 394.9
+  },
+  {
+    "arm": "agora-nodebate",
+    "seed": 1,
+    "steps": 8,
+    "n": 16,
+    "correct": 15,
+    "tokens": 49224,
+    "cost_usd": 0.0875,
+    "latency_s": 345.7
+  },
+  {
+    "arm": "agora-nodebate",
+    "seed": 2,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 55287,
+    "cost_usd": 0.0997,
+    "latency_s": 398.1
+  },
+  {
+    "arm": "agora-nodebate",
+    "seed": 3,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 54075,
+    "cost_usd": 0.0947,
+    "latency_s": 370.1
+  },
+  {
+    "arm": "agora-nodebate",
+    "seed": 4,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 51914,
+    "cost_usd": 0.0943,
+    "latency_s": 382.8
   }
 ]
