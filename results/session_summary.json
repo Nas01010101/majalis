@@ -2,20 +2,22 @@
   {
     "arm": "single",
     "seed": 0,
+    "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 19970,
-    "cost_usd": 0.101,
-    "latency_s": 201.8
+    "tokens": 22210,
+    "cost_usd": 0.116,
+    "latency_s": 238.7
   },
   {
     "arm": "agora",
     "seed": 0,
+    "steps": 8,
     "n": 16,
-    "correct": 16,
-    "tokens": 47879,
-    "cost_usd": 0.0844,
-    "latency_s": 322.0
+    "correct": 15,
+    "tokens": 61646,
+    "cost_usd": 0.121,
+    "latency_s": 472.6
   },
   {
     "arm": "single",

@@ -70,16 +70,55 @@ def collect(family: str, n: int, seed: int) -> None:
         print(f"{task.task_id}: score={score:.3f} harm={harm}", flush=True)
 
 
+def collect_session(seed: int, n_steps: int = 8) -> None:
+    """Session-mode pairs: replay a calibration stream with debates OFF and
+    label harm = 'the answer committed straight from the board was wrong'.
+    This matches the deployed decision exactly (same board state, same
+    features, same models)."""
+    from ..society import AgoraSession
+    from .stream import make_session
+
+    done = _done_ids()
+    _PAIRS.parent.mkdir(parents=True, exist_ok=True)
+    session = AgoraSession(seed=seed, gate_mode="never")
+    for ev in make_session(seed, n_steps=n_steps):
+        if ev.kind == "evidence":
+            session.ingest(ev.lines)
+            continue
+        uid = f"stream:{seed}:{ev.task.task_id}"
+        if uid in done:
+            continue  # note: board state still advanced by prior ingests
+        result = session.ask(ev.task)
+        gate = result.transcript[0]["gate"]
+        harm = 0 if grade(ev.task, result.answer) else 1
+        with _PAIRS.open("a") as fh:
+            fh.write(json.dumps({
+                "uid": uid, "score": gate["p_wrong"], "harm": harm,
+                "max_doubt": gate["max_doubt"],
+                "disagreement": gate["disagreement"],
+                "family": "stream",
+            }) + "\n")
+        print(f"{ev.task.task_id}: score={gate['p_wrong']:.3f} harm={harm}",
+              flush=True)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--families", default="churn,multihop")
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--seed", type=int, default=100)
+    ap.add_argument("--session-seeds", default="",
+                    help="comma list of stream seeds (>=100); replaces families")
     args = ap.parse_args()
-    assert args.seed >= 100, "calibration seeds live at 100+; eval uses 0-99"
 
-    for family in args.families.split(","):
-        collect(family, args.n, args.seed)
+    if args.session_seeds:
+        for seed in (int(s) for s in args.session_seeds.split(",")):
+            assert seed >= 100, "calibration seeds live at 100+; eval uses 0-99"
+            collect_session(seed)
+    else:
+        assert args.seed >= 100, "calibration seeds live at 100+; eval uses 0-99"
+        for family in args.families.split(","):
+            collect(family, args.n, args.seed)
 
     pairs = [json.loads(line) for line in _PAIRS.read_text().splitlines() if line]
     scores = [p["score"] for p in pairs]

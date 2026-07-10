@@ -206,11 +206,13 @@ class AgoraSession:
 
     def __init__(self, *, seed: int = 0,
                  model_strong: str = MODEL_STRONG,
-                 model_fast: str = MODEL_FAST):
+                 model_fast: str = MODEL_FAST,
+                 gate_mode: str = "wm"):  # wm | always | never
         self.board = BeliefBoard()
         self.seed = seed
         self.model_strong = model_strong
         self.model_fast = model_fast
+        self.gate_mode = gate_mode
         self.ingest_ledger = Ledger()  # perception cost, amortized over questions
 
     def ingest(self, lines: list[str]) -> None:
@@ -233,6 +235,10 @@ class AgoraSession:
                   support=proposal.support_keys, confidence=proposal.confidence)
         decision = _GATE.decide(task, board, proposal, ledger, self.model_fast,
                                 seed=self.seed)
+        if self.gate_mode == "always":
+            decision.fire, decision.reason = True, "ablation:always-debate"
+        elif self.gate_mode == "never":
+            decision.fire, decision.reason = False, "ablation:never-debate"
         trace.gate = decision.as_dict()
         targets = rank_targets(board, proposal.support_keys,
                                max_targets=MAX_DEBATES_PER_TASK)
