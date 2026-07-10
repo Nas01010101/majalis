@@ -42,10 +42,10 @@ than a consensus judge); **acceptance** — Budgeted
 Act-or-Defer deliberation (2606.29654, calibrated act/defer with a conditional
 reliability bound, deferring to humans); **substrate** — Mesh Memory Protocol
 (2604.19540) and ECON's belief-encoder coordination (ICML 2025); the
-**belief-store-with-supersession itself is established art** — Tenure (typed
-belief store with epistemic status + supersession), TOKI (EACL 2026,
-write-time contradiction control with provenance), and WorldDB (96.4%
-LongMemEval-s) all ship one in 2026, so Agora claims no novelty for the
+**belief-store-with-supersession itself is established art** — Tenure (2605.11325, typed
+belief store with epistemic status + supersession), TOKI (2606.06240,
+write-time contradiction control with audit-row provenance), and WorldDB
+(2604.18478; 96.4% LongMemEval-s, author-reported) all ship one in 2026, so Agora claims no novelty for the
 substrate — only for what it is wired to.
 
 What none of them do, and Agora does: close the loop through ONE persistent,
