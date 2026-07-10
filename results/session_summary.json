@@ -15,9 +15,9 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 63294,
-    "cost_usd": 0.1235,
-    "latency_s": 509.5
+    "tokens": 47035,
+    "cost_usd": 0.1056,
+    "latency_s": 386.9
   },
   {
     "arm": "single",
@@ -35,9 +35,9 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 54044,
-    "cost_usd": 0.0997,
-    "latency_s": 392.9
+    "tokens": 46886,
+    "cost_usd": 0.0912,
+    "latency_s": 366.3
   },
   {
     "arm": "single",
@@ -55,9 +55,9 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 54395,
-    "cost_usd": 0.0977,
-    "latency_s": 386.1
+    "tokens": 44221,
+    "cost_usd": 0.0843,
+    "latency_s": 292.8
   },
   {
     "arm": "single",
@@ -75,9 +75,9 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 54876,
-    "cost_usd": 0.0944,
-    "latency_s": 373.8
+    "tokens": 45454,
+    "cost_usd": 0.0844,
+    "latency_s": 297.4
   },
   {
     "arm": "single",
@@ -95,9 +95,9 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 49428,
-    "cost_usd": 0.0898,
-    "latency_s": 357.5
+    "tokens": 40180,
+    "cost_usd": 0.0785,
+    "latency_s": 279.7
   },
   {
     "arm": "single",
@@ -248,5 +248,25 @@
     "tokens": 51914,
     "cost_usd": 0.0943,
     "latency_s": 382.8
+  },
+  {
+    "arm": "agora",
+    "seed": 5,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 50020,
+    "cost_usd": 0.1004,
+    "latency_s": 380.1
+  },
+  {
+    "arm": "agora",
+    "seed": 6,
+    "steps": 8,
+    "n": 16,
+    "correct": 15,
+    "tokens": 44328,
+    "cost_usd": 0.0861,
+    "latency_s": 298.4
   }
 ]

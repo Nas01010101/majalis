@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,8 +53,15 @@ class GateDecision:
                 "weak_current": self.weak_current, "reason": self.reason}
 
 
+# Tuned by the autoresearch loop (experiments/gate-cost/journal.jsonl):
+# K=2 + skip-below-0.15 cut cost/question 8% on held-out seeds and 12% on
+# eval seeds at unchanged accuracy (80/80). Env-overridable for re-tuning.
+_K_SAMPLES = int(os.environ.get("AGORA_GATE_K", "2"))
+_SKIP_SAMPLER_BELOW_DOUBT = float(os.environ.get("AGORA_GATE_SKIP_DOUBT", "0.15"))
+
+
 def sample_disagreement(task: Task, board: BeliefBoard, ledger: Ledger,
-                        model: str, k: int = 3, seed: int = 0) -> float:
+                        model: str, k: int = _K_SAMPLES, seed: int = 0) -> float:
     """CSD-style: K cheap high-temperature answers; disagreement = 1 - modal freq."""
     prompt = (
         f"Question:\n{task.question}\n\n"
@@ -117,7 +125,12 @@ class AcceptGate:
                    if board.current(k) is not None}
         max_doubt = max(support.values(), default=0.0)
         weak = any(board.weak_current(k) for k in proposal.support_keys)
-        disagreement = sample_disagreement(task, board, ledger, model, seed=seed)
+        if not weak and max_doubt < _SKIP_SAMPLER_BELOW_DOUBT:
+            # Low-doubt fast path: the sampler's 3 calls rarely flip a clean
+            # board's decision — skip them (autoresearch-tuned threshold).
+            disagreement = 0.0
+        else:
+            disagreement = sample_disagreement(task, board, ledger, model, seed=seed)
         p_wrong = risk_score(max_doubt, disagreement, proposal.confidence, weak)
 
         if weak:

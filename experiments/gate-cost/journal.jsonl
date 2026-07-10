@@ -1,0 +1,5 @@
+{"iter":0,"ts":"2026-07-10T12:54:01Z","metric":999.0,"kept":true,"target_sha":"7396692a2b27"}
+{"iter":1,"ts":"2026-07-10T13:08:33Z","metric":0.0063401249999999985,"kept":true,"target_sha":"aa8319c031ab"}
+{"iter":2,"ts":"2026-07-10T13:22:07Z","metric":0.006216843750000001,"kept":true,"target_sha":"e792fa7cec09"}
+{"iter":3,"ts":"2026-07-10T13:36:07Z","metric":0.00622990625,"kept":false,"target_sha":"bff44b361cfb"}
+{"iter":4,"ts":"2026-07-10T13:47:52Z","metric":0.0058276874999999995,"kept":true,"target_sha":"41614b894e68"}
