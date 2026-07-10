@@ -4,7 +4,22 @@
 
 Built for the Global AI Hackathon with Qwen Cloud — Track 3: Agent Society.
 
-> Status: under construction. Architecture and benchmark docs land in `docs/`.
+## Measured results (session eval, 5 seeds, Wilson 95% CIs)
+
+Evidence streams with interleaved questions and unreliable sources; every arm
+sees identical events, graded identically, one shared token+USD ledger.
+
+| arm | accuracy | cost/question | note |
+|---|---|---|---|
+| **Agora** | **272/272 across all stream lengths** | **$0.0056, flat in stream length** | gate debates 6–16% of questions; gate params tuned by a metric-driven keep/revert loop on held-out seeds (experiments/gate-cost) |
+| single agent | 272/272 | $0.0079 → $0.0137, linear in stream length | re-reads the stream per question |
+| vanilla MAD (3×3) | 32/32 | $0.0709 | 10.6× Agora's cost |
+| Agora, debate ablated | 77/80 (96.2%) | $0.0060 | the 3 errors are exactly the rumor-poisoned beliefs the world model flagged; gated debate corrects all 3 for +$0.0004/q |
+
+Reproduce: `make bench` (per-task families) and
+`python -m agora.bench.session --arms single,agora,mad --seeds 0,1,2,3,4`.
+Calibration: `python -m agora.bench.calibrate --session-seeds 100,101,102`
+(seeds ≥100 are never evaluated).
 
 ## Why
 

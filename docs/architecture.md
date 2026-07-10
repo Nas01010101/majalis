@@ -27,6 +27,33 @@ token budget is a brutal baseline (arXiv:2604.02460). The levers that survive:
    stateless per-query classifier to a persistent, calibrated world model that
    modulates the entire debate lifecycle and compounds across tasks.
 
+### Positioning vs the mid-2026 frontier (checked 2026-07-10)
+
+The sparse/gated-debate space moved fast in May–June 2026; per control point,
+the closest neighbors are: **trigger** — iMAD (2511.11306) and SELENE (EACL
+2026 Industry, 2026.eacl-industry.7: selective debate initiation bypasses
+30–60% of cases, ~50% token cut *at a 0.8–1.5pp accuracy cost*); **topology**
+— DySCo (2606.01828, −70% tokens via sparse edges) and PEAR (2606.20621,
+equivariant sparse routing); **termination** — a Wald-SPRT compute governor
+for debates (2605.19193: 3.7× call cut on GSM8K but 2.1× cost blowup on MMLU
+where judge scores don't discriminate — stopping rules inherit their judge's
+calibration, which is why Agora's stop signal reads the belief state rather
+than a consensus judge); **acceptance** — Budgeted
+Act-or-Defer deliberation (2606.29654, calibrated act/defer with a conditional
+reliability bound, deferring to humans); **substrate** — Mesh Memory Protocol
+(2604.19540) and ECON's belief-encoder coordination (ICML 2025).
+
+What none of them do, and Agora does: close the loop through ONE persistent,
+inspectable belief state — the same board that amortizes perception also
+carries doubt, provenance, and supersession outcomes; the gate reads it, the
+debate writes back into it, and the next question starts smarter. Two
+measured consequences the neighbors don't show: gating with **zero accuracy
+cost** (the gate routes to correction instead of skipping — SELENE pays
+0.8–1.5pp for its bypass), and a **flat cost-per-question curve in stream
+length** (their evals are per-query, so amortization doesn't exist as an
+axis). Each mechanism alone: incremental. The closed loop and the cost
+regime: the contribution.
+
 MAST (2503.13657) attributes multi-agent failures to structural causes —
 inter-agent misalignment and weak verification/termination. Agora's answers are
 structural too: star topology (no agent-to-agent chat), typed artifact handoffs,
