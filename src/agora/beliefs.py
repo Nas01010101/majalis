@@ -135,6 +135,14 @@ class BeliefBoard:
         conflict_bump = 1.0 - math.exp(-0.5 * self._conflicts.get(key, 0))
         return min(1.0, base + 0.5 * conflict_bump * (1.0 - base) + 0.15 * conflict_bump)
 
+    def weak_current(self, key: str) -> bool:
+        """True when the CURRENT value displaced an authoritative value from a
+        weaker source (e.g. a rumor superseding a filing by date) — the
+        sharpest available signal of board corruption, and one sampling-based
+        disagreement cannot see (all samples read the same corrupted board)."""
+        cur = self._current.get(key)
+        return bool(cur and cur.outcome == "superseded-by-weaker-source")
+
     def docket(self, key: str) -> str:
         """Every dated assertion the board has seen for this key, oldest
         first — the challenge/adjudication record. Debates read the docket,

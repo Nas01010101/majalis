@@ -4,6 +4,21 @@ from agora.beliefs import BeliefBoard, parse_date_ord
 from agora.wm import AcceptGate, rank_targets, risk_score
 
 
+def test_weak_current_dominates_risk():
+    from agora.beliefs import parse_date_ord
+    b = BeliefBoard()
+    k = "e::ceo"
+    b.assert_fact(k, "Chen", parse_date_ord("Jan 2025"), source="Filing")
+    b.assert_fact(k, "Okafor", parse_date_ord("May 2025"), source="Rumor")
+    assert b.weak_current(k)
+    # A rumor-corrupted board must outscore an honest one decisively.
+    assert risk_score(0.3, 0.0, 0.9, weak_current=True) > \
+        risk_score(0.3, 0.0, 0.9, weak_current=False) + 0.3
+    # A later authoritative filing clears the flag.
+    b.assert_fact(k, "Larsson", parse_date_ord("Aug 2025"), source="Filing")
+    assert not b.weak_current(k)
+
+
 def test_risk_score_monotone():
     assert risk_score(0.0, 0.0, 1.0) < 0.1
     assert risk_score(0.9, 0.7, 0.4) > 0.8
