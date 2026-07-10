@@ -79,12 +79,34 @@ def _replay_agora(events, seed: int) -> list[dict]:
 REPLAYS = {"single": _replay_single, "mad": _replay_mad, "agora": _replay_agora}
 
 
+def _resume_summary(arm: str, seed: int, n_steps: int,
+                    raw_path: Path) -> dict | None:
+    """A cell whose raw file already holds every question is done — reload
+    its summary instead of re-spending API calls (kills are cheap)."""
+    if not raw_path.exists():
+        return None
+    rows = [json.loads(l) for l in raw_path.read_text().splitlines() if l]
+    if len(rows) != 2 * n_steps:
+        return None
+    tokens = sum(r["total_tokens"] + (r.get("ingest", {}).get("total_tokens", 0))
+                 for r in rows)
+    cost = sum(r["cost_usd"] + (r.get("ingest", {}).get("cost_usd", 0))
+               for r in rows)
+    return {"arm": arm, "seed": seed, "steps": n_steps, "n": len(rows),
+            "correct": sum(r["correct"] for r in rows), "tokens": tokens,
+            "cost_usd": round(cost, 4), "latency_s": 0.0, "resumed": True}
+
+
 def run_session_arm(arm: str, seed: int, n_steps: int = 8) -> dict:
+    raw_path = RESULTS_DIR / "raw" / f"session_{arm}_s{seed}_t{n_steps}.jsonl"
+    resumed = _resume_summary(arm, seed, n_steps, raw_path)
+    if resumed:
+        print(f"  (resumed from {raw_path.name})", flush=True)
+        return resumed
     events = make_session(seed, n_steps=n_steps)
     t0 = time.monotonic()
     records = REPLAYS[arm](events, seed)
     latency = time.monotonic() - t0
-    raw_path = RESULTS_DIR / "raw" / f"session_{arm}_s{seed}_t{n_steps}.jsonl"
     raw_path.parent.mkdir(parents=True, exist_ok=True)
     correct = tokens = 0
     cost = 0.0
