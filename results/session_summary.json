@@ -16,5 +16,45 @@
     "tokens": 47879,
     "cost_usd": 0.0844,
     "latency_s": 322.0
+  },
+  {
+    "arm": "single",
+    "seed": 0,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 66133,
+    "cost_usd": 0.3125,
+    "latency_s": 582.9
+  },
+  {
+    "arm": "agora",
+    "seed": 0,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 98274,
+    "cost_usd": 0.1662,
+    "latency_s": 614.8
+  },
+  {
+    "arm": "single",
+    "seed": 0,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 214235,
+    "cost_usd": 0.8656,
+    "latency_s": 1286.7
+  },
+  {
+    "arm": "agora",
+    "seed": 0,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 216512,
+    "cost_usd": 0.3422,
+    "latency_s": 1192.6
   }
 ]
