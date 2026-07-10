@@ -30,11 +30,15 @@ token budget is a brutal baseline (arXiv:2604.02460). The levers that survive:
 ### Positioning vs the mid-2026 frontier (checked 2026-07-10)
 
 The sparse/gated-debate space moved fast in May–June 2026; per control point,
-the closest neighbors are: **trigger** — iMAD (2511.11306) and SELENE (2026,
-selective debate initiation: bypasses 30–60% of cases, ~50% token cut *at a
-0.8–1.5pp accuracy cost*); **topology** — DySCo (2606.01828, −70% tokens via
-sparse edges) and PEAR (2606.20621, equivariant sparse routing); **termination**
-— an SPRT compute governor for debates (2026); **acceptance** — Budgeted
+the closest neighbors are: **trigger** — iMAD (2511.11306) and SELENE (EACL
+2026 Industry, 2026.eacl-industry.7: selective debate initiation bypasses
+30–60% of cases, ~50% token cut *at a 0.8–1.5pp accuracy cost*); **topology**
+— DySCo (2606.01828, −70% tokens via sparse edges) and PEAR (2606.20621,
+equivariant sparse routing); **termination** — a Wald-SPRT compute governor
+for debates (2605.19193: 3.7× call cut on GSM8K but 2.1× cost blowup on MMLU
+where judge scores don't discriminate — stopping rules inherit their judge's
+calibration, which is why Agora's stop signal reads the belief state rather
+than a consensus judge); **acceptance** — Budgeted
 Act-or-Defer deliberation (2606.29654, calibrated act/defer with a conditional
 reliability bound, deferring to humans); **substrate** — Mesh Memory Protocol
 (2604.19540) and ECON's belief-encoder coordination (ICML 2025).
