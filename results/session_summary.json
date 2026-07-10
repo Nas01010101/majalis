@@ -14,10 +14,10 @@
     "seed": 0,
     "steps": 8,
     "n": 16,
-    "correct": 15,
-    "tokens": 57328,
-    "cost_usd": 0.1095,
-    "latency_s": 422.8
+    "correct": 16,
+    "tokens": 63294,
+    "cost_usd": 0.1235,
+    "latency_s": 509.5
   },
   {
     "arm": "single",
@@ -34,10 +34,10 @@
     "seed": 1,
     "steps": 8,
     "n": 16,
-    "correct": 15,
-    "tokens": 48489,
-    "cost_usd": 0.0846,
-    "latency_s": 327.6
+    "correct": 16,
+    "tokens": 54044,
+    "cost_usd": 0.0997,
+    "latency_s": 392.9
   },
   {
     "arm": "single",
@@ -55,8 +55,148 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 53677,
-    "cost_usd": 0.0951,
-    "latency_s": 380.3
+    "tokens": 54395,
+    "cost_usd": 0.0977,
+    "latency_s": 386.1
+  },
+  {
+    "arm": "single",
+    "seed": 3,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 24783,
+    "cost_usd": 0.1298,
+    "latency_s": 273.3
+  },
+  {
+    "arm": "agora",
+    "seed": 3,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 54876,
+    "cost_usd": 0.0944,
+    "latency_s": 373.8
+  },
+  {
+    "arm": "single",
+    "seed": 4,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 24400,
+    "cost_usd": 0.1327,
+    "latency_s": 279.6
+  },
+  {
+    "arm": "agora",
+    "seed": 4,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 49428,
+    "cost_usd": 0.0898,
+    "latency_s": 357.5
+  },
+  {
+    "arm": "single",
+    "seed": 0,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 68423,
+    "cost_usd": 0.3086,
+    "latency_s": 541.9
+  },
+  {
+    "arm": "agora",
+    "seed": 0,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 119524,
+    "cost_usd": 0.2228,
+    "latency_s": 891.7
+  },
+  {
+    "arm": "single",
+    "seed": 1,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 68658,
+    "cost_usd": 0.3145,
+    "latency_s": 581.9
+  },
+  {
+    "arm": "agora",
+    "seed": 1,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 108892,
+    "cost_usd": 0.198,
+    "latency_s": 761.2
+  },
+  {
+    "arm": "single",
+    "seed": 0,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 227546,
+    "cost_usd": 0.8797,
+    "latency_s": 1203.3
+  },
+  {
+    "arm": "agora",
+    "seed": 0,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 253789,
+    "cost_usd": 0.4355,
+    "latency_s": 1611.8
+  },
+  {
+    "arm": "single",
+    "seed": 1,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 223748,
+    "cost_usd": 0.874,
+    "latency_s": 1221.1
+  },
+  {
+    "arm": "agora",
+    "seed": 1,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 244316,
+    "cost_usd": 0.4162,
+    "latency_s": 1570.8
+  },
+  {
+    "arm": "mad",
+    "seed": 0,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 238920,
+    "cost_usd": 1.0685,
+    "latency_s": 1884.4
+  },
+  {
+    "arm": "mad",
+    "seed": 1,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 260731,
+    "cost_usd": 1.1991,
+    "latency_s": 2147.5
   }
 ]

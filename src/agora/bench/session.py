@@ -59,8 +59,8 @@ def _replay_mad(events, seed: int) -> list[dict]:
     return records
 
 
-def _replay_agora(events, seed: int) -> list[dict]:
-    session = AgoraSession(seed=seed)
+def _replay_agora(events, seed: int, gate_mode: str = "wm") -> list[dict]:
+    session = AgoraSession(seed=seed, gate_mode=gate_mode)
     records = []
     for ev in events:
         if ev.kind == "evidence":
@@ -76,7 +76,13 @@ def _replay_agora(events, seed: int) -> list[dict]:
     return records
 
 
-REPLAYS = {"single": _replay_single, "mad": _replay_mad, "agora": _replay_agora}
+REPLAYS = {
+    "single": _replay_single,
+    "mad": _replay_mad,
+    "agora": _replay_agora,
+    # Ablation: same board, debates never fire — isolates what debate adds.
+    "agora-nodebate": lambda ev, seed: _replay_agora(ev, seed, gate_mode="never"),
+}
 
 
 def _resume_summary(arm: str, seed: int, n_steps: int,
