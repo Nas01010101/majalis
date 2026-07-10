@@ -7,14 +7,28 @@ _VALUE_RE = re.compile(r"\b(?:is|as|remains) (.+?)\.$")
 
 
 def _latest_value(lines: list[str], entity: str, attr: str) -> str | None:
+    """Latest-dated FILING value — the policy says only filings are
+    authoritative, and rumors are deliberately dated after filings."""
     latest, val = -1, None
     for line in lines:
-        if f"{entity}'s {attr}" in line:
+        if f"{entity}'s {attr}" in line and "Filing:" in line:
             m = _VALUE_RE.search(line)
             d = parse_date_ord(line)
             if m and d > latest:
                 latest, val = d, m.group(1)
     return val
+
+
+def test_stream_rumors_postdate_filings_and_are_wrong():
+    saw_rumor = False
+    for seed in range(4):
+        lines = [l for e in make_session(seed) for l in e.lines]
+        for line in (l for l in lines if l.startswith("[") and "Rumor:" in l):
+            saw_rumor = True
+            m = re.search(r"Rumor: (.+?)'s (.+?) is now (.+?)\.$", line)
+            entity, attr, claimed = m.groups()
+            assert claimed != _latest_value(lines, entity, attr)
+    assert saw_rumor
 
 
 def test_stream_gold_consistent_with_dated_lines():

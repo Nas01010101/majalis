@@ -26,11 +26,17 @@ class SessionEvent:
     task: Task | None = None  # questions
 
 
+_POLICY = ("Policy: filings are authoritative; blog recaps, industry notes "
+           "and rumors are unreliable and never override a filing.")
+
+
 def make_session(seed: int, *, n_steps: int = 8, keys_per_step: int = 4,
-                 questions_per_step: int = 2) -> list[SessionEvent]:
+                 questions_per_step: int = 2,
+                 rumor_rate: float = 0.35) -> list[SessionEvent]:
     rng = random.Random(seed)
     truth: dict[tuple[str, str], tuple[str, int]] = {}  # (entity, attr) -> (value, month)
     retired: dict[tuple[str, str], list[tuple[str, int]]] = {}
+    rumored: dict[tuple[str, str], set[str]] = {}  # rumors must never come true
     events: list[SessionEvent] = []
     month = 0
     q_idx = 0
@@ -43,7 +49,11 @@ def make_session(seed: int, *, n_steps: int = 8, keys_per_step: int = 4,
             else:
                 entity, attr = rng.choice(_ENTITIES), rng.choice(list(_ATTRS))
             old = truth.get((entity, attr))
-            candidates = [v for v in _ATTRS[attr] if not old or v != old[0]]
+            candidates = [v for v in _ATTRS[attr]
+                          if (not old or v != old[0])
+                          and v not in rumored.get((entity, attr), set())]
+            if not candidates:
+                continue
             value = rng.choice(candidates)
             filing_month = month + rng.randint(0, 2)
             if old and old[1] >= filing_month:
@@ -68,6 +78,17 @@ def make_session(seed: int, *, n_steps: int = 8, keys_per_step: int = 4,
                 echo_month = rng.randint(old_month + 1, cur_month - 1)
                 batch.append(f"[{_fmt_month(echo_month)}] Industry note: "
                              f"{entity}'s {attr} remains {old_value}.")
+        # Rumors: a WRONG value dated AFTER the latest filing. Gold ignores
+        # them (the policy says filings win), but a date-only reader — or a
+        # naive belief board — will absorb them. This is the honest error
+        # source that debate can catch.
+        if truth and rng.random() < rumor_rate:
+            entity, attr = rng.choice(list(truth))
+            cur_value, cur_month = truth[(entity, attr)]
+            wrong = rng.choice([v for v in _ATTRS[attr] if v != cur_value])
+            rumored.setdefault((entity, attr), set()).add(wrong)
+            batch.append(f"[{_fmt_month(cur_month + rng.randint(1, 2))}] Rumor: "
+                         f"{entity}'s {attr} is now {wrong}.")
         rng.shuffle(batch)
         events.append(SessionEvent("evidence", lines=batch))
         month += rng.randint(3, 4)
@@ -94,8 +115,9 @@ def make_session(seed: int, *, n_steps: int = 8, keys_per_step: int = 4,
                 family="stream",
                 context="",  # session arms supply their own memory of the stream
                 question=(f'Claim: "{entity}\'s {attr} is currently {claimed}." '
-                          "Based on the most recent dated evidence, is this "
-                          "claim true or false? Answer 'true' or 'false'."),
+                          f"{_POLICY} Based on the most recent authoritative "
+                          "evidence, is this claim true or false? "
+                          "Answer 'true' or 'false'."),
                 gold=gold,
                 meta={"entity": entity, "attr": attr,
                       "churned": (entity, attr) in retired},

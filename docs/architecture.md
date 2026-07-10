@@ -82,13 +82,24 @@ author≠validator separation, and termination owned by the world model.
   2. **Debate always re-proposes.** A judge can uphold a belief that the
      original proposal contradicted; without a mandatory re-proposal the
      debate's work is silently discarded.
-- **`bench/` — the harness.** Arms: `single` (CoT), `sc5` (self-consistency,
-  the honest null), `mad` (vanilla 3×3 debate), `agora`. Families: `churn`
-  (claim verification under evolving evidence — debate's proven habitat) and
-  `multihop` (control where the gate should stay closed). Seeded offline
-  generators, Wilson 95% CIs, per-call token/latency ledger shared by every
-  arm, one command (`make bench`). Calibration seeds (≥100) are disjoint from
-  eval seeds (0–99).
+- **`bench/` — the harness.** Two evaluations, both seeded/offline-generated,
+  Wilson 95% CIs, one shared token+USD ledger, calibration seeds (≥100)
+  disjoint from eval seeds (0–99):
+  1. **Session eval (headline)** — `bench/session.py`: dated evidence streams
+     with questions interleaved, plus unreliable sources (rumors postdating
+     filings, wrong by construction). Baselines re-read the stream-so-far per
+     question — O(stream) input tokens each time; Agora ingests each batch
+     once and answers from the board — O(board) per question, debating only
+     doubted keys via per-key dockets. Measured (seed 0): accuracy parity at
+     every length with **cost/question flat for Agora ($0.0053) and linear
+     for single-agent ($0.0135 at 32 steps, 2.5× and growing)**. Every Qwen
+     backbone ceilings on per-task synthetic families, so the honest gain is
+     this structural one — the regime where multi-agent genuinely wins
+     (context/amortization), not re-bought self-consistency.
+  2. **Per-task eval (secondary + ablations)** — `bench/run.py`: `single`,
+     `sc5` (the honest null), `mad` (vanilla 3×3), `agora`, and ablations
+     (`agora-nogate` / `agora-nodebate` / `agora-noeig`) over `churn`,
+     `compare`, `multihop` families.
 
 ## Guarantee fine print (honest limits)
 

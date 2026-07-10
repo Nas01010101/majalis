@@ -32,6 +32,13 @@ _MONTHS = {m: i + 1 for i, m in enumerate(
      "jul", "aug", "sep", "oct", "nov", "dec"])}
 
 
+def _tier(source: str) -> int:
+    """0 = authoritative (filings, adjudicated debates); 1 = everything else,
+    including unlabeled assertions."""
+    s = source.lower()
+    return 0 if ("filing" in s or s == "debate") else 1
+
+
 def parse_date_ord(text: str) -> int:
     """'[Mar 2025] ...' or 'Mar 2025' -> comparable day ordinal (approx)."""
     m = re.search(r"([A-Za-z]{3,9})\.?\s+(\d{4})", text)
@@ -81,6 +88,13 @@ class BeliefBoard:
             cur.superseded = True
             belief.outcome = "superseded"
             self._current[key] = belief
+            # A non-authoritative source displacing an authoritative value is
+            # suspicious even though date-supersession accepts it — flag it so
+            # doubt rises and the debate layer can adjudicate by source tier.
+            if _tier(source) > _tier(cur.source):
+                self._conflicts[key] = self._conflicts.get(key, 0) + 2
+                belief.outcome = "superseded-by-weaker-source"
+                return "superseded-by-weaker-source"
             return "superseded"
         if date_ord < cur.date_ord:
             # An older-dated assertion of a different value: a stale echo of a

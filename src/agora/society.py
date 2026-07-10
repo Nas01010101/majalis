@@ -32,8 +32,9 @@ def extract_facts(evidence: str, ledger: Ledger, model: str) -> list[dict]:
         "Extract every dated factual assertion from the evidence as JSON.\n"
         f"Evidence:\n{evidence}\n\n"
         'Return a JSON list of objects: {"entity": str, "attribute": str, '
-        '"value": str, "date": str}. Use the date exactly as written; if a '
-        'line has no date, use "". No commentary.'
+        '"value": str, "date": str, "source": str}. Use the date exactly as '
+        'written (or "" if undated); source is the line\'s label, e.g. '
+        '"Filing", "Blog recap", "Industry note", "Rumor". No commentary.'
     )
     out = chat(model, [{"role": "user", "content": prompt}],
                ledger=ledger, temperature=0.0, max_tokens=2048)
@@ -74,8 +75,10 @@ def skeptic_challenge(task: Task, board: BeliefBoard, key: str,
         f"Belief under challenge: {key} = {cur.value if cur else '?'}\n"
         f"Recorded assertions for this key (the docket):\n{board.docket(key)}\n\n"
         f"Proposed answer: {proposal.answer}\nRationale: {proposal.rationale}\n\n"
-        "Attack the belief: is the value stale, contradicted, or misread from "
-        'the evidence? Return JSON: {"attack": str, "sub_questions": [str]} '
+        "Attack the belief: is the value stale, contradicted, sourced from an "
+        "unreliable mention (filings are authoritative; blog/industry/rumor "
+        "lines are not), or misread? "
+        'Return JSON: {"attack": str, "sub_questions": [str]} '
         "where sub_questions are 2-4 binary-checkable questions whose answers "
         "settle the challenge (each answerable by pointing at a dated line)."
     )
@@ -96,8 +99,9 @@ def adjudicate(task: Task, board: BeliefBoard, proposal: Proposal,
     subq = "\n".join(f"- {q}" for q in challenge.sub_questions)
     prompt = (
         "You are a judge. Settle a challenge by answering each sub-question "
-        "ONLY from the dated docket entries below (cite the deciding entry); "
-        "the most recent date wins.\n"
+        "ONLY from the dated docket entries below (cite the deciding entry). "
+        "Policy: filings are authoritative and the most recent FILING wins; "
+        "blog recaps, industry notes and rumors never override a filing.\n"
         f"Docket for {challenge.target_key}:\n{board.docket(challenge.target_key)}\n\n"
         f"Belief: {challenge.target_key} = {cur.value if cur else '?'}\n"
         f"Attack: {challenge.attack}\nSub-questions:\n{subq}\n\n"
@@ -134,7 +138,8 @@ def run_agora(task: Task, *, seed: int = 0,
         try:
             key = BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"]))
             outcome = board.assert_fact(key, str(fact["value"]),
-                                        parse_date_ord(str(fact.get("date", ""))))
+                                        parse_date_ord(str(fact.get("date", ""))),
+                                        source=str(fact.get("source", "")))
             trace.log("assert", key=key, value=str(fact["value"]), outcome=outcome)
         except (KeyError, TypeError):
             continue
@@ -201,11 +206,13 @@ class AgoraSession:
 
     def __init__(self, *, seed: int = 0,
                  model_strong: str = MODEL_STRONG,
-                 model_fast: str = MODEL_FAST):
+                 model_fast: str = MODEL_FAST,
+                 gate_mode: str = "wm"):  # wm | always | never
         self.board = BeliefBoard()
         self.seed = seed
         self.model_strong = model_strong
         self.model_fast = model_fast
+        self.gate_mode = gate_mode
         self.ingest_ledger = Ledger()  # perception cost, amortized over questions
 
     def ingest(self, lines: list[str]) -> None:
@@ -214,7 +221,8 @@ class AgoraSession:
                 self.board.assert_fact(
                     BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"])),
                     str(fact["value"]),
-                    parse_date_ord(str(fact.get("date", ""))))
+                    parse_date_ord(str(fact.get("date", ""))),
+                    source=str(fact.get("source", "")))
             except (KeyError, TypeError):
                 continue
 
@@ -227,6 +235,10 @@ class AgoraSession:
                   support=proposal.support_keys, confidence=proposal.confidence)
         decision = _GATE.decide(task, board, proposal, ledger, self.model_fast,
                                 seed=self.seed)
+        if self.gate_mode == "always":
+            decision.fire, decision.reason = True, "ablation:always-debate"
+        elif self.gate_mode == "never":
+            decision.fire, decision.reason = False, "ablation:never-debate"
         trace.gate = decision.as_dict()
         targets = rank_targets(board, proposal.support_keys,
                                max_targets=MAX_DEBATES_PER_TASK)

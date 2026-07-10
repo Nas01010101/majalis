@@ -48,6 +48,17 @@ def test_date_parse_orders():
     assert parse_date_ord("no date here") == 0
 
 
+def test_weak_source_supersession_flagged():
+    b, k = _board()
+    b.assert_fact(k, "Chen", parse_date_ord("Jan 2025"), source="Filing")
+    doubt_before = b.doubt(k)
+    out = b.assert_fact(k, "Okafor", parse_date_ord("May 2025"), source="Rumor")
+    assert out == "superseded-by-weaker-source"
+    assert b.current(k).value == "okafor"  # date logic still applies...
+    assert b.doubt(k) > doubt_before  # ...but doubt spikes for the gate
+    assert "Rumor" in b.docket(k)
+
+
 def test_missing_key():
     b, _ = _board()
     assert b.doubt("nope::x") == 1.0

@@ -1,40 +1,6 @@
-{"uid": "churn:100:churn-0", "score": 0.4090730390539844, "harm": 0, "max_doubt": 0.9692, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-1", "score": 0.3552746253281887, "harm": 0, "max_doubt": 0.8655, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-2", "score": 0.4090730390539844, "harm": 0, "max_doubt": 0.9692, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-3", "score": 0.3884270614858228, "harm": 0, "max_doubt": 0.93, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-4", "score": 0.3884270614858228, "harm": 0, "max_doubt": 0.93, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-5", "score": 0.4090730390539844, "harm": 0, "max_doubt": 0.9692, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-6", "score": 0.30171956607709405, "harm": 0, "max_doubt": 0.7549, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-7", "score": 0.4255574831883411, "harm": 0, "max_doubt": 1.0, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-8", "score": 0.4255574831883411, "harm": 0, "max_doubt": 1.0, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-9", "score": 0.3552746253281887, "harm": 0, "max_doubt": 0.8655, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-10", "score": 0.4090730390539844, "harm": 0, "max_doubt": 0.9692, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-11", "score": 0.4255574831883411, "harm": 0, "max_doubt": 1.0, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-12", "score": 0.3884270614858228, "harm": 0, "max_doubt": 0.93, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-13", "score": 0.4255574831883411, "harm": 0, "max_doubt": 1.0, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-14", "score": 0.30171956607709405, "harm": 0, "max_doubt": 0.7549, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-15", "score": 0.4255574831883411, "harm": 0, "max_doubt": 1.0, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-16", "score": 0.30171956607709405, "harm": 0, "max_doubt": 0.7549, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-17", "score": 0.3552746253281887, "harm": 0, "max_doubt": 0.8655, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-18", "score": 0.3552746253281887, "harm": 0, "max_doubt": 0.8655, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "churn:100:churn-19", "score": 0.30171956607709405, "harm": 0, "max_doubt": 0.7549, "disagreement": 0.0, "confidence": 1.0, "family": "churn"}
-{"uid": "multihop:100:multihop-0", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-1", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-2", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-3", "score": 0.07585818002124355, "harm": 0, "max_doubt": 0.0, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-4", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-5", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-6", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-7", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-8", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-9", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-10", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-11", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-12", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-13", "score": 0.07585818002124355, "harm": 0, "max_doubt": 0.0, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-14", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-15", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-16", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-17", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-18", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
-{"uid": "multihop:100:multihop-19", "score": 0.10286817696930499, "harm": 0, "max_doubt": 0.1519, "disagreement": 0.0, "confidence": 1.0, "family": "multihop"}
+{"uid": "stream:100:s100-q0", "score": 0.256, "harm": 0, "max_doubt": 0.651, "disagreement": 0.0, "family": "stream"}
+{"uid": "stream:100:s100-q1", "score": 0.256, "harm": 0, "max_doubt": 0.651, "disagreement": 0.0, "family": "stream"}
+{"uid": "stream:100:s100-q2", "score": 0.103, "harm": 0, "max_doubt": 0.152, "disagreement": 0.0, "family": "stream"}
+{"uid": "stream:100:s100-q3", "score": 0.103, "harm": 0, "max_doubt": 0.152, "disagreement": 0.0, "family": "stream"}
+{"uid": "stream:100:s100-q4", "score": 0.271, "harm": 0, "max_doubt": 0.687, "disagreement": 0.0, "family": "stream"}
+{"uid": "stream:100:s100-q5", "score": 0.271, "harm": 0, "max_doubt": 0.687, "disagreement": 0.0, "family": "stream"}
