@@ -1,20 +1,22 @@
 [
   {
-    "arm": "agora",
+    "arm": "single",
     "family": "churn",
-    "n": 3,
+    "n": 12,
     "seed": 0,
-    "correct": 3,
-    "tokens": 22990,
-    "latency_s": 346.1
+    "correct": 12,
+    "tokens": 31375,
+    "latency_s": 353.5,
+    "cost_usd": 0.0305
   },
   {
-    "arm": "agora",
-    "family": "multihop",
-    "n": 3,
+    "arm": "single",
+    "family": "compare",
+    "n": 12,
     "seed": 0,
-    "correct": 3,
-    "tokens": 15182,
-    "latency_s": 247.7
+    "correct": 11,
+    "tokens": 36306,
+    "latency_s": 514.0,
+    "cost_usd": 0.0383
   }
 ]

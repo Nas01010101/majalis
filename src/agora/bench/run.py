@@ -28,6 +28,7 @@ def run_arm(arm: str, family: str, n: int, seed: int) -> dict:
     correct = 0
     tokens = 0
     latency = 0.0
+    cost = 0.0
     with raw_path.open("w") as fh:
         for task in tasks:
             t0 = time.monotonic()
@@ -36,6 +37,7 @@ def run_arm(arm: str, family: str, n: int, seed: int) -> dict:
             correct += ok
             tokens += result.ledger.total_tokens
             latency += time.monotonic() - t0
+            cost += result.ledger.cost_usd
             gate = next((m.get("gate") for m in result.transcript
                          if isinstance(m, dict) and m.get("gate")), None)
             fh.write(json.dumps({
@@ -49,6 +51,7 @@ def run_arm(arm: str, family: str, n: int, seed: int) -> dict:
     return {
         "arm": arm, "family": family, "n": n, "seed": seed,
         "correct": correct, "tokens": tokens, "latency_s": round(latency, 1),
+        "cost_usd": round(cost, 4),
     }
 
 
@@ -77,10 +80,11 @@ def main() -> None:
 
     out = RESULTS_DIR / f"summary_s{args.seed}.json"
     out.write_text(json.dumps(summaries, indent=2))
-    print(f"\n{'arm':<8} {'family':<10} {'accuracy (Wilson 95%)':<28} {'tokens':>9} {'lat(s)':>7}")
+    print(f"\n{'arm':<14} {'family':<10} {'accuracy (Wilson 95%)':<28} "
+          f"{'tokens':>9} {'lat(s)':>7} {'cost($)':>8}")
     for s in summaries:
-        print(f"{s['arm']:<8} {s['family']:<10} {fmt_acc(s['correct'], s['n']):<28} "
-              f"{s['tokens']:>9} {s['latency_s']:>7}")
+        print(f"{s['arm']:<14} {s['family']:<10} {fmt_acc(s['correct'], s['n']):<28} "
+              f"{s['tokens']:>9} {s['latency_s']:>7} {s['cost_usd']:>8}")
     print(f"\nwrote {out}")
 
 
