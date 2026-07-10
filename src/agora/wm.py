@@ -22,7 +22,10 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from preact_wm.calibrated_gate import CalibratedGate
+try:  # prefer the upstream package when present (dev machines)
+    from preact_wm.calibrated_gate import CalibratedGate
+except ImportError:  # self-contained everywhere else (deploy, judges)
+    from .vendor.calibrated_gate import CalibratedGate
 
 from .beliefs import BeliefBoard
 from .bench.tasks import Task
