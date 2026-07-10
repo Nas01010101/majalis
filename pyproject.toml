@@ -13,6 +13,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+api = ["fastapi>=0.110", "uvicorn>=0.29"]
 
 [build-system]
 requires = ["hatchling"]
