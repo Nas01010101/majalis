@@ -15,9 +15,9 @@
     "steps": 8,
     "n": 16,
     "correct": 15,
-    "tokens": 66965,
-    "cost_usd": 0.1363,
-    "latency_s": 608.3
+    "tokens": 57328,
+    "cost_usd": 0.1095,
+    "latency_s": 422.8
   },
   {
     "arm": "single",
@@ -35,9 +35,9 @@
     "steps": 8,
     "n": 16,
     "correct": 15,
-    "tokens": 74421,
-    "cost_usd": 0.1616,
-    "latency_s": 797.9
+    "tokens": 48489,
+    "cost_usd": 0.0846,
+    "latency_s": 327.6
   },
   {
     "arm": "single",
@@ -55,8 +55,8 @@
     "steps": 8,
     "n": 16,
     "correct": 16,
-    "tokens": 87951,
-    "cost_usd": 0.1819,
-    "latency_s": 1040.3
+    "tokens": 53677,
+    "cost_usd": 0.0951,
+    "latency_s": 380.3
   }
 ]

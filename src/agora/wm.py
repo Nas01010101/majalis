@@ -100,7 +100,12 @@ class AcceptGate:
         if _GATE_STATE.exists():
             try:
                 state = json.loads(_GATE_STATE.read_text())
-                self.gate.fit(state["scores"], [bool(h) for h in state["harms"]])
+                # Weak-flagged pairs (the +3.0 term puts them >= ~0.7; the
+                # non-weak band tops out ~0.43) hard-fire in decide() and must
+                # not shape the threshold that governs the rest.
+                kept = [(s, h) for s, h in zip(state["scores"], state["harms"])
+                        if s < 0.7]
+                self.gate.fit([s for s, _ in kept], [bool(h) for _, h in kept])
                 self.gate.calibrate(self.alpha)
                 self.calibrated = True
             except Exception:  # noqa: BLE001 — corrupt state = run uncalibrated
@@ -115,6 +120,14 @@ class AcceptGate:
         disagreement = sample_disagreement(task, board, ledger, model, seed=seed)
         p_wrong = risk_score(max_doubt, disagreement, proposal.confidence, weak)
 
+        if weak:
+            # A weak-source displacement is a KNOWN policy violation, not a
+            # probabilistic risk — adjudication is mandatory. (Leaving this to
+            # the calibrated threshold fails: ~half of weak cases are harmless
+            # by luck, which drags tau above the harmful half.)
+            return GateDecision(fire=True, p_wrong=p_wrong,
+                                disagreement=disagreement, max_doubt=max_doubt,
+                                reason="policy:weak-source", weak_current=True)
         if self.calibrated:
             accept = self.gate.trust(p_wrong)
             reason = f"conformal(alpha={self.alpha})"
