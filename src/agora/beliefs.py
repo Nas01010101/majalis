@@ -48,6 +48,7 @@ class Belief:
     date_ord: int
     source: str
     superseded: bool = False
+    outcome: str = ""  # how this assertion landed: new/superseded/stale-echo/...
 
 
 @dataclass
@@ -69,22 +70,27 @@ class BeliefBoard:
         belief = Belief(key, value_norm, date_ord, source)
         self._history.setdefault(key, []).append(belief)
         if cur is None:
+            belief.outcome = "new"
             self._current[key] = belief
             return "new"
         if value_norm == cur.value:
             cur.date_ord = max(cur.date_ord, date_ord)
+            belief.outcome = "refresh"
             return "refresh"
         if date_ord > cur.date_ord:
             cur.superseded = True
+            belief.outcome = "superseded"
             self._current[key] = belief
             return "superseded"
         if date_ord < cur.date_ord:
             # An older-dated assertion of a different value: a stale echo of a
             # retired value — evidence of churn/noise on this key, raise doubt.
             belief.superseded = True
+            belief.outcome = "stale-echo"
             self._conflicts[key] = self._conflicts.get(key, 0) + 1
             return "stale-echo"
         # Same date, different value: unresolvable without adjudication.
+        belief.outcome = "conflict"
         self._conflicts[key] = self._conflicts.get(key, 0) + 2
         return "conflict"
 
@@ -114,6 +120,30 @@ class BeliefBoard:
         base = 1.0 - self.p_valid(key)
         conflict_bump = 1.0 - math.exp(-0.5 * self._conflicts.get(key, 0))
         return min(1.0, base + 0.5 * conflict_bump * (1.0 - base) + 0.15 * conflict_bump)
+
+    def docket(self, key: str) -> str:
+        """Every dated assertion the board has seen for this key, oldest
+        first — the challenge/adjudication record. Debates read the docket,
+        never the full evidence stream: this is what keeps debate cost
+        O(key history) instead of O(stream)."""
+        month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+        def fmt(ord_: int) -> str:
+            if ord_ <= 0:
+                return "undated"
+            year, rem = divmod(ord_, 372)
+            month = rem // 31
+            if month == 0:  # December lands exactly on a year boundary
+                year, month = year - 1, 12
+            return f"{month_names[min(12, month) - 1]} {year}"
+
+        entries = sorted(self._history.get(key, []), key=lambda b: b.date_ord)
+        return "\n".join(
+            f"- [{fmt(b.date_ord)}] {key} = {b.value}"
+            + (f" ({b.source})" if b.source else "")
+            for b in entries
+        ) or "(no record)"
 
     def doubts(self, threshold: float = 0.3) -> list[tuple[str, float]]:
         scored = [(k, self.doubt(k)) for k in self._current]

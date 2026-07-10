@@ -27,10 +27,10 @@ _GATE = AcceptGate()
 
 # --- Roles (each is one prompt, one artifact) --------------------------------
 
-def extract_facts(task: Task, ledger: Ledger, model: str) -> list[dict]:
+def extract_facts(evidence: str, ledger: Ledger, model: str) -> list[dict]:
     prompt = (
         "Extract every dated factual assertion from the evidence as JSON.\n"
-        f"Evidence:\n{task.context}\n\n"
+        f"Evidence:\n{evidence}\n\n"
         'Return a JSON list of objects: {"entity": str, "attribute": str, '
         '"value": str, "date": str}. Use the date exactly as written; if a '
         'line has no date, use "". No commentary.'
@@ -71,9 +71,8 @@ def skeptic_challenge(task: Task, board: BeliefBoard, key: str,
     prompt = (
         "You are an adversarial fact-checker. A proposed answer rests on a "
         "belief you must attack.\n"
-        f"Belief under challenge: {key} = {cur.value if cur else '?'} "
-        f"(doubt={board.doubt(key):.2f})\n"
-        f"Evidence:\n{task.context}\n\n"
+        f"Belief under challenge: {key} = {cur.value if cur else '?'}\n"
+        f"Recorded assertions for this key (the docket):\n{board.docket(key)}\n\n"
         f"Proposed answer: {proposal.answer}\nRationale: {proposal.rationale}\n\n"
         "Attack the belief: is the value stale, contradicted, or misread from "
         'the evidence? Return JSON: {"attack": str, "sub_questions": [str]} '
@@ -97,9 +96,9 @@ def adjudicate(task: Task, board: BeliefBoard, proposal: Proposal,
     subq = "\n".join(f"- {q}" for q in challenge.sub_questions)
     prompt = (
         "You are a judge. Settle a challenge by answering each sub-question "
-        "ONLY from dated lines in the evidence (quote the deciding line), "
-        "most recent date wins.\n"
-        f"Evidence:\n{task.context}\n\n"
+        "ONLY from the dated docket entries below (cite the deciding entry); "
+        "the most recent date wins.\n"
+        f"Docket for {challenge.target_key}:\n{board.docket(challenge.target_key)}\n\n"
         f"Belief: {challenge.target_key} = {cur.value if cur else '?'}\n"
         f"Attack: {challenge.attack}\nSub-questions:\n{subq}\n\n"
         'Return JSON: {"upheld": bool (true if the belief survives), '
@@ -131,7 +130,7 @@ def run_agora(task: Task, *, seed: int = 0,
     board = BeliefBoard()
 
     # 1. Perception: evidence -> keyed beliefs (supersession by date).
-    for fact in extract_facts(task, ledger, model_fast):
+    for fact in extract_facts(task.context, ledger, model_fast):
         try:
             key = BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"]))
             outcome = board.assert_fact(key, str(fact["value"]),
@@ -192,6 +191,71 @@ def run_agora(task: Task, *, seed: int = 0,
     result.transcript = [{"role": "trace", "gate": trace.gate,
                           "events": trace.events}]
     return result
+
+
+class AgoraSession:
+    """Incremental society over an evidence STREAM: ingest each batch once,
+    answer every question from the compact board; debates read per-key
+    dockets. This is where the world model's cost structure pays —
+    O(stream) perception happens once, questions cost O(board)."""
+
+    def __init__(self, *, seed: int = 0,
+                 model_strong: str = MODEL_STRONG,
+                 model_fast: str = MODEL_FAST):
+        self.board = BeliefBoard()
+        self.seed = seed
+        self.model_strong = model_strong
+        self.model_fast = model_fast
+        self.ingest_ledger = Ledger()  # perception cost, amortized over questions
+
+    def ingest(self, lines: list[str]) -> None:
+        for fact in extract_facts("\n".join(lines), self.ingest_ledger, self.model_fast):
+            try:
+                self.board.assert_fact(
+                    BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"])),
+                    str(fact["value"]),
+                    parse_date_ord(str(fact.get("date", ""))))
+            except (KeyError, TypeError):
+                continue
+
+    def ask(self, task: Task) -> ArmResult:
+        ledger = Ledger()
+        trace = DebateTrace(task_id=task.task_id)
+        board = self.board
+        proposal = propose(task, board, ledger, self.model_strong)
+        trace.log("proposal", answer=proposal.answer,
+                  support=proposal.support_keys, confidence=proposal.confidence)
+        decision = _GATE.decide(task, board, proposal, ledger, self.model_fast,
+                                seed=self.seed)
+        trace.gate = decision.as_dict()
+        targets = rank_targets(board, proposal.support_keys,
+                               max_targets=MAX_DEBATES_PER_TASK)
+        if decision.fire and targets:
+            adjudications = []
+            for key in targets:
+                challenge = skeptic_challenge(task, board, key, proposal,
+                                              ledger, MODEL_MID)
+                trace.log("challenge", key=key, attack=challenge.attack[:200])
+                verdict = adjudicate(task, board, proposal, challenge,
+                                     ledger, self.model_strong)
+                trace.log("verdict", key=key, upheld=verdict.upheld,
+                          corrected=verdict.corrected_value)
+                if not verdict.upheld and verdict.corrected_value:
+                    board.assert_fact(key, verdict.corrected_value,
+                                      board._now_ord + 1, source="debate")
+                    adjudications.append(f"{key}: CORRECTED to {verdict.corrected_value}")
+                else:
+                    adjudications.append(f"{key}: belief UPHELD as stated")
+            note = ("Adjudication results for the challenged beliefs:\n"
+                    + "\n".join(f"- {a}" for a in adjudications)
+                    + "\nAnswer strictly from the belief state below.\n\n")
+            proposal = propose(task, board, ledger, self.model_strong,
+                               correction_note=note)
+            trace.log("reproposal", answer=proposal.answer)
+        result = ArmResult(proposal.answer, ledger,
+                           [{"role": "trace", "gate": trace.gate,
+                             "events": trace.events}])
+        return result
 
 
 def _agora_arm(task: Task, *, seed: int = 0) -> ArmResult:

@@ -43,7 +43,7 @@ def collect(family: str, n: int, seed: int) -> None:
             continue
         ledger = Ledger()
         board = BeliefBoard()
-        for fact in extract_facts(task, ledger, MODEL_FAST):
+        for fact in extract_facts(task.context, ledger, MODEL_FAST):
             try:
                 board.assert_fact(
                     BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"])),

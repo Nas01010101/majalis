@@ -5,16 +5,18 @@
     "n": 12,
     "seed": 0,
     "correct": 12,
-    "tokens": 29440,
-    "latency_s": 253.6
+    "tokens": 31375,
+    "latency_s": 353.5,
+    "cost_usd": 0.0305
   },
   {
     "arm": "single",
     "family": "compare",
     "n": 12,
     "seed": 0,
-    "correct": 12,
-    "tokens": 35808,
-    "latency_s": 361.6
+    "correct": 11,
+    "tokens": 36306,
+    "latency_s": 514.0,
+    "cost_usd": 0.0383
   }
 ]
