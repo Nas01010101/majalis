@@ -31,8 +31,10 @@ from .beliefs import BeliefBoard
 from .bench.tasks import Task
 from .handoffs import Proposal
 from .llm import Ledger, chat
+from .wmnet import load_wm
 
 _GATE_STATE = Path(__file__).resolve().parents[2] / "data" / "gate_calibration.json"
+_GATE_STATE_LEARNED = _GATE_STATE.with_name("gate_calibration_learned.json")
 
 # Cost model for the breakeven rule (CBS): a debate costs roughly
 # challenge + verdict + re-proposal ~ 3 calls vs the ~0 extra calls of
@@ -108,7 +110,23 @@ class AcceptGate:
         self.alpha = alpha
         self.gate = CalibratedGate()
         self.calibrated = False
-        if _GATE_STATE.exists():
+        # Learned world model (trained on logged episodes; train/train_wm.py).
+        # None when weights are absent or AGORA_WM=heuristic — the hand-set
+        # blend below remains the fallback and the ablation arm.
+        self.wm = load_wm()
+        if self.wm and _GATE_STATE_LEARNED.exists():
+            try:
+                rows = json.loads(_GATE_STATE_LEARNED.read_text())
+                # Weak-flagged episodes hard-fire in decide(); exclude them by
+                # FLAG (not by score band — learned scores don't share the
+                # heuristic's band structure) so they don't shape tau.
+                kept = [(r["score"], r["harm"]) for r in rows if not r["weak"]]
+                self.gate.fit([s for s, _ in kept], [bool(h) for _, h in kept])
+                self.gate.calibrate(self.alpha)
+                self.calibrated = True
+            except Exception:  # noqa: BLE001 — corrupt state = run uncalibrated
+                pass
+        elif _GATE_STATE.exists():
             try:
                 state = json.loads(_GATE_STATE.read_text())
                 # Weak-flagged pairs (the +3.0 term puts them >= ~0.7; the
@@ -124,17 +142,36 @@ class AcceptGate:
 
     def decide(self, task: Task, board: BeliefBoard, proposal: Proposal,
                ledger: Ledger, model: str, seed: int = 0) -> GateDecision:
-        support = {k: board.doubt(k) for k in proposal.support_keys
-                   if board.current(k) is not None}
+        if self.wm:
+            # Learned per-key risk: P(the board's current value is wrong),
+            # from the trained wrong_now head (val AUROC 0.999 vs 0.79 for
+            # the hand blend; 0.937 on real logged LLM-board episodes).
+            support = {k: self.wm.wrong_now(board, k)
+                       for k in proposal.support_keys
+                       if board.current(k) is not None}
+        else:
+            support = {k: board.doubt(k) for k in proposal.support_keys
+                       if board.current(k) is not None}
         max_doubt = max(support.values(), default=0.0)
         weak = any(board.weak_current(k) for k in proposal.support_keys)
-        if not weak and max_doubt < _SKIP_SAMPLER_BELOW_DOUBT:
+        if self.wm and abs(self.wm.stk_coef[1]) < 1e-9:
+            # The stacker LEARNED a zero weight on sampled disagreement (on
+            # real logged episodes the wrong_now head subsumes it), so the
+            # sampler's K calls cannot change p_wrong — skip them entirely.
+            # Measured consequence, not an assumption: gate becomes 0-call.
+            disagreement = 0.0
+        elif not weak and max_doubt < _SKIP_SAMPLER_BELOW_DOUBT:
             # Low-doubt fast path: the sampler's 3 calls rarely flip a clean
             # board's decision — skip them (autoresearch-tuned threshold).
             disagreement = 0.0
         else:
             disagreement = sample_disagreement(task, board, ledger, model, seed=seed)
-        p_wrong = risk_score(max_doubt, disagreement, proposal.confidence, weak)
+        if self.wm:
+            # Stacker fit on real logged episodes (leave-one-seed-out AUROC
+            # 0.95): maps (head risk, sampled disagreement, weak) -> P(wrong).
+            p_wrong = self.wm.commit_risk(max_doubt, disagreement, weak)
+        else:
+            p_wrong = risk_score(max_doubt, disagreement, proposal.confidence, weak)
 
         if weak:
             # A weak-source displacement is a KNOWN policy violation, not a
@@ -168,16 +205,26 @@ class AcceptGate:
         _GATE_STATE.parent.mkdir(parents=True, exist_ok=True)
         _GATE_STATE.write_text(json.dumps({"scores": scores, "harms": harms}))
 
+    @staticmethod
+    def save_calibration_learned(rows: list[dict]) -> None:
+        """rows: [{score, harm, weak}] — learned-score calibration pairs
+        (scripts/refit_gate_learned.py rebuilds them offline, no LLM spend)."""
+        _GATE_STATE_LEARNED.parent.mkdir(parents=True, exist_ok=True)
+        _GATE_STATE_LEARNED.write_text(json.dumps(rows))
+
 
 def rank_targets(board: BeliefBoard, support_keys: list[str],
-                 max_targets: int = 2) -> list[str]:
-    """TARGET: expected information gain ~ doubt-entropy of each supporting
+                 max_targets: int = 2, wm=None) -> list[str]:
+    """TARGET: expected information gain ~ risk-entropy of each supporting
     belief. With binary flip outcomes EIG reduces to the Bernoulli entropy of
-    doubt — highest-entropy (most uncertain) beliefs are the most informative
-    to challenge; a belief with doubt ~0 or ~1 teaches us nothing new.
+    P(wrong) — highest-entropy (most uncertain) beliefs are the most
+    informative to challenge; ~0 or ~1 teaches us nothing new. P(wrong) is
+    the learned wrong_now head when trained weights exist, else the hand-set
+    doubt blend.
     """
     def eig(key: str) -> float:
-        d = min(0.999, max(0.001, board.doubt(key)))
+        d = wm.wrong_now(board, key) if wm else board.doubt(key)
+        d = min(0.999, max(0.001, d))
         return -(d * math.log(d) + (1 - d) * math.log(1 - d))
 
     keys = [k for k in support_keys if board.current(k) is not None]

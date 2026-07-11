@@ -268,5 +268,15 @@
     "tokens": 44328,
     "cost_usd": 0.0861,
     "latency_s": 298.4
+  },
+  {
+    "arm": "agora-wm",
+    "seed": 0,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 34258,
+    "cost_usd": 0.091,
+    "latency_s": 297.2
   }
 ]
