@@ -161,7 +161,7 @@ def run_agora(task: Task, *, seed: int = 0,
     # 4. Debate the most informative doubted beliefs, EIG-ordered, bounded.
     if eig_targeting:
         targets = rank_targets(board, proposal.support_keys,
-                               max_targets=MAX_DEBATES_PER_TASK)
+                               max_targets=MAX_DEBATES_PER_TASK, wm=_GATE.wm)
     else:  # ablation: naive order, no information-gain ranking
         targets = [k for k in proposal.support_keys
                    if board.current(k) is not None][:MAX_DEBATES_PER_TASK]
@@ -241,7 +241,7 @@ class AgoraSession:
             decision.fire, decision.reason = False, "ablation:never-debate"
         trace.gate = decision.as_dict()
         targets = rank_targets(board, proposal.support_keys,
-                               max_targets=MAX_DEBATES_PER_TASK)
+                               max_targets=MAX_DEBATES_PER_TASK, wm=_GATE.wm)
         if decision.fire and targets:
             adjudications = []
             for key in targets:

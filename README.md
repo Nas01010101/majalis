@@ -1,6 +1,15 @@
 # Agora
 
-**A world-model-modulated debate society.** Agents don't just argue in rounds — a shared, calibrated belief-state world model decides *whether a disagreement is worth the tokens*, *which belief gets challenged*, *who speaks next*, *when debate terminates*, and *what gets committed back*. Debate outcomes update the world model; the world model steers the debate.
+**A debate society steered by a learned world model.** Agents don't just argue in rounds — a shared world model, **trained on the society's own logged episodes**, decides *whether a disagreement is worth the tokens*, *which belief gets challenged*, *who speaks next*, *when debate terminates*, and *what gets committed back*. Debate outcomes update the belief state; the belief state is what the world model reads; every session's episodes become its next training data.
+
+Two trained heads over the shared belief board (torch on GPU to train, numpy-only to serve; conformal threshold on top for a distribution-free accept guarantee):
+
+| head | predicts | learned vs the hand-set baseline it replaced |
+|---|---|---|
+| `wrong_now` | P(the board's current value for a key is incorrect) | AUROC **0.999 vs 0.79** (synthetic val); **0.937 on real LLM-built boards** it never saw |
+| `superseded_next` | P(an authoritative filing overturns it within lookahead) | AUROC **0.657 vs 0.496 (= chance)** for the fixed Lomax prior |
+
+The stacker (fit on real logged episodes, LOSO AUROC 0.95) learned a **zero weight** on K-sample disagreement — the trained head subsumes the sampler — so the debate-trigger decision costs **zero LLM calls**. On 60 unseen streams (960 questions): fires on 9.8%, catches 82.2% of corrupted boards, 0.7% false-fire. Live: 16/16 accuracy at **25% fewer tokens/question** than the hand-set gate. Retrain from scratch: `python scripts/gen_wm_dataset.py && python train/train_wm.py` (~2 min end to end; the old heuristic survives as ablation via `AGORA_WM=heuristic`).
 
 Built for the Global AI Hackathon with Qwen Cloud — Track 3: Agent Society.
 

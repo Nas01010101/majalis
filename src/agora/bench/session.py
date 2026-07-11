@@ -82,6 +82,11 @@ REPLAYS = {
     "agora": _replay_agora,
     # Ablation: same board, debates never fire — isolates what debate adds.
     "agora-nodebate": lambda ev, seed: _replay_agora(ev, seed, gate_mode="never"),
+    # Learned world model (trained heads + stacker; wm.py auto-loads
+    # data/wm_weights.json). A separate arm name means separate raw files —
+    # the frozen heuristic-gate numbers are never clobbered. Reproduce the
+    # heuristic arm exactly with AGORA_WM=heuristic.
+    "agora-wm": _replay_agora,
 }
 
 

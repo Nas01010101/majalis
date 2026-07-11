@@ -2,9 +2,11 @@
 
 ## One paragraph
 
-Agora is a multi-agent debate society in which a **shared world model** — a keyed
-belief board with a closed-form fact-dynamics survival model, plus sampling-based
-disagreement estimates and a conformal accept gate — controls the debate rather
+Agora is a multi-agent debate society in which a **shared, learned world model** —
+a keyed belief board plus two trained predictive heads (`wrong_now`: is the
+board's current value incorrect; `superseded_next`: will an authoritative
+filing overturn it soon), a stacker fit on real logged episodes, and a
+conformal accept gate on the learned score — controls the debate rather
 than merely feeding it. The world model decides **whether a disagreement is worth
 the tokens** (trigger), **which belief gets challenged** (targeting), **who argues**
 (speaker/backbone selection), **when debate stops** (termination), **what gets
@@ -97,14 +99,33 @@ author≠validator separation, and termination owned by the world model.
   Gamma-Lomax posterior predictive over each key's observed churn — the same
   form as tenet-memory's fact-dynamics model, which backs the board via MCP once
   embeddings are available (in-process board mirrors its semantics exactly).
-- **`wm.py` — control layer.** Risk feature = logistic blend of (max support
-  doubt, K-sample disagreement, author confidence). The *guarantee* never rests
-  on the feature being a true probability: the ACCEPT threshold is conformally
-  calibrated (preact-wm CalibratedGate, split conformal risk control) so that
-  E[error | accepted-without-debate] ≤ α on exchangeable data. Fail-safe when
-  uncalibrated. Targeting is expected-information-gain: challenge the
-  highest-entropy supporting belief; a belief with doubt ≈0 or ≈1 teaches
-  nothing.
+- **`wm.py` + `wmnet.py` + `wmfeat.py` — the LEARNED world model.** Two
+  decision-relevant heads (AAWM-style targets, arXiv:2606.09032) on a shared
+  MLP trunk, trained on 115k logged episode rows replayed offline from the
+  stream generator (labels from its own ground truth — zero LLM cost;
+  train/train_wm.py, 18s on an RTX 3080; numpy-only inference at serve time):
+  - `wrong_now(key)` — P(the board's current value is incorrect). Val AUROC
+    **0.999 vs 0.79** for the old hand-set doubt blend; **0.937 on real
+    LLM-built-board episodes** it never trained on (sim-to-real measured,
+    not assumed). This is the same recipe Minority Sentinel
+    (arXiv:2606.29270) validates for debate-outcome prediction: a small
+    trained classifier on a fingerprint, which beats LLM-as-judge.
+  - `superseded_next(key)` — P(an authoritative filing overturns the value
+    within lookahead): learned fact dynamics, AUROC **0.657 vs 0.496 —
+    chance — for the fixed-prior Lomax survival it replaced** (the learned
+    per-key decay DAGE lists as open work).
+  A logistic stacker fit on the 96 real calibration episodes (leave-one-
+  seed-out AUROC 0.95) maps (head risk, sampled disagreement, weak flag) →
+  P(committed answer wrong). It learned a ZERO weight on sampled
+  disagreement — the head subsumes the K-sample sampler — so the gate skips
+  those LLM calls entirely: the trigger decision costs **zero LLM calls**.
+  The *guarantee* still never rests on the score being a true probability:
+  the ACCEPT threshold is conformally calibrated on the learned score
+  (preact-wm CalibratedGate, split CRC) so E[error | accepted-without-
+  debate] ≤ α on exchangeable data; fail-safe when uncalibrated; the
+  hand-set blend survives as fallback + ablation (`AGORA_WM=heuristic`).
+  Targeting is expected-information-gain over the learned P(wrong):
+  challenge the highest-entropy supporting belief.
 - **`society.py` — the society.** extract → assert into board → propose →
   gate → (skeptic ↔ judge, ≤2 targets, always re-propose) → commit. Two rules
   learned from live failures, now encoded:
@@ -140,6 +161,12 @@ author≠validator separation, and termination owned by the world model.
 - CSD-style naive coverage claims are **not** made: sample-frequency laws
   under-cover on small models (measured in wm-reasoner); frequencies are used
   as risk *features*, with the guarantee coming from threshold calibration.
-- P(still valid) is a survival heuristic; it is calibrated in form, not
-  validated per-domain. It is used to *prioritize spend*, never to decide truth
+- The closed-form Lomax P(still valid) is now a *feature* of the learned
+  heads, not the model: measured at chance (AUROC 0.496) for forecasting
+  supersession, which is precisely why it was replaced.
+- The learned heads' near-ceiling wrong_now AUROC (0.999) is on synthetic
+  validation streams where weak-source displacement is highly separable; the
+  honest generalization numbers are the real-episode ones (0.937 head alone,
+  0.95 LOSO stacker, 82.2% poisoned-board recall at 0.7% false-fire on 60
+  unseen streams). World-model outputs *prioritize spend*, never decide truth
   — truth is decided by the judge against dated evidence.
