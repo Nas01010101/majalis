@@ -215,14 +215,22 @@ class AgoraSession:
         self.gate_mode = gate_mode
         self.ingest_ledger = Ledger()  # perception cost, amortized over questions
 
-    def ingest(self, lines: list[str]) -> None:
+    def ingest(self, lines: list[str], trace: list | None = None) -> None:
+        """trace, when given, receives one record per asserted fact — the
+        session recorder (scripts/record_session.py) uses it to replay
+        perception in the live society viewer."""
         for fact in extract_facts("\n".join(lines), self.ingest_ledger, self.model_fast):
             try:
-                self.board.assert_fact(
-                    BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"])),
-                    str(fact["value"]),
+                key = BeliefBoard.make_key(str(fact["entity"]), str(fact["attribute"]))
+                value = str(fact["value"])
+                source = str(fact.get("source", ""))
+                outcome = self.board.assert_fact(
+                    key, value,
                     parse_date_ord(str(fact.get("date", ""))),
-                    source=str(fact.get("source", "")))
+                    source=source)
+                if trace is not None:
+                    trace.append({"key": key, "value": value.strip().lower(),
+                                  "source": source, "outcome": outcome})
             except (KeyError, TypeError):
                 continue
 

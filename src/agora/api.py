@@ -91,3 +91,13 @@ def index() -> str:
     if page.exists():
         return page.read_text()
     return "<h1>Agora</h1><p>Dashboard not built; see /docs for the API.</p>"
+
+
+@app.get("/live", response_class=HTMLResponse)
+def live() -> str:
+    """The society view: a recorded run replayed with the learned world
+    model's per-belief risk visible (scripts/build_live.py)."""
+    page = Path(__file__).resolve().parents[2] / "dashboard" / "live.html"
+    if page.exists():
+        return page.read_text()
+    return "<h1>Agora</h1><p>Live view not built; run scripts/build_live.py.</p>"
