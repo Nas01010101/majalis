@@ -46,6 +46,23 @@ body { background:var(--plane); color:var(--ink); margin:0 auto;
   padding:28px 24px 40px; max-width:1120px;
   font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
 h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:16px; margin:32px 0 8px; }
+.skip { position:absolute; left:-9999px; top:0; background:var(--surface);
+  color:var(--ink); padding:8px 14px; border-radius:8px; z-index:20; }
+.skip:focus { left:12px; top:12px; }
+:focus-visible { outline:2px solid var(--wm); outline-offset:2px; border-radius:3px; }
+.brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.brand svg { flex:0 0 auto; }
+.brand .word { font-size:26px; font-weight:650; letter-spacing:.3px; }
+nav.links { display:flex; gap:14px; flex-wrap:wrap; font-size:13.5px; margin:8px 0 2px; }
+nav.links a { color:var(--wm); text-decoration:none; font-weight:550; }
+nav.links a:hover { text-decoration:underline; }
+code, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.92em; background:color-mix(in srgb, var(--ink) 6%, var(--surface));
+  padding:1px 5px; border-radius:5px; }
+pre.try { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+  background:color-mix(in srgb, var(--ink) 6%, var(--surface));
+  border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+  overflow-x:auto; margin:10px 0 0; }
 .sub { color:var(--ink2); margin:0 0 8px; max-width:72ch; }
 .card { background:var(--surface); border:1px solid var(--border);
   border-radius:12px; padding:16px 18px; margin:10px 0; }
@@ -282,17 +299,46 @@ def main() -> None:
             f"<span><span class='key' style='background:var(--{v})'></span>"
             f"{esc(k)}</span>" for k, v in items) + "</div>")
 
+    mark_svg = (
+        '<svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">'
+        '<rect x="4" y="4" width="56" height="56" rx="14" fill="none" '
+        'stroke="var(--wm)" stroke-width="4.5"/>'
+        '<rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/>'
+        '<rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/>'
+        '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/>'
+        '<rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg>')
+    favicon = ("data:image/svg+xml," + html.escape(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+        '<rect x="4" y="4" width="56" height="56" rx="14" fill="none" '
+        'stroke="%232a78d6" stroke-width="4.5"/>'
+        '<rect x="16" y="18" width="32" height="6" rx="3" fill="%232a78d6"/>'
+        '<rect x="16" y="29" width="16" height="6" rx="3" fill="%23eda100"/>'
+        '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="%23eda100"/>'
+        '<rect x="16" y="40" width="32" height="6" rx="3" fill="%232a78d6"/></svg>'))
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Agora — a multi-agent debate society whose learned world model decides when debate is worth the tokens.">
+<link rel="icon" href="{favicon}">
 <title>Agora — a debate society steered by a learned world model</title>
 <style>{CSS}</style></head><body>
-<h1>Agora</h1>
-<p class="sub">A multi-agent debate society whose <strong>learned world
-model</strong> — trained on the society's own logged episodes — decides when
-disagreement is worth the tokens. Baselines re-read the evidence stream per
-question; Agora ingests once into a shared belief board, and two trained heads
+<a class="skip" href="#main">Skip to content</a>
+<header>
+<div class="brand">{mark_svg}<span class="word">agora</span></div>
+<p class="sub" style="margin-top:8px">Your agents debate too much. A
+<strong>world model trained on the society's own logged episodes</strong>
+decides when disagreement is worth the tokens: two trained heads
 (<code>wrong_now</code>, <code>superseded_next</code>) plus a conformal
-threshold route debate only where the board is likely corrupted.</p>
+threshold route debate only where the shared belief board is likely
+corrupted — at <strong>zero LLM calls per gate decision</strong>.</p>
+<nav class="links" aria-label="Product links">
+<a href="/docs">API playground (try /ingest and /ask)</a>
+<a href="https://github.com/Nas01010101/agora">GitHub</a>
+<a href="/healthz">health</a>
+</nav>
+<pre class="try"># try it — one command, no API key
+$ git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
+</header>
+<main id="main">
 {tiles(cells, gate_eval, wm["metrics"])}
 
 <div class="card"><h2 style="margin-top:0">Cost per question vs stream length</h2>
@@ -333,6 +379,7 @@ session (seed 0, 16 steps)</h2>
 decision and reason. It debated exactly the weak-source displacements —
 rumor-poisoned beliefs — and nothing else.</p>
 {gate_table(RESULTS / "raw" / "session_agora-wm_s0_t16.jsonl")}</div>
+</main>
 
 <footer><strong>Honesty notes.</strong><ul>
 <li>wrong_now's 0.999 AUROC is on synthetic validation streams where

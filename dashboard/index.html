@@ -1,5 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Agora — a multi-agent debate society whose learned world model decides when debate is worth the tokens.">
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 64 64&quot;&gt;&lt;rect x=&quot;4&quot; y=&quot;4&quot; width=&quot;56&quot; height=&quot;56&quot; rx=&quot;14&quot; fill=&quot;none&quot; stroke=&quot;%232a78d6&quot; stroke-width=&quot;4.5&quot;/&gt;&lt;rect x=&quot;16&quot; y=&quot;18&quot; width=&quot;32&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;%232a78d6&quot;/&gt;&lt;rect x=&quot;16&quot; y=&quot;29&quot; width=&quot;16&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;%23eda100&quot;/&gt;&lt;path d=&quot;M42 26 l6 6 -6 6 -6 -6 z&quot; fill=&quot;%23eda100&quot;/&gt;&lt;rect x=&quot;16&quot; y=&quot;40&quot; width=&quot;32&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;%232a78d6&quot;/&gt;&lt;/svg&gt;">
 <title>Agora — a debate society steered by a learned world model</title>
 <style>
 :root { --surface:#fcfcfb; --plane:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e;
@@ -16,6 +18,23 @@ body { background:var(--plane); color:var(--ink); margin:0 auto;
   padding:28px 24px 40px; max-width:1120px;
   font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
 h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:16px; margin:32px 0 8px; }
+.skip { position:absolute; left:-9999px; top:0; background:var(--surface);
+  color:var(--ink); padding:8px 14px; border-radius:8px; z-index:20; }
+.skip:focus { left:12px; top:12px; }
+:focus-visible { outline:2px solid var(--wm); outline-offset:2px; border-radius:3px; }
+.brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.brand svg { flex:0 0 auto; }
+.brand .word { font-size:26px; font-weight:650; letter-spacing:.3px; }
+nav.links { display:flex; gap:14px; flex-wrap:wrap; font-size:13.5px; margin:8px 0 2px; }
+nav.links a { color:var(--wm); text-decoration:none; font-weight:550; }
+nav.links a:hover { text-decoration:underline; }
+code, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:.92em; background:color-mix(in srgb, var(--ink) 6%, var(--surface));
+  padding:1px 5px; border-radius:5px; }
+pre.try { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+  background:color-mix(in srgb, var(--ink) 6%, var(--surface));
+  border:1px solid var(--border); border-radius:8px; padding:10px 12px;
+  overflow-x:auto; margin:10px 0 0; }
 .sub { color:var(--ink2); margin:0 0 8px; max-width:72ch; }
 .card { background:var(--surface); border:1px solid var(--border);
   border-radius:12px; padding:16px 18px; margin:10px 0; }
@@ -65,13 +84,24 @@ details { margin:8px 0; } summary { color:var(--ink2); cursor:pointer; font-size
 footer { color:var(--muted); font-size:12.5px; margin-top:28px; max-width:80ch; }
 footer li { margin:3px 0; }
 </style></head><body>
-<h1>Agora</h1>
-<p class="sub">A multi-agent debate society whose <strong>learned world
-model</strong> — trained on the society's own logged episodes — decides when
-disagreement is worth the tokens. Baselines re-read the evidence stream per
-question; Agora ingests once into a shared belief board, and two trained heads
+<a class="skip" href="#main">Skip to content</a>
+<header>
+<div class="brand"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="var(--wm)" stroke-width="4.5"/><rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/><rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/><path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/><rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg><span class="word">agora</span></div>
+<p class="sub" style="margin-top:8px">Your agents debate too much. A
+<strong>world model trained on the society's own logged episodes</strong>
+decides when disagreement is worth the tokens: two trained heads
 (<code>wrong_now</code>, <code>superseded_next</code>) plus a conformal
-threshold route debate only where the board is likely corrupted.</p>
+threshold route debate only where the shared belief board is likely
+corrupted — at <strong>zero LLM calls per gate decision</strong>.</p>
+<nav class="links" aria-label="Product links">
+<a href="/docs">API playground (try /ingest and /ask)</a>
+<a href="https://github.com/Nas01010101/agora">GitHub</a>
+<a href="/healthz">health</a>
+</nav>
+<pre class="try"># try it — one command, no API key
+$ git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
+</header>
+<main id="main">
 <div class='tiles'><div class='tile'><div class='v'>48/48</div><div class='k'>learned-gate accuracy, live session eval (agora-wm)</div></div><div class='tile'><div class='v'>0</div><div class='k'>LLM calls per gate decision</div><div class='d'>the stacker learned the sampler adds nothing</div></div><div class='tile'><div class='v'>2.1×</div><div class='k'>single-agent cost per question at 32-step streams, vs Agora</div></div><div class='tile'><div class='v'>86%</div><div class='k'>corrupted boards caught, 1600 held-out questions</div><div class='d up'>+7pp vs the hand-set gate, at 0.9% false-fire</div></div></div>
 
 <div class="card"><h2 style="margin-top:0">Cost per question vs stream length</h2>
@@ -112,6 +142,7 @@ session (seed 0, 16 steps)</h2>
 decision and reason. It debated exactly the weak-source displacements —
 rumor-poisoned beliefs — and nothing else.</p>
 <div class='wrap'><table><tr><th>question</th><th>gate</th><th>p(wrong)</th><th>reason</th><th>correct</th><th>tokens</th></tr><tr><td>s0-q0</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>500</td></tr><tr><td>s0-q1</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>403</td></tr><tr><td>s0-q2</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>410</td></tr><tr><td>s0-q3</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>453</td></tr><tr><td>s0-q4</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>479</td></tr><tr><td>s0-q5</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>424</td></tr><tr><td>s0-q6</td><td><span class='chip fire'>▲ DEBATE</span></td><td>0.427</td><td>policy:weak-source</td><td><span class='good'>✓</span></td><td>3188</td></tr><tr><td>s0-q7</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>441</td></tr><tr><td>s0-q8</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>508</td></tr><tr><td>s0-q9</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>616</td></tr><tr><td>s0-q10</td><td><span class='chip ok'>✓ commit</span></td><td>0.038</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>521</td></tr><tr><td>s0-q11</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>732</td></tr><tr><td>s0-q12</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>484</td></tr><tr><td>s0-q13</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>509</td></tr><tr><td>s0-q14</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>563</td></tr><tr><td>s0-q15</td><td><span class='chip fire'>▲ DEBATE</span></td><td>0.427</td><td>policy:weak-source</td><td><span class='good'>✓</span></td><td>3529</td></tr><tr><td>s0-q16</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>538</td></tr><tr><td>s0-q17</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>510</td></tr><tr><td>s0-q18</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>522</td></tr><tr><td>s0-q19</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>506</td></tr><tr><td>s0-q20</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>522</td></tr><tr><td>s0-q21</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>544</td></tr><tr><td>s0-q22</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>559</td></tr><tr><td>s0-q23</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>589</td></tr><tr><td>s0-q24</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>593</td></tr><tr><td>s0-q25</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>586</td></tr><tr><td>s0-q26</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>560</td></tr><tr><td>s0-q27</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>612</td></tr><tr><td>s0-q28</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>600</td></tr><tr><td>s0-q29</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>595</td></tr><tr><td>s0-q30</td><td><span class='chip fire'>▲ DEBATE</span></td><td>0.428</td><td>policy:weak-source</td><td><span class='good'>✓</span></td><td>4861</td></tr><tr><td>s0-q31</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>597</td></tr></table></div></div>
+</main>
 
 <footer><strong>Honesty notes.</strong><ul>
 <li>wrong_now's 0.999 AUROC is on synthetic validation streams where

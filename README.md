@@ -1,17 +1,61 @@
-# Agora
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.svg">
+    <img alt="Agora" src="assets/logo-light.svg" width="300">
+  </picture>
 
-**A debate society steered by a learned world model.** Agents don't just argue in rounds — a shared world model, **trained on the society's own logged episodes**, decides *whether a disagreement is worth the tokens*, *which belief gets challenged*, *who speaks next*, *when debate terminates*, and *what gets committed back*. Debate outcomes update the belief state; the belief state is what the world model reads; every session's episodes become its next training data.
+  <h3>Your agents debate too much. Agora's learned world model decides when it's worth it.</h3>
 
-Two trained heads over the shared belief board (torch on GPU to train, numpy-only to serve; conformal threshold on top for a distribution-free accept guarantee):
+  <p>
+    <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
+    <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
+    <img src="https://img.shields.io/badge/tests-27%20passing-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/gate%20decision-0%20LLM%20calls-blue" alt="Zero-call gate">
+    <img src="https://img.shields.io/badge/Qwen%20Cloud-Track%203%3A%20Agent%20Society-8A2BE2" alt="Qwen Cloud Hackathon">
+  </p>
 
-| head | predicts | learned vs the hand-set baseline it replaced |
+  <p>
+    <a href="http://47.237.187.157:8080/">Live dashboard</a> ·
+    <a href="http://47.237.187.157:8080/docs">API playground</a> ·
+    <a href="docs/architecture.md">Architecture</a> ·
+    <a href="docs/submission.md">Hackathon submission</a>
+  </p>
+</div>
+
+Multi-agent debate mostly re-buys self-consistency at higher cost. Agora gives an agent team a **shared belief board** and a **world model trained on the society's own logged episodes** that routes debate only where the state is likely corrupted — with a conformal guarantee on what gets committed without one (E[error | accepted] ≤ α), and **zero LLM calls per gate decision**.
+
+```bash
+git clone https://github.com/Nas01010101/agora && cd agora
+pip install -e . && python examples/quickstart.py   # no API key needed
+```
+
+```python
+from agora.beliefs import BeliefBoard, parse_date_ord
+from agora.wmnet import load_wm
+
+board = BeliefBoard()
+board.assert_fact("acme::ceo", "Jane Doe", parse_date_ord("Jan 2026"), source="Filing")
+board.assert_fact("acme::ceo", "John Roe", parse_date_ord("Mar 2026"), source="Rumor")
+
+wm = load_wm()
+wm.wrong_now(board, "acme::ceo")   # ~1.0 — a rumor displaced a filing: debate-worthy
+```
+
+## Why Agora?
+
+- **Debate as a spend decision.** Two trained heads — `wrong_now` (is this belief incorrect?) and `superseded_next` (will it be overturned?) — plus a stacker fit on real logged episodes decide commit-vs-debate. No judge model, no extra samples: the trigger costs **0 LLM calls**.
+- **A world model you retrain yourself.** `python scripts/gen_wm_dataset.py && python train/train_wm.py` — ~2 min end to end (torch to train, numpy-only to serve). The hand-set heuristic it replaced survives as an ablation (`AGORA_WM=heuristic`).
+- **Calibrated, not vibes.** The ACCEPT threshold is split-conformal on the learned score; the coverage claim is checked empirically in the offline benchmark (accepted-error 2.1% ≤ α=0.05 on 1,600 held-out questions).
+- **Provable without an API key.** `python scripts/offline_bench.py` replays 100 unseen evidence streams through the real gate in under a second: learned fires 12.4% / catches 86.2% of corrupted boards / 0.9% false-fire, vs 23.8% / 78.8% / 15.1% for the hand-set gate.
+- **Flat cost in stream length.** Perception amortizes into the board (O(board) per question, not O(stream)); the single-agent baseline's cost grows linearly, Agora's doesn't.
+
+| learned head | predicts | vs the hand-set baseline it replaced |
 |---|---|---|
-| `wrong_now` | P(the board's current value for a key is incorrect) | AUROC **0.999 vs 0.79** (synthetic val); **0.937 on real LLM-built boards** it never saw |
-| `superseded_next` | P(an authoritative filing overturns it within lookahead) | AUROC **0.657 vs 0.496 (= chance)** for the fixed Lomax prior |
+| `wrong_now` | P(board value is incorrect) | AUROC **0.999 vs 0.79** (synthetic val); **0.937 on real LLM-built boards** it never saw |
+| `superseded_next` | P(fact overturned within lookahead) | AUROC **0.657 vs 0.496 (= chance)** for the fixed Lomax prior |
 
-The stacker (fit on real logged episodes, LOSO AUROC 0.95) learned a **zero weight** on K-sample disagreement — the trained head subsumes the sampler — so the debate-trigger decision costs **zero LLM calls**. On 60 unseen streams (960 questions): fires on 9.8%, catches 82.2% of corrupted boards, 0.7% false-fire. Live: 16/16 accuracy at **25% fewer tokens/question** than the hand-set gate. Retrain from scratch: `python scripts/gen_wm_dataset.py && python train/train_wm.py` (~2 min end to end; the old heuristic survives as ablation via `AGORA_WM=heuristic`).
-
-Built for the Global AI Hackathon with Qwen Cloud — Track 3: Agent Society.
+Built for the Global AI Hackathon with Qwen Cloud — Track 3: Agent Society (heterogeneous qwen3.7-max / plus / qwen3.6-flash backbones).
 
 ## Measured results (session eval, 5 seeds, Wilson 95% CIs)
 
