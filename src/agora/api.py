@@ -93,6 +93,22 @@ def index() -> str:
     return "<h1>Agora</h1><p>Dashboard not built; see /docs for the API.</p>"
 
 
+@app.get("/zh", response_class=HTMLResponse)
+def index_zh() -> str:
+    page = Path(__file__).resolve().parents[2] / "dashboard" / "index.zh.html"
+    if page.exists():
+        return page.read_text()
+    return "<h1>Agora</h1><p>中文页面未构建；请运行 scripts/translate_zh.py。</p>"
+
+
+@app.get("/zh/live", response_class=HTMLResponse)
+def live_zh() -> str:
+    page = Path(__file__).resolve().parents[2] / "dashboard" / "live.zh.html"
+    if page.exists():
+        return page.read_text()
+    return "<h1>Agora</h1><p>中文页面未构建；请运行 scripts/translate_zh.py。</p>"
+
+
 @app.get("/live", response_class=HTMLResponse)
 def live() -> str:
     """The society view: a recorded run replayed with the learned world

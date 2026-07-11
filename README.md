@@ -8,6 +8,10 @@
   <h3>Your agents debate too much. Agora's learned world model decides when it's worth it.</h3>
 
   <p>
+    <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
+  </p>
+
+  <p>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
     <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
     <img src="https://img.shields.io/badge/tests-27%20passing-brightgreen" alt="Tests">
@@ -17,7 +21,9 @@
 
   <p>
     <a href="http://47.237.187.157:8080/">Live dashboard</a> ·
+    <a href="http://47.237.187.157:8080/live">Society view</a> ·
     <a href="http://47.237.187.157:8080/docs">API playground</a> ·
+    <a href="docs/paper/agora.pdf">Paper (PDF)</a> ·
     <a href="docs/architecture.md">Architecture</a> ·
     <a href="docs/submission.md">Hackathon submission</a>
   </p>

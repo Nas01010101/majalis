@@ -267,7 +267,7 @@ def main() -> None:
 {mark}<span class="word">agora</span><span class="view">/ society view</span>
 <span class="status">REPLAY · seed {replay['seed']} · {replay['steps']} steps ·
 {s['correct']}/{s['questions']} correct · ${s['total_cost_usd']} total · recorded {date.today().isoformat()}</span>
-<nav aria-label="Product links"><a href="/">Benchmarks</a><a href="/docs">API playground</a></nav>
+<nav aria-label="Product links"><a href="/">Benchmarks</a><a href="/docs">API playground</a><a href="/zh/live" hreflang="zh-CN" lang="zh-CN">中文</a></nav>
 </header>
 <p style="color:var(--ink2);max-width:78ch;margin:2px 0 6px">A real recorded run
 (not a mock): dated filings, stale echoes and rumors arrive on the left of the
