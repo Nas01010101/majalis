@@ -29,6 +29,9 @@ Reproduce: `make bench` (per-task families) and
 `python -m agora.bench.session --arms single,agora,mad --seeds 0,1,2,3,4`.
 Calibration: `python -m agora.bench.calibrate --session-seeds 100,101,102`
 (seeds ≥100 are never evaluated).
+Zero-API offline benchmark (gate quality, learned vs hand-set, coverage,
+reliability — 1,600 held-out questions in <1s):
+`python scripts/offline_bench.py` → `results/offline_gate_eval.json`.
 
 ## Why
 
