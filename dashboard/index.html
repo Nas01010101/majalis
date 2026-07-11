@@ -4,46 +4,54 @@
 <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 64 64&quot;&gt;&lt;rect x=&quot;4&quot; y=&quot;4&quot; width=&quot;56&quot; height=&quot;56&quot; rx=&quot;14&quot; fill=&quot;none&quot; stroke=&quot;%232a78d6&quot; stroke-width=&quot;4.5&quot;/&gt;&lt;rect x=&quot;16&quot; y=&quot;18&quot; width=&quot;32&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;%232a78d6&quot;/&gt;&lt;rect x=&quot;16&quot; y=&quot;29&quot; width=&quot;16&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;%23eda100&quot;/&gt;&lt;path d=&quot;M42 26 l6 6 -6 6 -6 -6 z&quot; fill=&quot;%23eda100&quot;/&gt;&lt;rect x=&quot;16&quot; y=&quot;40&quot; width=&quot;32&quot; height=&quot;6&quot; rx=&quot;3&quot; fill=&quot;%232a78d6&quot;/&gt;&lt;/svg&gt;">
 <title>Agora — a debate society steered by a learned world model</title>
 <style>
-:root { --surface:#fcfcfb; --plane:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e;
-  --muted:#898781; --grid:#e1e0d9; --axis:#c3c2b7; --good:#0ca30c;
-  --warn:#fab219; --crit:#d03b3b; --border:rgba(11,11,11,.10);
-  --wm:#2a78d6; --ag:#1baf7a; --si:#eda100; --base:#898781; }
+:root { --surface:#fcfcfb; --plane:#f6f6f2; --ink:#151412; --ink2:#52514e;
+  --muted:#8a8780; --grid:#e3e1da; --axis:#c4c2ba; --good:#0ca30c;
+  --warn:#fab219; --crit:#d03b3b; --border:rgba(21,20,18,.11);
+  --wm:#2a78d6; --ag:#1baf7a; --si:#eda100; --base:#898781;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 @media (prefers-color-scheme: dark) {
-  :root { --surface:#1a1a19; --plane:#0d0d0d; --ink:#ffffff; --ink2:#c3c2b7;
-    --muted:#898781; --grid:#2c2c2a; --axis:#383835; --good:#0ca30c;
-    --warn:#fab219; --crit:#d03b3b; --border:rgba(255,255,255,.10);
+  :root { --surface:#191b1a; --plane:#0f1110; --ink:#f4f4f1; --ink2:#c3c2b7;
+    --muted:#8a8780; --grid:#2b2d2b; --axis:#3a3c3a; --good:#0ca30c;
+    --warn:#fab219; --crit:#d03b3b; --border:rgba(244,244,241,.11);
     --wm:#3987e5; --ag:#199e70; --si:#c98500; } }
 * { box-sizing:border-box; }
 body { background:var(--plane); color:var(--ink); margin:0 auto;
-  padding:28px 24px 40px; max-width:1120px;
-  font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
-h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:16px; margin:32px 0 8px; }
+  padding:32px 24px 48px; max-width:1120px;
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+h1 { font-size:30px; line-height:1.18; font-weight:680; letter-spacing:-0.015em;
+  margin:10px 0 8px; max-width:40ch; text-wrap:balance; }
+.eyebrow { font:600 11px/1 var(--mono); letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+.eyebrow b { color:var(--wm); font-weight:600; }
+h2 { font-size:17px; font-weight:650; letter-spacing:-0.01em; margin:2px 0 6px;
+  text-wrap:balance; }
 .skip { position:absolute; left:-9999px; top:0; background:var(--surface);
   color:var(--ink); padding:8px 14px; border-radius:8px; z-index:20; }
 .skip:focus { left:12px; top:12px; }
 :focus-visible { outline:2px solid var(--wm); outline-offset:2px; border-radius:3px; }
 .brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
 .brand svg { flex:0 0 auto; }
-.brand .word { font-size:26px; font-weight:650; letter-spacing:.3px; }
-nav.links { display:flex; gap:14px; flex-wrap:wrap; font-size:13.5px; margin:8px 0 2px; }
-nav.links a { color:var(--wm); text-decoration:none; font-weight:550; }
+.brand .word { font-size:24px; font-weight:650; letter-spacing:.2px; }
+nav.links { display:flex; gap:16px; flex-wrap:wrap; font-size:13.5px; margin:12px 0 2px; }
+nav.links a { color:var(--wm); text-decoration:none; font-weight:560; }
 nav.links a:hover { text-decoration:underline; }
-code, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:.92em; background:color-mix(in srgb, var(--ink) 6%, var(--surface));
-  padding:1px 5px; border-radius:5px; }
-pre.try { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+code, .mono { font-family:var(--mono); font-size:.9em;
   background:color-mix(in srgb, var(--ink) 6%, var(--surface));
-  border:1px solid var(--border); border-radius:8px; padding:10px 12px;
-  overflow-x:auto; margin:10px 0 0; }
+  padding:1px 5px; border-radius:5px; }
+pre.try { font-family:var(--mono); font-size:12.5px; line-height:1.7;
+  background:#111311; color:#cfcec5; border:1px solid var(--border);
+  border-radius:10px; padding:12px 15px; overflow-x:auto; margin:14px 0 0; }
+pre.try .p { color:#5fa86a; } pre.try .c { color:#787771; }
 .sub { color:var(--ink2); margin:0 0 8px; max-width:72ch; }
 .card { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:16px 18px; margin:10px 0; }
-.tiles { display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
+  border-radius:12px; padding:18px 20px; margin:12px 0; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px; margin:20px 0 8px; }
 .tile { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:14px 18px; min-width:180px; flex:1; }
-.tile .v { font-size:28px; font-weight:650; }
-.tile .k { color:var(--ink2); font-size:13px; margin-top:2px; }
-.tile .d { font-size:12px; margin-top:4px; color:var(--ink2); }
+  border-radius:12px; padding:16px 18px; }
+.tile .v { font-size:32px; font-weight:680; letter-spacing:-0.02em; line-height:1.1; }
+.tile .k { color:var(--ink2); font-size:12.5px; margin-top:5px; line-height:1.4; }
+.tile .d { font-size:12px; margin-top:5px; color:var(--ink2); }
 .tile .d.up { color:var(--good); }
 .legend { display:flex; gap:18px; font-size:13px; color:var(--ink2);
   margin:2px 0 6px; flex-wrap:wrap; }
@@ -87,25 +95,28 @@ footer li { margin:3px 0; }
 <a class="skip" href="#main">Skip to content</a>
 <header>
 <div class="brand"><svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="var(--wm)" stroke-width="4.5"/><rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/><rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/><path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/><rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg><span class="word">agora</span></div>
-<p class="sub" style="margin-top:8px">Your agents debate too much. A
-<strong>world model trained on the society's own logged episodes</strong>
-decides when disagreement is worth the tokens: two trained heads
-(<code>wrong_now</code>, <code>superseded_next</code>) plus a conformal
-threshold route debate only where the shared belief board is likely
-corrupted — at <strong>zero LLM calls per gate decision</strong>.</p>
+<p class="eyebrow" style="margin-top:18px"><b>Qwen Cloud · Track 3</b> — agent
+society · learned world model</p>
+<h1>Your agents debate too much. The world model decides when it's worth it.</h1>
+<p class="sub">A society of Qwen agents shares one belief board; two heads
+<strong>trained on its own logged episodes</strong> (<code>wrong_now</code>,
+<code>superseded_next</code>) plus a conformal threshold route debate only
+where the board is likely corrupted — at <strong>zero LLM calls per gate
+decision</strong>.</p>
 <nav class="links" aria-label="Product links">
 <a href="/live">Society view — watch a live run</a>
 <a href="/docs">API playground (try /ingest and /ask)</a>
 <a href="https://github.com/Nas01010101/agora">GitHub</a>
 <a href="/healthz">health</a>
 </nav>
-<pre class="try"># try it — one command, no API key
-$ git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
+<pre class="try"><span class="c"># try it — one command, no API key</span>
+<span class="p">$</span> git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
 </header>
 <main id="main">
 <div class='tiles'><div class='tile'><div class='v'>48/48</div><div class='k'>learned-gate accuracy, live session eval (agora-wm)</div></div><div class='tile'><div class='v'>0</div><div class='k'>LLM calls per gate decision</div><div class='d'>the stacker learned the sampler adds nothing</div></div><div class='tile'><div class='v'>2.1×</div><div class='k'>single-agent cost per question at 32-step streams, vs Agora</div></div><div class='tile'><div class='v'>86%</div><div class='k'>corrupted boards caught, 1600 held-out questions</div><div class='d up'>+7pp vs the hand-set gate, at 0.9% false-fire</div></div></div>
 
-<div class="card"><h2 style="margin-top:0">Cost per question vs stream length</h2>
+<div class="card"><p class="eyebrow">Benchmark — session eval, live Qwen runs</p>
+<h2>Cost per question vs stream length</h2>
 <p class="sub">Perception is amortized into the board, so Agora's cost stays
 flat while the single agent re-reads a growing stream. (vanilla 3×3 debate:
 $0.0709/q at 8 steps — off this chart's scale; see the table.)</p>
@@ -113,8 +124,8 @@ $0.0709/q at 8 steps — off this chart's scale; see the table.)</p>
 <figure class="chart" data-chart="line" data-payload="{&quot;xs&quot;: [8, 16, 32], &quot;pad&quot;: 52, &quot;w&quot;: 680, &quot;h&quot;: 300, &quot;ymax&quot;: 0.0164409375, &quot;series&quot;: {&quot;agora-wm&quot;: {&quot;8&quot;: 0.0056875, &quot;16&quot;: 0.005396875}, &quot;agora&quot;: {&quot;8&quot;: 0.005629464285714286, &quot;16&quot;: 0.006575, &quot;32&quot;: 0.00665390625}, &quot;single&quot;: {&quot;8&quot;: 0.00787375, &quot;16&quot;: 0.0097359375, &quot;32&quot;: 0.01370078125}}, &quot;colors&quot;: {&quot;agora-wm&quot;: &quot;var(--wm)&quot;, &quot;agora&quot;: &quot;var(--ag)&quot;, &quot;single&quot;: &quot;var(--si)&quot;}}"><svg viewBox="0 0 680 300" role="img" aria-label="Cost per question vs stream length, by arm"><line x1="52" y1="248.0" x2="628" y2="248.0" class="grid"/><text x="44" y="248.0" text-anchor="end" dy="4" class="tick">$0.000</text><line x1="52" y1="188.4" x2="628" y2="188.4" class="grid"/><text x="44" y="188.4" text-anchor="end" dy="4" class="tick">$0.005</text><line x1="52" y1="128.8" x2="628" y2="128.8" class="grid"/><text x="44" y="128.8" text-anchor="end" dy="4" class="tick">$0.010</text><line x1="52" y1="69.2" x2="628" y2="69.2" class="grid"/><text x="44" y="69.2" text-anchor="end" dy="4" class="tick">$0.015</text><line x1="52" y1="248" x2="628" y2="248" class="axis"/><path d="M52.0,180.2 L244.0,183.7" fill="none" stroke="var(--wm)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52.0" cy="180.2" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2"/><circle cx="244.0" cy="183.7" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2"/><circle cx="254.0" cy="182.7" r="4" fill="var(--wm)"/><text x="262.0" y="183.7" dy="3" class="endlabel">agora-wm</text><path d="M52.0,180.9 L244.0,169.6 L628.0,168.7" fill="none" stroke="var(--ag)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52.0" cy="180.9" r="4" fill="var(--ag)" stroke="var(--surface)" stroke-width="2"/><circle cx="244.0" cy="169.6" r="4" fill="var(--ag)" stroke="var(--surface)" stroke-width="2"/><circle cx="628.0" cy="168.7" r="4" fill="var(--ag)" stroke="var(--surface)" stroke-width="2"/><circle cx="638.0" cy="167.7" r="4" fill="var(--ag)"/><text x="646.0" y="168.7" dy="3" class="endlabel">agora</text><path d="M52.0,154.1 L244.0,131.9 L628.0,84.7" fill="none" stroke="var(--si)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52.0" cy="154.1" r="4" fill="var(--si)" stroke="var(--surface)" stroke-width="2"/><circle cx="244.0" cy="131.9" r="4" fill="var(--si)" stroke="var(--surface)" stroke-width="2"/><circle cx="628.0" cy="84.7" r="4" fill="var(--si)" stroke="var(--surface)" stroke-width="2"/><circle cx="638.0" cy="83.7" r="4" fill="var(--si)"/><text x="646.0" y="84.7" dy="3" class="endlabel">single</text><text x="52.0" y="266" text-anchor="middle" class="tick">8</text><text x="244.0" y="266" text-anchor="middle" class="tick">16</text><text x="628.0" y="266" text-anchor="middle" class="tick">32</text><text x="340" y="290" text-anchor="middle" class="tick">stream length (evidence steps)</text><line class="xhair" x1="0" x2="0" y1="42" y2="248" style="display:none"/></svg></figure>
 <details><summary>table view — all arms, pooled across seeds</summary><div class='wrap'><table><tr><th>arm</th><th>stream steps</th><th>accuracy</th><th>cost / question</th></tr><tr><td>agora</td><td>8</td><td>111/112</td><td>$0.00563</td></tr><tr><td>agora-nodebate</td><td>8</td><td>77/80</td><td>$0.00595</td></tr><tr><td>agora-wm</td><td>8</td><td>16/16</td><td>$0.00569</td></tr><tr><td>mad</td><td>8</td><td>32/32</td><td>$0.07086</td></tr><tr><td>single</td><td>8</td><td>80/80</td><td>$0.00787</td></tr><tr><td>agora</td><td>16</td><td>64/64</td><td>$0.00658</td></tr><tr><td>agora-wm</td><td>16</td><td>32/32</td><td>$0.00540</td></tr><tr><td>single</td><td>16</td><td>64/64</td><td>$0.00974</td></tr><tr><td>agora</td><td>32</td><td>128/128</td><td>$0.00665</td></tr><tr><td>single</td><td>32</td><td>128/128</td><td>$0.01370</td></tr></table></div></details></div>
 
-<div class="card"><h2 style="margin-top:0">The learned world model vs the
-hand-set heuristics it replaced</h2>
+<div class="card"><p class="eyebrow">World model — trained vs hand-set, held out</p>
+<h2>The learned heads vs the heuristics they replaced</h2>
 <p class="sub">Same features, same held-out data — the only change is that the
 weights are trained instead of typed. The fixed Lomax survival prior sits at
 chance; the learned dynamics head does not.</p>
@@ -129,7 +140,8 @@ Hand-set: fires 23.8% (2× the debates) for
 78.8% recall at 15.1%
 false-fire.</p></div>
 
-<div class="card"><h2 style="margin-top:0">Calibration (held-out)</h2>
+<div class="card"><p class="eyebrow">World model — reliability, held out</p>
+<h2>Calibration</h2>
 <p class="sub">Predicted P(wrong) vs observed frequency, 10 bins; the diagonal
 is perfect calibration. The conformal ACCEPT threshold is calibrated on top of
 these scores, so the guarantee never rests on the model being exactly
@@ -137,15 +149,16 @@ calibrated.</p>
 <figure class="chart row"><svg viewBox="0 0 260 260" role="img" class="reliability" aria-label="Reliability of wrong_now head"><line x1="44" y1="216" x2="216" y2="44" class="ref"/><line x1="44" y1="216" x2="216" y2="216" class="axis"/><line x1="44" y1="44" x2="44" y2="216" class="axis"/><path d="M44.9,215.9L68.4,216.0L87.4,216.0L103.2,216.0L117.9,216.0L136.2,216.0L161.4,216.0L177.3,216.0L182.4,216.0L215.8,47.7" fill="none" stroke="var(--wm)" stroke-width="2" stroke-linecap="round"/><circle cx="44.9" cy="215.9" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.0-0.1: predicted 0.01 vs observed 0.00 (n=4728)" tabindex="0"/><circle cx="68.4" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.1-0.2: predicted 0.14 vs observed 0.00 (n=64)" tabindex="0"/><circle cx="87.4" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.2-0.3: predicted 0.25 vs observed 0.00 (n=25)" tabindex="0"/><circle cx="103.2" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.3-0.4: predicted 0.34 vs observed 0.00 (n=11)" tabindex="0"/><circle cx="117.9" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.4-0.5: predicted 0.43 vs observed 0.00 (n=4)" tabindex="0"/><circle cx="136.2" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.5-0.6: predicted 0.54 vs observed 0.00 (n=2)" tabindex="0"/><circle cx="161.4" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.6-0.7: predicted 0.68 vs observed 0.00 (n=2)" tabindex="0"/><circle cx="177.3" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.7-0.8: predicted 0.78 vs observed 0.00 (n=1)" tabindex="0"/><circle cx="182.4" cy="216.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.8-0.9: predicted 0.80 vs observed 0.00 (n=1)" tabindex="0"/><circle cx="215.8" cy="47.7" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="wrong_now head bin 0.9-1.0: predicted 1.00 vs observed 0.98 (n=647)" tabindex="0"/><text x="44.0" y="232" text-anchor="middle" class="tick">0.0</text><text x="36" y="216.0" dy="3" text-anchor="end" class="tick">0.0</text><text x="130.0" y="232" text-anchor="middle" class="tick">0.5</text><text x="36" y="130.0" dy="3" text-anchor="end" class="tick">0.5</text><text x="216.0" y="232" text-anchor="middle" class="tick">1.0</text><text x="36" y="44.0" dy="3" text-anchor="end" class="tick">1.0</text><text x="130.0" y="254" text-anchor="middle" class="tick">predicted P(wrong)</text><text x="12" y="130.0" class="tick" transform="rotate(-90 12 130.0)" text-anchor="middle">observed</text><text x="130.0" y="16" text-anchor="middle" class="subtitle">wrong_now head</text></svg><svg viewBox="0 0 260 260" role="img" class="reliability" aria-label="Reliability of commit_risk (gate)"><line x1="44" y1="216" x2="216" y2="44" class="ref"/><line x1="44" y1="216" x2="216" y2="216" class="axis"/><line x1="44" y1="44" x2="44" y2="216" class="axis"/><path d="M50.4,215.6L66.6,68.6L117.5,49.0" fill="none" stroke="var(--wm)" stroke-width="2" stroke-linecap="round"/><circle cx="50.4" cy="215.6" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="commit_risk (gate) bin 0.0-0.1: predicted 0.04 vs observed 0.00 (n=1373)" tabindex="0"/><circle cx="66.6" cy="68.6" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="commit_risk (gate) bin 0.1-0.2: predicted 0.13 vs observed 0.86 (n=56)" tabindex="0"/><circle cx="117.5" cy="49.0" r="4" fill="var(--wm)" stroke="var(--surface)" stroke-width="2" class="dot" data-tip="commit_risk (gate) bin 0.4-0.5: predicted 0.43 vs observed 0.97 (n=171)" tabindex="0"/><text x="44.0" y="232" text-anchor="middle" class="tick">0.0</text><text x="36" y="216.0" dy="3" text-anchor="end" class="tick">0.0</text><text x="130.0" y="232" text-anchor="middle" class="tick">0.5</text><text x="36" y="130.0" dy="3" text-anchor="end" class="tick">0.5</text><text x="216.0" y="232" text-anchor="middle" class="tick">1.0</text><text x="36" y="44.0" dy="3" text-anchor="end" class="tick">1.0</text><text x="130.0" y="254" text-anchor="middle" class="tick">predicted P(wrong)</text><text x="12" y="130.0" class="tick" transform="rotate(-90 12 130.0)" text-anchor="middle">observed</text><text x="130.0" y="16" text-anchor="middle" class="subtitle">commit_risk (gate)</text></svg></figure>
 <details><summary>table view — wrong_now reliability bins (5485 held-out rows)</summary><div class='wrap'><table><tr><th>score bin</th><th>n</th><th>mean predicted</th><th>observed wrong</th></tr><tr><td>0.0-0.1</td><td>4728</td><td>0.005</td><td>0.000</td></tr><tr><td>0.1-0.2</td><td>64</td><td>0.142</td><td>0.000</td></tr><tr><td>0.2-0.3</td><td>25</td><td>0.252</td><td>0.000</td></tr><tr><td>0.3-0.4</td><td>11</td><td>0.344</td><td>0.000</td></tr><tr><td>0.4-0.5</td><td>4</td><td>0.429</td><td>0.000</td></tr><tr><td>0.5-0.6</td><td>2</td><td>0.536</td><td>0.000</td></tr><tr><td>0.6-0.7</td><td>2</td><td>0.683</td><td>0.000</td></tr><tr><td>0.7-0.8</td><td>1</td><td>0.775</td><td>0.000</td></tr><tr><td>0.8-0.9</td><td>1</td><td>0.805</td><td>0.000</td></tr><tr><td>0.9-1.0</td><td>647</td><td>0.999</td><td>0.978</td></tr></table></div></details></div>
 
-<div class="card"><h2 style="margin-top:0">Gate decisions — live learned-gate
-session (seed 0, 16 steps)</h2>
+<div class="card"><p class="eyebrow">Live run — seed 0 · 16 steps · learned gate</p>
+<h2>Gate decisions, question by question</h2>
 <p class="sub">Every question the deployed society answered, with the gate's
 decision and reason. It debated exactly the weak-source displacements —
-rumor-poisoned beliefs — and nothing else.</p>
+rumor-poisoned beliefs — and nothing else. <a href="/live">Watch this run
+play out in the society view →</a></p>
 <div class='wrap'><table><tr><th>question</th><th>gate</th><th>p(wrong)</th><th>reason</th><th>correct</th><th>tokens</th></tr><tr><td>s0-q0</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>500</td></tr><tr><td>s0-q1</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>403</td></tr><tr><td>s0-q2</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>410</td></tr><tr><td>s0-q3</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>453</td></tr><tr><td>s0-q4</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>479</td></tr><tr><td>s0-q5</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>424</td></tr><tr><td>s0-q6</td><td><span class='chip fire'>▲ DEBATE</span></td><td>0.427</td><td>policy:weak-source</td><td><span class='good'>✓</span></td><td>3188</td></tr><tr><td>s0-q7</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>441</td></tr><tr><td>s0-q8</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>508</td></tr><tr><td>s0-q9</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>616</td></tr><tr><td>s0-q10</td><td><span class='chip ok'>✓ commit</span></td><td>0.038</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>521</td></tr><tr><td>s0-q11</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>732</td></tr><tr><td>s0-q12</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>484</td></tr><tr><td>s0-q13</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>509</td></tr><tr><td>s0-q14</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>563</td></tr><tr><td>s0-q15</td><td><span class='chip fire'>▲ DEBATE</span></td><td>0.427</td><td>policy:weak-source</td><td><span class='good'>✓</span></td><td>3529</td></tr><tr><td>s0-q16</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>538</td></tr><tr><td>s0-q17</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>510</td></tr><tr><td>s0-q18</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>522</td></tr><tr><td>s0-q19</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>506</td></tr><tr><td>s0-q20</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>522</td></tr><tr><td>s0-q21</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>544</td></tr><tr><td>s0-q22</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>559</td></tr><tr><td>s0-q23</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>589</td></tr><tr><td>s0-q24</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>593</td></tr><tr><td>s0-q25</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>586</td></tr><tr><td>s0-q26</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>560</td></tr><tr><td>s0-q27</td><td><span class='chip ok'>✓ commit</span></td><td>0.037</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>612</td></tr><tr><td>s0-q28</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>600</td></tr><tr><td>s0-q29</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>595</td></tr><tr><td>s0-q30</td><td><span class='chip fire'>▲ DEBATE</span></td><td>0.428</td><td>policy:weak-source</td><td><span class='good'>✓</span></td><td>4861</td></tr><tr><td>s0-q31</td><td><span class='chip ok'>✓ commit</span></td><td>0.036</td><td>conformal(alpha=0.05)</td><td><span class='good'>✓</span></td><td>597</td></tr></table></div></div>
 </main>
 
-<footer><strong>Honesty notes.</strong><ul>
+<footer><p class="eyebrow">Honesty notes</p><ul>
 <li>wrong_now's 0.999 AUROC is on synthetic validation streams where
 weak-source displacement is highly separable; the honest generalization
 numbers are 0.937 AUROC on real LLM-built boards and the gate-quality figures

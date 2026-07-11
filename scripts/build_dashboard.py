@@ -32,46 +32,54 @@ DARK = {"agora-wm": "#3987e5", "agora": "#199e70", "single": "#c98500",
         "learned": "#3987e5", "baseline": "#898781"}
 
 CSS = """
-:root { --surface:#fcfcfb; --plane:#f9f9f7; --ink:#0b0b0b; --ink2:#52514e;
-  --muted:#898781; --grid:#e1e0d9; --axis:#c3c2b7; --good:#0ca30c;
-  --warn:#fab219; --crit:#d03b3b; --border:rgba(11,11,11,.10);
-  --wm:#2a78d6; --ag:#1baf7a; --si:#eda100; --base:#898781; }
+:root { --surface:#fcfcfb; --plane:#f6f6f2; --ink:#151412; --ink2:#52514e;
+  --muted:#8a8780; --grid:#e3e1da; --axis:#c4c2ba; --good:#0ca30c;
+  --warn:#fab219; --crit:#d03b3b; --border:rgba(21,20,18,.11);
+  --wm:#2a78d6; --ag:#1baf7a; --si:#eda100; --base:#898781;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 @media (prefers-color-scheme: dark) {
-  :root { --surface:#1a1a19; --plane:#0d0d0d; --ink:#ffffff; --ink2:#c3c2b7;
-    --muted:#898781; --grid:#2c2c2a; --axis:#383835; --good:#0ca30c;
-    --warn:#fab219; --crit:#d03b3b; --border:rgba(255,255,255,.10);
+  :root { --surface:#191b1a; --plane:#0f1110; --ink:#f4f4f1; --ink2:#c3c2b7;
+    --muted:#8a8780; --grid:#2b2d2b; --axis:#3a3c3a; --good:#0ca30c;
+    --warn:#fab219; --crit:#d03b3b; --border:rgba(244,244,241,.11);
     --wm:#3987e5; --ag:#199e70; --si:#c98500; } }
 * { box-sizing:border-box; }
 body { background:var(--plane); color:var(--ink); margin:0 auto;
-  padding:28px 24px 40px; max-width:1120px;
-  font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
-h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:16px; margin:32px 0 8px; }
+  padding:32px 24px 48px; max-width:1120px;
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+h1 { font-size:30px; line-height:1.18; font-weight:680; letter-spacing:-0.015em;
+  margin:10px 0 8px; max-width:40ch; text-wrap:balance; }
+.eyebrow { font:600 11px/1 var(--mono); letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+.eyebrow b { color:var(--wm); font-weight:600; }
+h2 { font-size:17px; font-weight:650; letter-spacing:-0.01em; margin:2px 0 6px;
+  text-wrap:balance; }
 .skip { position:absolute; left:-9999px; top:0; background:var(--surface);
   color:var(--ink); padding:8px 14px; border-radius:8px; z-index:20; }
 .skip:focus { left:12px; top:12px; }
 :focus-visible { outline:2px solid var(--wm); outline-offset:2px; border-radius:3px; }
 .brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
 .brand svg { flex:0 0 auto; }
-.brand .word { font-size:26px; font-weight:650; letter-spacing:.3px; }
-nav.links { display:flex; gap:14px; flex-wrap:wrap; font-size:13.5px; margin:8px 0 2px; }
-nav.links a { color:var(--wm); text-decoration:none; font-weight:550; }
+.brand .word { font-size:24px; font-weight:650; letter-spacing:.2px; }
+nav.links { display:flex; gap:16px; flex-wrap:wrap; font-size:13.5px; margin:12px 0 2px; }
+nav.links a { color:var(--wm); text-decoration:none; font-weight:560; }
 nav.links a:hover { text-decoration:underline; }
-code, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  font-size:.92em; background:color-mix(in srgb, var(--ink) 6%, var(--surface));
-  padding:1px 5px; border-radius:5px; }
-pre.try { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+code, .mono { font-family:var(--mono); font-size:.9em;
   background:color-mix(in srgb, var(--ink) 6%, var(--surface));
-  border:1px solid var(--border); border-radius:8px; padding:10px 12px;
-  overflow-x:auto; margin:10px 0 0; }
+  padding:1px 5px; border-radius:5px; }
+pre.try { font-family:var(--mono); font-size:12.5px; line-height:1.7;
+  background:#111311; color:#cfcec5; border:1px solid var(--border);
+  border-radius:10px; padding:12px 15px; overflow-x:auto; margin:14px 0 0; }
+pre.try .p { color:#5fa86a; } pre.try .c { color:#787771; }
 .sub { color:var(--ink2); margin:0 0 8px; max-width:72ch; }
 .card { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:16px 18px; margin:10px 0; }
-.tiles { display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
+  border-radius:12px; padding:18px 20px; margin:12px 0; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px; margin:20px 0 8px; }
 .tile { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:14px 18px; min-width:180px; flex:1; }
-.tile .v { font-size:28px; font-weight:650; }
-.tile .k { color:var(--ink2); font-size:13px; margin-top:2px; }
-.tile .d { font-size:12px; margin-top:4px; color:var(--ink2); }
+  border-radius:12px; padding:16px 18px; }
+.tile .v { font-size:32px; font-weight:680; letter-spacing:-0.02em; line-height:1.1; }
+.tile .k { color:var(--ink2); font-size:12.5px; margin-top:5px; line-height:1.4; }
+.tile .d { font-size:12px; margin-top:5px; color:var(--ink2); }
 .tile .d.up { color:var(--good); }
 .legend { display:flex; gap:18px; font-size:13px; color:var(--ink2);
   margin:2px 0 6px; flex-wrap:wrap; }
@@ -324,25 +332,28 @@ def main() -> None:
 <a class="skip" href="#main">Skip to content</a>
 <header>
 <div class="brand">{mark_svg}<span class="word">agora</span></div>
-<p class="sub" style="margin-top:8px">Your agents debate too much. A
-<strong>world model trained on the society's own logged episodes</strong>
-decides when disagreement is worth the tokens: two trained heads
-(<code>wrong_now</code>, <code>superseded_next</code>) plus a conformal
-threshold route debate only where the shared belief board is likely
-corrupted — at <strong>zero LLM calls per gate decision</strong>.</p>
+<p class="eyebrow" style="margin-top:18px"><b>Qwen Cloud · Track 3</b> — agent
+society · learned world model</p>
+<h1>Your agents debate too much. The world model decides when it's worth it.</h1>
+<p class="sub">A society of Qwen agents shares one belief board; two heads
+<strong>trained on its own logged episodes</strong> (<code>wrong_now</code>,
+<code>superseded_next</code>) plus a conformal threshold route debate only
+where the board is likely corrupted — at <strong>zero LLM calls per gate
+decision</strong>.</p>
 <nav class="links" aria-label="Product links">
 <a href="/live">Society view — watch a live run</a>
 <a href="/docs">API playground (try /ingest and /ask)</a>
 <a href="https://github.com/Nas01010101/agora">GitHub</a>
 <a href="/healthz">health</a>
 </nav>
-<pre class="try"># try it — one command, no API key
-$ git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
+<pre class="try"><span class="c"># try it — one command, no API key</span>
+<span class="p">$</span> git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
 </header>
 <main id="main">
 {tiles(cells, gate_eval, wm["metrics"])}
 
-<div class="card"><h2 style="margin-top:0">Cost per question vs stream length</h2>
+<div class="card"><p class="eyebrow">Benchmark — session eval, live Qwen runs</p>
+<h2>Cost per question vs stream length</h2>
 <p class="sub">Perception is amortized into the board, so Agora's cost stays
 flat while the single agent re-reads a growing stream. (vanilla 3×3 debate:
 $0.0709/q at 8 steps — off this chart's scale; see the table.)</p>
@@ -350,8 +361,8 @@ $0.0709/q at 8 steps — off this chart's scale; see the table.)</p>
 {scaling_chart(series, {"agora-wm": "var(--wm)", "agora": "var(--ag)", "single": "var(--si)"})}
 <details><summary>table view — all arms, pooled across seeds</summary>{arms_table(cells)}</details></div>
 
-<div class="card"><h2 style="margin-top:0">The learned world model vs the
-hand-set heuristics it replaced</h2>
+<div class="card"><p class="eyebrow">World model — trained vs hand-set, held out</p>
+<h2>The learned heads vs the heuristics they replaced</h2>
 <p class="sub">Same features, same held-out data — the only change is that the
 weights are trained instead of typed. The fixed Lomax survival prior sits at
 chance; the learned dynamics head does not.</p>
@@ -366,7 +377,8 @@ Hand-set: fires {heur['fire_rate']:.1%} (2× the debates) for
 {heur['recall_poisoned']:.1%} recall at {heur['false_fire_rate']:.1%}
 false-fire.</p></div>
 
-<div class="card"><h2 style="margin-top:0">Calibration (held-out)</h2>
+<div class="card"><p class="eyebrow">World model — reliability, held out</p>
+<h2>Calibration</h2>
 <p class="sub">Predicted P(wrong) vs observed frequency, 10 bins; the diagonal
 is perfect calibration. The conformal ACCEPT threshold is calibrated on top of
 these scores, so the guarantee never rests on the model being exactly
@@ -374,15 +386,16 @@ calibrated.</p>
 {reliability_panel(curves, "var(--wm)")}
 {reliability_table(gate_eval["reliability"])}</div>
 
-<div class="card"><h2 style="margin-top:0">Gate decisions — live learned-gate
-session (seed 0, 16 steps)</h2>
+<div class="card"><p class="eyebrow">Live run — seed 0 · 16 steps · learned gate</p>
+<h2>Gate decisions, question by question</h2>
 <p class="sub">Every question the deployed society answered, with the gate's
 decision and reason. It debated exactly the weak-source displacements —
-rumor-poisoned beliefs — and nothing else.</p>
+rumor-poisoned beliefs — and nothing else. <a href="/live">Watch this run
+play out in the society view →</a></p>
 {gate_table(RESULTS / "raw" / "session_agora-wm_s0_t16.jsonl")}</div>
 </main>
 
-<footer><strong>Honesty notes.</strong><ul>
+<footer><p class="eyebrow">Honesty notes</p><ul>
 <li>wrong_now's 0.999 AUROC is on synthetic validation streams where
 weak-source displacement is highly separable; the honest generalization
 numbers are 0.937 AUROC on real LLM-built boards and the gate-quality figures
