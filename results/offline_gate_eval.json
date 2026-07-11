@@ -1,0 +1,136 @@
+{
+  "seeds": "5000:5100",
+  "n_questions": 1600,
+  "gate_quality": {
+    "mode": "learned",
+    "calibrated": true,
+    "n_questions": 1600,
+    "board_wrong_rate": 0.1356,
+    "fire_rate": 0.1244,
+    "recall_poisoned": 0.8618,
+    "false_fire_rate": 0.0087,
+    "score_auroc": 0.9963,
+    "accepted_error_rate": 0.0214,
+    "alpha": 0.05,
+    "coverage_holds": true
+  },
+  "learned_vs_heuristic": {
+    "learned": {
+      "mode": "learned",
+      "calibrated": true,
+      "n_questions": 1600,
+      "board_wrong_rate": 0.1356,
+      "fire_rate": 0.1244,
+      "recall_poisoned": 0.8618,
+      "false_fire_rate": 0.0087,
+      "score_auroc": 0.9963,
+      "accepted_error_rate": 0.0214,
+      "alpha": 0.05,
+      "coverage_holds": true
+    },
+    "heuristic": {
+      "mode": "heuristic",
+      "calibrated": true,
+      "n_questions": 1600,
+      "board_wrong_rate": 0.1356,
+      "fire_rate": 0.2375,
+      "recall_poisoned": 0.788,
+      "false_fire_rate": 0.1511,
+      "score_auroc": 0.9211,
+      "accepted_error_rate": 0.0377,
+      "alpha": 0.05,
+      "coverage_holds": true
+    }
+  },
+  "reliability": {
+    "commit_risk": [
+      {
+        "bin": "0.0-0.1",
+        "n": 1373,
+        "mean_pred": 0.0371,
+        "empirical": 0.0022
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 56,
+        "mean_pred": 0.1315,
+        "empirical": 0.8571
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 171,
+        "mean_pred": 0.4273,
+        "empirical": 0.9708
+      }
+    ],
+    "wrong_now_head": [
+      {
+        "bin": "0.0-0.1",
+        "n": 4728,
+        "mean_pred": 0.005,
+        "empirical": 0.0004
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 64,
+        "mean_pred": 0.1419,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 25,
+        "mean_pred": 0.2523,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 11,
+        "mean_pred": 0.344,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 4,
+        "mean_pred": 0.4294,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 2,
+        "mean_pred": 0.5361,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 2,
+        "mean_pred": 0.6828,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 1,
+        "mean_pred": 0.775,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 1,
+        "mean_pred": 0.8046,
+        "empirical": 0.0
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 647,
+        "mean_pred": 0.9988,
+        "empirical": 0.9784
+      }
+    ],
+    "wrong_now_auroc": 0.9993,
+    "n_step_rows": 5485
+  },
+  "notes": [
+    "zero LLM calls: sampler stubbed to 0.0 for BOTH modes (learned stacker measured its weight at zero; heuristic gets its skip-path value)",
+    "heuristic confidence fixed at 0.9",
+    "labels from the generator's arrived-filings ground truth"
+  ]
+}

@@ -1,0 +1,2815 @@
+{
+ "seed": 0,
+ "steps": 8,
+ "summary": {
+  "questions": 16,
+  "correct": 16,
+  "gate_fired": 2,
+  "ingest_cost_usd": 0.0277,
+  "total_cost_usd": 0.0911
+ },
+ "events": [
+  {
+   "type": "evidence",
+   "lines": [
+    "[Feb 2025] Filing: Aster Materials's flagship product is Prism.",
+    "[Mar 2025] Filing: Lumen Biotech's headcount is 2200.",
+    "[Feb 2025] Filing: Nimbus Health's flagship product is Atlas.",
+    "[Mar 2025] Filing: Nimbus Health's flagship product is Nova."
+   ],
+   "asserts": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "2200",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "outcome": "superseded"
+    }
+   ],
+   "cost_usd": 0.00306,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "2200",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.536,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q0",
+   "question": "Claim: \"Nimbus Health's flagship product is currently Nova.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "nimbus health::flagship product"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00346,
+   "tokens": 581,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "2200",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.536,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q1",
+   "question": "Claim: \"Nimbus Health's flagship product is currently Atlas.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "false",
+   "answer": "false",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "nimbus health::flagship product"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00202,
+   "tokens": 389,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "2200",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.536,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Jul 2025] Rumor: Skylark Compute's headquarters is now Toronto.",
+    "[Jun 2025] Filing: Cascade Semiconductors's ceo is Tanaka.",
+    "[May 2025] Filing: Lumen Biotech's headcount is 780.",
+    "[Jun 2025] Filing: Skylark Compute's headquarters is Porto.",
+    "[Jul 2025] Filing: Nimbus Health's flagship product is Atlas."
+   ],
+   "asserts": [
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "outcome": "new"
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "tanaka",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "porto",
+     "source": "Filing",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "outcome": "superseded"
+    }
+   ],
+   "cost_usd": 0.00313,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.373,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "tanaka",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.442,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.483,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.483,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q2",
+   "question": "Claim: \"Cascade Semiconductors's ceo is currently Tanaka.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "cascade semiconductors::ceo"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00222,
+   "tokens": 432,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.373,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "tanaka",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.442,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.483,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.483,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q3",
+   "question": "Claim: \"Nimbus Health's flagship product is currently Nova.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "false",
+   "answer": "false",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "nimbus health::flagship product"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00193,
+   "tokens": 391,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "prism",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.373,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "tanaka",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.442,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.483,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.483,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Nov 2025] Filing: Nimbus Health's flagship product is Kestrel.",
+    "[Nov 2025] Filing: Cascade Semiconductors's ceo is Larsson.",
+    "[Aug 2025] Blog recap: sources describe Cascade Semiconductors's ceo as Tanaka.",
+    "[Nov 2025] Filing: Aster Materials's flagship product is Atlas.",
+    "[Oct 2025] Filing: Lumen Biotech's funding round is Series C."
+   ],
+   "asserts": [
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "tanaka",
+     "source": "Blog recap",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "outcome": "new"
+    }
+   ],
+   "cost_usd": 0.00287,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.348,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.02,
+     "superseded_next": 0.388,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.376,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.432,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 0
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q4",
+   "question": "Claim: \"Lumen Biotech's funding round is currently Series B.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "false",
+   "answer": "false",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "lumen biotech::funding round"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00276,
+   "tokens": 513,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.348,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.02,
+     "superseded_next": 0.388,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.376,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.432,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 0
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q5",
+   "question": "Claim: \"Cascade Semiconductors's ceo is currently Larsson.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.037,
+    "disagreement": 0.0,
+    "max_doubt": 0.02,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "cascade semiconductors::ceo"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00209,
+   "tokens": 424,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.348,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.02,
+     "superseded_next": 0.388,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.376,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.432,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 0
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "toronto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Feb 2026] Filing: Skylark Compute's headquarters is Austin.",
+    "[Jan 2026] Blog recap: sources describe Skylark Compute's headquarters as Porto.",
+    "[Feb 2026] Filing: Onyx Mobility's headcount is 340.",
+    "[Jan 2026] Filing: Onyx Mobility's headcount is 120.",
+    "[Dec 2025] Filing: Aster Materials's funding round is Series C.",
+    "[Dec 2025] Rumor: Aster Materials's flagship product is now Kestrel."
+   ],
+   "asserts": [
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "porto",
+     "source": "Blog recap",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "120",
+     "source": "Filing",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "aster materials::flagship product",
+     "value": "kestrel",
+     "source": "Rumor",
+     "outcome": "superseded-by-weaker-source"
+    }
+   ],
+   "cost_usd": 0.0038,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "kestrel",
+     "source": "Rumor",
+     "wrong_now": 0.998,
+     "superseded_next": 0.329,
+     "weak": true,
+     "churn": 2,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.424,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.344,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.393,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.311,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.376,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 0
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.569,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.03,
+     "superseded_next": 0.382,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q6",
+   "question": "Claim: \"Aster Materials's flagship product is currently Atlas.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": true,
+    "p_wrong": 0.427,
+    "disagreement": 0.0,
+    "max_doubt": 0.998,
+    "weak_current": true,
+    "reason": "policy:weak-source"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "aster materials::flagship product"
+     ],
+     "confidence": 1.0
+    },
+    {
+     "kind": "challenge",
+     "key": "aster materials::flagship product",
+     "attack": "The belief that Kestrel is Aster Materials' flagship product rests entirely on a Dec 2025 entry tagged as 'Rumor,' which is explicitly an unreliable source type. The most recent authoritative Filing ("
+    },
+    {
+     "kind": "verdict",
+     "key": "aster materials::flagship product",
+     "upheld": false,
+     "corrected": "atlas"
+    },
+    {
+     "kind": "reproposal",
+     "answer": "true"
+    }
+   ],
+   "cost_usd": 0.01174,
+   "tokens": 3514,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.02,
+     "superseded_next": 0.337,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.424,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.344,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.393,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.311,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.375,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 0
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.566,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.029,
+     "superseded_next": 0.381,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q7",
+   "question": "Claim: \"Aster Materials's flagship product is currently Prism.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "false",
+   "answer": "false",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.037,
+    "disagreement": 0.0,
+    "max_doubt": 0.02,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "aster materials::flagship product"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00211,
+   "tokens": 440,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.02,
+     "superseded_next": 0.337,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.424,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.344,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.393,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.311,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.375,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 0
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.566,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.029,
+     "superseded_next": 0.381,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Apr 2026] Filing: Onyx Mobility's headcount is 780.",
+    "[Jun 2026] Filing: Halcyon Systems's headquarters is Austin.",
+    "[Jun 2026] Filing: Nimbus Health's flagship product is Atlas.",
+    "[May 2026] Filing: Onyx Mobility's headcount is 340.",
+    "[Dec 2025] Blog recap: sources describe Nimbus Health's flagship product as Kestrel.",
+    "[Mar 2026] Blog recap: sources describe Onyx Mobility's headcount as 340."
+   ],
+   "asserts": [
+    {
+     "key": "onyx mobility::headcount",
+     "value": "780",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "kestrel",
+     "source": "Blog recap",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Blog recap",
+     "outcome": "refresh"
+    }
+   ],
+   "cost_usd": 0.00285,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.237,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.354,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.304,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.316,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.232,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.272,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.57,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.003,
+     "superseded_next": 0.291,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q8",
+   "question": "Claim: \"Lumen Biotech's headcount is currently 780.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "lumen biotech::headcount"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.0034,
+   "tokens": 622,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.237,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.354,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.304,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.316,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.232,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.272,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.57,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.003,
+     "superseded_next": 0.291,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q9",
+   "question": "Claim: \"Lumen Biotech's headcount is currently 780.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "lumen biotech::headcount"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00234,
+   "tokens": 481,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.237,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.354,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.304,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.316,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.232,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.272,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.57,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.003,
+     "superseded_next": 0.291,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Oct 2025] Blog recap: sources describe Lumen Biotech's headcount as 780.",
+    "[Jul 2026] Blog recap: sources describe Nimbus Health's flagship product as Atlas.",
+    "[Sep 2026] Filing: Nimbus Health's flagship product is Zephyr.",
+    "[Mar 2026] Blog recap: sources describe Lumen Biotech's funding round as Series C.",
+    "[Aug 2026] Filing: Lumen Biotech's headcount is 340.",
+    "[Oct 2026] Filing: Lumen Biotech's funding round is Series A.",
+    "[Sep 2026] Filing: Lumen Biotech's funding round is Series B."
+   ],
+   "asserts": [
+    {
+     "key": "lumen biotech::headcount",
+     "value": "780",
+     "source": "Blog recap",
+     "outcome": "refresh"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Blog recap",
+     "outcome": "refresh"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Blog recap",
+     "outcome": "refresh"
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series b",
+     "source": "Filing",
+     "outcome": "stale-echo"
+    }
+   ],
+   "cost_usd": 0.00388,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.142,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.279,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.207,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.393,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.028,
+     "superseded_next": 0.455,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.132,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.199,
+     "weak": false,
+     "churn": 6,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.001,
+     "superseded_next": 0.467,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.217,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q10",
+   "question": "Claim: \"Lumen Biotech's funding round is currently Series A.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.038,
+    "disagreement": 0.0,
+    "max_doubt": 0.028,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "lumen biotech::funding round"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00419,
+   "tokens": 728,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.142,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.279,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.207,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.393,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.028,
+     "superseded_next": 0.455,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.132,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.199,
+     "weak": false,
+     "churn": 6,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.001,
+     "superseded_next": 0.467,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.217,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q11",
+   "question": "Claim: \"Onyx Mobility's headcount is currently 340.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.001,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "onyx mobility::headcount"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00362,
+   "tokens": 652,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.142,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series c",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.279,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.005,
+     "superseded_next": 0.207,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.393,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.028,
+     "superseded_next": 0.455,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.132,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.199,
+     "weak": false,
+     "churn": 6,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.001,
+     "superseded_next": 0.467,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.217,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Dec 2026] Filing: Aster Materials's funding round is Series D.",
+    "[Nov 2026] Filing: Aster Materials's headcount is 780.",
+    "[Jul 2026] Industry note: Lumen Biotech's funding round remains Series C.",
+    "[Nov 2026] Filing: Aster Materials's funding round is Series A.",
+    "[Dec 2026] Filing: Lumen Biotech's flagship product is Nova."
+   ],
+   "asserts": [
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "780",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series c",
+     "source": "Industry note",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "outcome": "new"
+    }
+   ],
+   "cost_usd": 0.00356,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.109,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.335,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.006,
+     "superseded_next": 0.163,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.354,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.044,
+     "superseded_next": 0.434,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.105,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.168,
+     "weak": false,
+     "churn": 6,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.427,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.174,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q12",
+   "question": "Claim: \"Cascade Semiconductors's ceo is currently Larsson.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.037,
+    "disagreement": 0.0,
+    "max_doubt": 0.006,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "cascade semiconductors::ceo"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00258,
+   "tokens": 530,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.109,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.335,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.006,
+     "superseded_next": 0.163,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.354,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.044,
+     "superseded_next": 0.434,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.105,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.168,
+     "weak": false,
+     "churn": 6,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.427,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.174,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q13",
+   "question": "Claim: \"Aster Materials's headcount is currently 120.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "false",
+   "answer": "false",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.0,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "aster materials::headcount"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00242,
+   "tokens": 509,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.109,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.335,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "780",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.422,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.006,
+     "superseded_next": 0.163,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.354,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "nova",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.044,
+     "superseded_next": 0.434,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.105,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.168,
+     "weak": false,
+     "churn": 6,
+     "conflicts": 1
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.427,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 1
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.174,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    }
+   ]
+  },
+  {
+   "type": "evidence",
+   "lines": [
+    "[Apr 2026] Rumor: Skylark Compute's headquarters is now Porto.",
+    "[Jan 2027] Blog recap: sources describe Lumen Biotech's flagship product as Nova.",
+    "[Feb 2027] Filing: Onyx Mobility's headcount is 120.",
+    "[Jan 2027] Blog recap: sources describe Onyx Mobility's headcount as 340.",
+    "[Apr 2025] Industry note: Nimbus Health's flagship product remains Atlas.",
+    "[Mar 2027] Filing: Lumen Biotech's flagship product is Kestrel.",
+    "[Apr 2027] Filing: Halcyon Systems's headcount is 340.",
+    "[Feb 2027] Filing: Aster Materials's headcount is 1500."
+   ],
+   "asserts": [
+    {
+     "key": "skylark compute::headquarters",
+     "value": "porto",
+     "source": "Rumor",
+     "outcome": "superseded-by-weaker-source"
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "nova",
+     "source": "Blog recap",
+     "outcome": "refresh"
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "120",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "340",
+     "source": "Blog recap",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "atlas",
+     "source": "Industry note",
+     "outcome": "stale-echo"
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "outcome": "superseded"
+    },
+    {
+     "key": "halcyon systems::headcount",
+     "value": "340",
+     "source": "Filing",
+     "outcome": "new"
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "1500",
+     "source": "Filing",
+     "outcome": "superseded"
+    }
+   ],
+   "cost_usd": 0.0046,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.063,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.23,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "1500",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.427,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.007,
+     "superseded_next": 0.099,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.279,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.369,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.023,
+     "superseded_next": 0.331,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.062,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.107,
+     "weak": false,
+     "churn": 7,
+     "conflicts": 2
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "120",
+     "source": "Filing",
+     "wrong_now": 0.004,
+     "superseded_next": 0.359,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 2
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "porto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.115,
+     "weak": true,
+     "churn": 4,
+     "conflicts": 4
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q14",
+   "question": "Claim: \"Lumen Biotech's flagship product is currently Kestrel.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": false,
+    "p_wrong": 0.036,
+    "disagreement": 0.0,
+    "max_doubt": 0.002,
+    "weak_current": false,
+    "reason": "conformal(alpha=0.05)"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "true",
+     "support": [
+      "lumen biotech::flagship product"
+     ],
+     "confidence": 1.0
+    }
+   ],
+   "cost_usd": 0.00254,
+   "tokens": 535,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.063,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.23,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "1500",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.427,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.007,
+     "superseded_next": 0.099,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.415,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.279,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.369,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.023,
+     "superseded_next": 0.331,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.062,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.107,
+     "weak": false,
+     "churn": 7,
+     "conflicts": 2
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "120",
+     "source": "Filing",
+     "wrong_now": 0.004,
+     "superseded_next": 0.359,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 2
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "porto",
+     "source": "Rumor",
+     "wrong_now": 1.0,
+     "superseded_next": 0.115,
+     "weak": true,
+     "churn": 4,
+     "conflicts": 4
+    }
+   ]
+  },
+  {
+   "type": "question",
+   "task_id": "s0-q15",
+   "question": "Claim: \"Skylark Compute's headquarters is currently Austin.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.",
+   "gold": "true",
+   "answer": "true",
+   "correct": true,
+   "gate": {
+    "fired": true,
+    "p_wrong": 0.427,
+    "disagreement": 0.0,
+    "max_doubt": 1.0,
+    "weak_current": true,
+    "reason": "policy:weak-source"
+   },
+   "events": [
+    {
+     "kind": "proposal",
+     "answer": "false",
+     "support": [
+      "skylark compute::headquarters"
+     ],
+     "confidence": 1.0
+    },
+    {
+     "kind": "challenge",
+     "key": "skylark compute::headquarters",
+     "attack": "The belief that headquarters = Porto is stale and contradicted by the most recent authoritative source. The Feb 2026 Filing\u2014the latest authoritative record\u2014states Austin as headquarters. All subsequen"
+    },
+    {
+     "kind": "verdict",
+     "key": "skylark compute::headquarters",
+     "upheld": false,
+     "corrected": "austin"
+    },
+    {
+     "kind": "reproposal",
+     "answer": "true"
+    }
+   ],
+   "cost_usd": 0.0139,
+   "tokens": 3512,
+   "board": [
+    {
+     "key": "aster materials::flagship product",
+     "value": "atlas",
+     "source": "debate",
+     "wrong_now": 0.008,
+     "superseded_next": 0.062,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "aster materials::funding round",
+     "value": "series d",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.229,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "aster materials::headcount",
+     "value": "1500",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.426,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "cascade semiconductors::ceo",
+     "value": "larsson",
+     "source": "Filing",
+     "wrong_now": 0.007,
+     "superseded_next": 0.099,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 1
+    },
+    {
+     "key": "halcyon systems::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.414,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "halcyon systems::headquarters",
+     "value": "austin",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.279,
+     "weak": false,
+     "churn": 0,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::flagship product",
+     "value": "kestrel",
+     "source": "Filing",
+     "wrong_now": 0.002,
+     "superseded_next": 0.369,
+     "weak": false,
+     "churn": 1,
+     "conflicts": 0
+    },
+    {
+     "key": "lumen biotech::funding round",
+     "value": "series a",
+     "source": "Filing",
+     "wrong_now": 0.023,
+     "superseded_next": 0.331,
+     "weak": false,
+     "churn": 3,
+     "conflicts": 2
+    },
+    {
+     "key": "lumen biotech::headcount",
+     "value": "340",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.062,
+     "weak": false,
+     "churn": 2,
+     "conflicts": 0
+    },
+    {
+     "key": "nimbus health::flagship product",
+     "value": "zephyr",
+     "source": "Filing",
+     "wrong_now": 0.0,
+     "superseded_next": 0.106,
+     "weak": false,
+     "churn": 7,
+     "conflicts": 2
+    },
+    {
+     "key": "onyx mobility::headcount",
+     "value": "120",
+     "source": "Filing",
+     "wrong_now": 0.004,
+     "superseded_next": 0.358,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 2
+    },
+    {
+     "key": "skylark compute::headquarters",
+     "value": "austin",
+     "source": "debate",
+     "wrong_now": 0.009,
+     "superseded_next": 0.092,
+     "weak": false,
+     "churn": 5,
+     "conflicts": 4
+    }
+   ]
+  }
+ ]
+}

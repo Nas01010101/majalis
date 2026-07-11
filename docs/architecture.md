@@ -167,6 +167,9 @@ author≠validator separation, and termination owned by the world model.
 - The learned heads' near-ceiling wrong_now AUROC (0.999) is on synthetic
   validation streams where weak-source displacement is highly separable; the
   honest generalization numbers are the real-episode ones (0.937 head alone,
-  0.95 LOSO stacker, 82.2% poisoned-board recall at 0.7% false-fire on 60
-  unseen streams). World-model outputs *prioritize spend*, never decide truth
+  0.95 LOSO stacker) and the reproducible offline benchmark
+  (`scripts/offline_bench.py` → `results/offline_gate_eval.json`: 100 unseen
+  streams / 1,600 questions — learned gate fires 12.4%, catches 86.2% of
+  corrupted boards at 0.9% false-fire, accepted-error 2.1% ≤ α=0.05; the
+  hand-set gate fires 23.8% for 78.8% recall at 15.1% false-fire). World-model outputs *prioritize spend*, never decide truth
   — truth is decided by the judge against dated evidence.
