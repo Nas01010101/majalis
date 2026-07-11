@@ -7,22 +7,67 @@ board and the gate decide. The dashboard's live view drives this API.
 """
 from __future__ import annotations
 
+import os
+from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from .beliefs import BeliefBoard
 from .bench.tasks import Task
 from .society import AgoraSession
+from .wmnet import load_wm
 
 app = FastAPI(title="Agora", version="0.1.0")
 _sessions: dict[str, AgoraSession] = {}
+_WM = load_wm()
+
+# Live-demo spend guard: /ingest and /ask cost real Qwen calls. Anonymous
+# callers share a daily budget; AGORA_LIVE_TOKEN in X-Agora-Token bypasses it.
+_spent = {"day": "", "calls": 0}
+
+
+def _spend_guard(token: str | None) -> None:
+    secret = os.environ.get("AGORA_LIVE_TOKEN", "")
+    if secret and token == secret:
+        return
+    cap = int(os.environ.get("AGORA_LIVE_DAILY_CAP", "25"))
+    today = datetime.now(timezone.utc).date().isoformat()
+    if _spent["day"] != today:
+        _spent.update(day=today, calls=0)
+    if _spent["calls"] >= cap:
+        raise HTTPException(429, detail=(
+            f"today's shared live-demo budget ({cap} calls) is spent — "
+            "try tomorrow, or send X-Agora-Token"))
+    _spent["calls"] += 1
+
+
+def _snapshot(s: AgoraSession) -> list[dict]:
+    """Full board with world-model scores — offline numpy, 0 LLM calls."""
+    b = s.board
+    snap = []
+    for key in sorted(b._current):
+        cur = b.current(key)
+        if _WM is not None:
+            wrong = _WM.wrong_now(b, key)
+            sup = _WM.superseded_next(b, key)
+        else:  # heuristic fallback when weights are absent
+            wrong, sup = b.doubt(key), 1.0 - b.p_valid(key)
+        snap.append({
+            "key": key, "value": cur.value, "source": cur.source,
+            "wrong_now": round(wrong, 3), "superseded_next": round(sup, 3),
+            "weak": b.weak_current(key), "churn": b.n_supersessions(key),
+            "conflicts": b._conflicts.get(key, 0),
+        })
+    return snap
 
 
 def _session(sid: str) -> AgoraSession:
     if sid not in _sessions:
+        if len(_sessions) >= 64:  # drop the oldest live session, not the box
+            _sessions.pop(next(iter(_sessions)))
         _sessions[sid] = AgoraSession(seed=0)
     return _sessions[sid]
 
@@ -38,19 +83,33 @@ class AskBody(BaseModel):
 
 
 @app.post("/ingest")
-def ingest(body: IngestBody) -> dict:
+def ingest(body: IngestBody,
+           x_agora_token: str | None = Header(default=None)) -> dict:
+    if not (0 < len(body.lines) <= 12) or any(len(x) > 300 for x in body.lines):
+        raise HTTPException(422, detail="1-12 evidence lines, each ≤300 chars")
+    _spend_guard(x_agora_token)
     s = _session(body.session_id)
     before = len(s.board._current)
-    s.ingest(body.lines)
+    cost0 = s.ingest_ledger.cost_usd
+    asserts: list[dict] = []
+    s.ingest(body.lines, trace=asserts)
     return {
         "beliefs": len(s.board._current),
         "new_beliefs": len(s.board._current) - before,
         "ingest_tokens": s.ingest_ledger.total_tokens,
+        # replay-schema event: the live viewer feeds it straight to the renderer
+        "event": {"type": "evidence", "lines": body.lines, "asserts": asserts,
+                  "cost_usd": round(s.ingest_ledger.cost_usd - cost0, 5),
+                  "board": _snapshot(s)},
     }
 
 
 @app.post("/ask")
-def ask(body: AskBody) -> dict:
+def ask(body: AskBody,
+        x_agora_token: str | None = Header(default=None)) -> dict:
+    if not (0 < len(body.question) <= 400):
+        raise HTTPException(422, detail="question must be 1-400 chars")
+    _spend_guard(x_agora_token)
     s = _session(body.session_id)
     task = Task(task_id="live", family="live", context="",
                 question=body.question, gold="")
@@ -62,19 +121,29 @@ def ask(body: AskBody) -> dict:
         "events": trace.get("events", []),
         "tokens": result.ledger.total_tokens,
         "cost_usd": round(result.ledger.cost_usd, 6),
+        "event": {"type": "question", "task_id": "live",
+                  "question": body.question, "gold": None,
+                  "answer": result.answer, "correct": None,
+                  "gate": trace.get("gate"), "events": trace.get("events", []),
+                  "cost_usd": round(result.ledger.cost_usd, 5),
+                  "tokens": result.ledger.total_tokens,
+                  "board": _snapshot(s)},
     }
 
 
 @app.get("/board")
 def board(session_id: str = "default") -> dict:
-    b: BeliefBoard = _session(session_id).board
+    s = _session(session_id)
+    b: BeliefBoard = s.board
     return {
         "beliefs": [
-            {"key": k, "value": b.current(k).value,
-             "p_valid": round(b.p_valid(k), 3),
-             "doubt": round(b.doubt(k), 3),
-             "changes": b.n_supersessions(k)}
-            for k in sorted(b._current)
+            {"key": r["key"], "value": r["value"],
+             "p_valid": round(b.p_valid(r["key"]), 3),
+             "doubt": round(b.doubt(r["key"]), 3),
+             "changes": r["churn"], "wrong_now": r["wrong_now"],
+             "superseded_next": r["superseded_next"], "weak": r["weak"],
+             "source": r["source"]}
+            for r in _snapshot(s)
         ],
         "doubted": [k for k, _ in b.doubts(0.3)],
     }

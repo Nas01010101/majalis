@@ -1,6 +1,7 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="观看 Agora 智能体社会处理相互矛盾的证据流，学习世界模型的风险仪表实时可见。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%224%22 y=%224%22 width=%2256%22 height=%2256%22 rx=%2214%22 fill=%22none%22 stroke=%22%232a78d6%22 stroke-width=%224.5%22/%3E%3Crect x=%2216%22 y=%2218%22 width=%2232%22 height=%226%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3Crect x=%2216%22 y=%2229%22 width=%2216%22 height=%226%22 rx=%223%22 fill=%22%23eda100%22/%3E%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23eda100%22/%3E%3Crect x=%2216%22 y=%2240%22 width=%2232%22 height=%226%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3C/svg%3E">
 <title>Agora — 社会实况（真实运行回放）</title><style>
 :root { --surface:#fcfcfb; --plane:#f6f6f2; --ink:#151412; --ink2:#52514e;
   --muted:#8a8780; --grid:#e3e1da; --border:rgba(21,20,18,.11);
@@ -76,16 +77,36 @@ section.panel { background:var(--surface); border:1px solid var(--border);
   margin-top:12px; max-height:180px; overflow-y:auto; }
 #term .t { color:#6f6e68; margin-right:8px; }
 footer { color:var(--muted); font-size:12px; margin-top:14px; }
+.modes { display:flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
+.modes button { border:0; border-radius:0; padding:5px 14px; }
+.modes button[aria-pressed=true] { background:var(--wm); color:#fff; font-weight:650; }
+#livebar { display:none; flex-direction:column; gap:8px; background:var(--surface);
+  border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:10px 0; }
+#livebar textarea { font:12.5px/1.6 var(--mono); color:var(--ink); background:var(--plane);
+  border:1px solid var(--border); border-radius:8px; padding:8px 10px; width:100%;
+  min-height:74px; resize:vertical; }
+#livebar .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+#livebar input[type=text], #livebar input[type=password] { font:inherit; color:var(--ink);
+  background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+#question { flex:1; min-width:240px; }
+#token { width:150px; font-family:var(--mono); font-size:12px; }
+#ingest-btn, #ask-btn { background:var(--wm); color:#fff; border-color:var(--wm); font-weight:650; }
+#ingest-btn:disabled, #ask-btn:disabled { opacity:.5; cursor:wait; }
+#livemsg { font-family:var(--mono); font-size:12px; color:var(--muted); }
 @media (prefers-reduced-motion: no-preference) {
   .belief, .act { transition:border-color .4s; } }
 </style></head><body>
 <a class="skip" href="#main">跳转到正文</a>
 <header>
 <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="var(--wm)" stroke-width="4.5"/><rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/><rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/><path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/><rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg><span class="word">agora</span><span class="view">/ 社会实况</span>
-<span class="status">回放 · 种子 0 · 8 步 · 16/16 正确 · $0.0911 总成本 · 录制于 2026-07-11</span>
+<div class="modes" role="group" aria-label="查看模式">
+<button id="mode-replay" type="button" aria-pressed="true">录制回放</button>
+<button id="mode-live" type="button" aria-pressed="false">实况 — 试一试</button>
+</div>
+<span class="status">种子 0 · 8 步 · 16/16 正确 · $0.0911 总成本 · 录制于 2026-07-11</span>
 <nav aria-label="Product links"><a href="/zh">基准结果</a><a href="/docs">API 演练场</a><a href="/live" hreflang="en" lang="en">English</a></nav>
 </header>
-<p style="color:var(--ink2);max-width:78ch;margin:2px 0 6px">一次真实录制的运行（并非模拟数据）：带日期的公告、过期回声与谣言依次到达；信念板的<strong>学习世界模型</strong>随之为每条信念实时重新打分；门控只在 P(wrong) 飙升处发起辩论。空格 = 播放/暂停，方向键 = 逐帧。</p>
+<p style="color:var(--ink2);max-width:78ch;margin:2px 0 6px">一次真实录制的运行（并非模拟数据）：带日期的公告、过期回声与谣言依次到达；信念板的<strong>学习世界模型</strong>随之为每条信念实时重新打分；门控只在 P(wrong) 飙升处发起辩论。空格 = 播放/暂停，方向键 = 逐帧。 也可以切换到<strong>实况</strong>模式，把你自己的证据喂给这个社会。</p>
 <div class="controls" role="group" aria-label="回放控制">
 <button id="play" type="button">▶ 播放</button>
 <label>速度 <select id="speed" aria-label="播放速度">
@@ -95,6 +116,18 @@ footer { color:var(--muted); font-size:12px; margin-top:14px; }
  aria-label="时间轴">
 <span class="readout" id="readout"></span>
 <span class="stats" id="stats"></span>
+</div>
+<div id="livebar" role="group" aria-label="实况会话控制">
+<label for="evidence" style="font:600 11px/1.5 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.09em">证据 — 每行一条、带日期；公告优先于谣言（示例保留英文，抽取器按英文模板解析）</label>
+<textarea id="evidence" spellcheck="false">[Jan 2026] Filing: Acme Robotics's CEO is Jane Doe.
+[Mar 2026] Rumor: acme robotics's ceo is John Roe.</textarea>
+<div class="row">
+<button id="ingest-btn" type="button">⇢ 喂给社会</button>
+<input id="question" type="text" value="Claim: &quot;Acme Robotics's CEO is currently John Roe.&quot; Policy: filings are authoritative; rumors are unreliable and never override a filing. True or false?" aria-label="问题或断言">
+<button id="ask-btn" type="button">▶ 提问</button>
+<input id="token" type="password" placeholder="令牌（可选）" aria-label="访问令牌" autocomplete="off">
+</div>
+<span id="livemsg">匿名访问共享每日小额预算 — 真实 Qwen 调用，每问约 $0.01</span>
 </div>
 <div id="live-status" class="sr" role="status" aria-live="polite"
  style="position:absolute;left:-9999px"></div>
@@ -192,10 +225,15 @@ function feedFor(e) {
   const gateCard = actCard('世界模型门控', 'var(--ink)', '0 次 LLM 调用', [chip,
     el('span', '', `  p(wrong)=${g.p_wrong} — ${g.reason}`)]);
   cards.splice(2, 0, gateCard); // after question+proposal
-  const res = el('span', e.correct ? 'okmark' : 'badmark',
-    `${e.correct ? '✓' : '✗'} 回答 “${e.answer}” (标准答案: ${e.gold}) · ${e.tokens} tokens · $${e.cost_usd}`);
-  cards.push(actCard('结果', e.correct ? 'var(--good)' : 'var(--crit)', null, [res]));
-  log(`${e.task_id}: ${g.fired ? 'DEBATE' : 'commit'} p=${g.p_wrong} → ${e.correct ? '✓' : '✗'} ($${e.cost_usd})`);
+  const graded = e.correct !== null && e.correct !== undefined; // live asks have no gold
+  const res = graded
+    ? el('span', e.correct ? 'okmark' : 'badmark',
+        `${e.correct ? '✓' : '✗'} 回答 “${e.answer}” (标准答案: ${e.gold}) · ${e.tokens} tokens · $${e.cost_usd}`)
+    : el('span', '', `回答 “${e.answer}” · ${e.tokens} tokens · $${e.cost_usd}`);
+  cards.push(actCard('结果',
+    graded ? (e.correct ? 'var(--good)' : 'var(--crit)') : 'var(--ink)', null, [res]));
+  log(`${e.task_id}: ${g.fired ? 'DEBATE' : 'commit'} p=${g.p_wrong}` +
+      (graded ? ` → ${e.correct ? '✓' : '✗'}` : '') + ` ($${e.cost_usd})`);
   return cards;
 }
 
@@ -236,11 +274,80 @@ $('speed').addEventListener('change', ev => { speed = +ev.target.value;
   if (playing) { stop(); $('play').click(); } });
 $('scrub').addEventListener('input', ev => { stop(); apply(+ev.target.value, true); });
 document.addEventListener('keydown', ev => {
-  if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT') return;
+  if (mode !== 'replay') return;
+  if (['INPUT', 'SELECT', 'TEXTAREA'].includes(ev.target.tagName)) return;
   if (ev.code === 'Space') { ev.preventDefault(); $('play').click(); }
   if (ev.key === 'ArrowRight') { stop(); apply(i + 1); }
   if (ev.key === 'ArrowLeft') { stop(); apply(i - 1, true); }
 });
+
+// ---- live mode: your own evidence through the real society ----
+const liveSid = 'live-' + Math.random().toString(36).slice(2, 10);
+let mode = 'replay', liveN = 0, liveCost = 0, liveQ = 0, liveFired = 0, busy = false;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+$('token').value = localStorage.getItem('agora-token') || '';
+$('token').addEventListener('change', ev => localStorage.setItem('agora-token', ev.target.value));
+
+function liveMsg(s) { $('livemsg').textContent = s; }
+function setBusy(b) { busy = b; $('ingest-btn').disabled = b; $('ask-btn').disabled = b; }
+
+function setMode(m) {
+  mode = m; stop();
+  $('mode-replay').setAttribute('aria-pressed', String(m === 'replay'));
+  $('mode-live').setAttribute('aria-pressed', String(m === 'live'));
+  document.querySelector('.controls').style.display = m === 'replay' ? 'flex' : 'none';
+  $('livebar').style.display = m === 'live' ? 'flex' : 'none';
+  feed.replaceChildren(); term.replaceChildren(); board.replaceChildren();
+  if (m === 'replay') { i = -1; apply(0, true); }
+  else { i = liveN;
+    liveMsg('你自己的证据、真实的社会、真实的学习门控 — 每次调用都消耗真实 token');
+    log('实况会话已开始 — 先喂证据，再提问'); }
+}
+
+async function liveCall(path, payload) {
+  setBusy(true); liveMsg('社会运转中 — 真实 Qwen 调用进行中…');
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    const tok = $('token').value.trim();
+    if (tok) headers['X-Agora-Token'] = tok;
+    const r = await fetch(path, { method: 'POST', headers, body: JSON.stringify(payload) });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
+    return data;
+  } finally { setBusy(false); }
+}
+
+function liveRender(e) {
+  liveN += 1; i = liveN; liveCost += e.cost_usd || 0;
+  if (e.type === 'question') { liveQ += 1; liveFired += e.gate.fired ? 1 : 0; }
+  const cards = feedFor(e);
+  const step = REDUCED ? 0 : 380;
+  cards.forEach((c, k) => setTimeout(() => {
+    feed.appendChild(c); feed.scrollTop = feed.scrollHeight; }, k * step));
+  setTimeout(() => {
+    const hot = new Set(e.type === 'evidence' ? e.asserts.map(a => a.key)
+      : (e.events || []).filter(t => t.key).map(t => t.key));
+    renderBoard(e.board, hot);
+    liveMsg(`${e.board.length} 条信念 · 已问 ${liveQ} · 辩论 ${liveFired} · 本会话已花 $${liveCost.toFixed(4)}`);
+  }, cards.length * step);
+}
+
+$('ingest-btn').addEventListener('click', async () => {
+  if (busy) return;
+  const lines = $('evidence').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!lines.length) return liveMsg('请至少粘贴一行证据');
+  try { liveRender((await liveCall('/ingest', { session_id: liveSid, lines })).event); }
+  catch (err) { liveMsg(String(err.message || err)); log(`ERROR ${err.message || err}`); }
+});
+$('ask-btn').addEventListener('click', async () => {
+  if (busy) return;
+  const q = $('question').value.trim();
+  if (!q) return liveMsg('请先输入断言或问题');
+  try { liveRender((await liveCall('/ask', { session_id: liveSid, question: q })).event); }
+  catch (err) { liveMsg(String(err.message || err)); log(`ERROR ${err.message || err}`); }
+});
+$('mode-replay').addEventListener('click', () => setMode('replay'));
+$('mode-live').addEventListener('click', () => setMode('live'));
 apply(0, true);
 </script>
 </body></html>

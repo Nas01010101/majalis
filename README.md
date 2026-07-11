@@ -21,7 +21,7 @@
 
   <p>
     <a href="http://47.237.187.157:8080/">Live dashboard</a> ·
-    <a href="http://47.237.187.157:8080/live">Society view</a> ·
+    <a href="http://47.237.187.157:8080/live">Society view — replay or live</a> ·
     <a href="http://47.237.187.157:8080/docs">API playground</a> ·
     <a href="docs/paper/agora.pdf">Paper (PDF)</a> ·
     <a href="docs/architecture.md">Architecture</a> ·
@@ -55,6 +55,7 @@ wm.wrong_now(board, "acme::ceo")   # ~1.0 — a rumor displaced a filing: debate
 - **Calibrated, not vibes.** The ACCEPT threshold is split-conformal on the learned score; the coverage claim is checked empirically in the offline benchmark (accepted-error 2.1% ≤ α=0.05 on 1,600 held-out questions).
 - **Provable without an API key.** `python scripts/offline_bench.py` replays 100 unseen evidence streams through the real gate in under a second: learned fires 12.4% / catches 86.2% of corrupted boards / 0.9% false-fire, vs 23.8% / 78.8% / 15.1% for the hand-set gate.
 - **Flat cost in stream length.** Perception amortizes into the board (O(board) per question, not O(stream)); the single-agent baseline's cost grows linearly, Agora's doesn't.
+- **Feed it your own evidence, live.** In the [society view](http://47.237.187.157:8080/live), switch to *live — try it*: paste dated evidence lines, watch the extractor build beliefs, the learned world model re-score them, and the gate spend debate only where P(wrong) spikes — through the real deployed society. Anonymous callers share a small daily budget (`AGORA_LIVE_DAILY_CAP`); `X-Agora-Token` bypasses it.
 
 | learned head | predicts | vs the hand-set baseline it replaced |
 |---|---|---|
