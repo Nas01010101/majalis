@@ -191,6 +191,13 @@ LIVE = [
      "`${e.board.length} 条信念 · 已问 ${liveQ} · 辩论 ${liveFired} · 本会话已花 $${liveCost.toFixed(4)}`"),
     ("`answer \u201c${e.answer}\u201d · ${e.tokens} tokens · $${e.cost_usd}`",
      "`回答 \u201c${e.answer}\u201d · ${e.tokens} tokens · $${e.cost_usd}`"),
+    ('aria-label="The society"', 'aria-label="智能体社会"'),
+    ('>EXTRACTOR<', '>抽取器<'),
+    ('>PROPOSER<', '>提议者<'),
+    ('>WM GATE<', '>WM 门控<'),
+    ('>SKEPTIC<', '>质疑者<'),
+    ('>JUDGE<', '>裁决者<'),
+    ('>0 LLM calls<', '>0 次 LLM 调用<'),
 ]
 
 

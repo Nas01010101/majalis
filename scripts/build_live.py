@@ -85,8 +85,20 @@ section.panel { background:var(--surface); border:1px solid var(--border);
 .chip.auth { background:color-mix(in srgb, var(--wm) 14%, var(--surface)); }
 .chip.weakish { background:color-mix(in srgb, var(--warn) 22%, var(--surface)); }
 .chip.deb { background:color-mix(in srgb, var(--judge) 16%, var(--surface)); }
+#society { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 2px; }
+.agent { display:flex; gap:7px; align-items:center; border:1px solid var(--border);
+  border-radius:10px; padding:4px 11px; background:var(--surface); opacity:.5;
+  transition:opacity .25s, border-color .25s, box-shadow .25s; }
+.agent .dot { width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+.agent .nm { font:700 10.5px/1.5 var(--mono); letter-spacing:.07em; }
+.agent .md { font-family:var(--mono); font-size:10.5px; color:var(--muted); }
+.agent.on { opacity:1; border-color:var(--c); box-shadow:0 0 0 1px var(--c); }
 #feed { display:flex; flex-direction:column; gap:8px; max-height:66vh; overflow-y:auto; }
 .act { border:1px solid var(--grid); border-radius:10px; padding:8px 11px; }
+.act.thread { border-left:3px solid color-mix(in srgb, var(--judge) 55%, var(--surface));
+  margin-left:16px; }
+.act.gatecard { border-color:color-mix(in srgb, var(--warn) 60%, var(--border)); }
+.act .body .ev { display:block; font-family:var(--mono); font-size:12px; color:var(--ink2); }
 .act .who { display:flex; gap:8px; align-items:baseline; margin-bottom:3px; }
 .role { font:700 10.5px/1.5 var(--mono); letter-spacing:.08em; }
 .model { font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:auto; }
@@ -116,8 +128,11 @@ footer { color:var(--muted); font-size:12px; margin-top:14px; }
 #ingest-btn, #ask-btn { background:var(--wm); color:#fff; border-color:var(--wm); font-weight:650; }
 #ingest-btn:disabled, #ask-btn:disabled { opacity:.5; cursor:wait; }
 #livemsg { font-family:var(--mono); font-size:12px; color:var(--muted); }
+@keyframes hotflash { from { background:color-mix(in srgb, var(--warn) 16%, var(--surface)); }
+  to { background:transparent; } }
 @media (prefers-reduced-motion: no-preference) {
-  .belief, .act { transition:border-color .4s; } }
+  .belief, .act { transition:border-color .4s; }
+  .belief.hot { animation:hotflash 1.2s ease-out; } }
 """
 
 JS_TEMPLATE = """
@@ -157,6 +172,16 @@ function renderBoard(snap, hotKeys) {
   }
 }
 
+const AGENT_IDS = { 'EVIDENCE ARRIVES': 'ag-extractor', 'EXTRACTOR': 'ag-extractor',
+  'PROPOSER': 'ag-proposer', 'PROPOSER (re-proposal)': 'ag-proposer',
+  'WORLD-MODEL GATE': 'ag-gate', 'SKEPTIC': 'ag-skeptic', 'JUDGE': 'ag-judge' };
+function pulse(role) {
+  const n = document.getElementById(AGENT_IDS[role] || '');
+  if (!n) return;
+  n.classList.add('on'); clearTimeout(n._t);
+  n._t = setTimeout(() => n.classList.remove('on'), 1400);
+}
+
 function actCard(role, color, model, bodyNodes) {
   const card = el('div', 'act');
   const who = el('div', 'who');
@@ -167,8 +192,10 @@ function actCard(role, color, model, bodyNodes) {
   const body = el('div', 'body');
   for (const n of bodyNodes) body.appendChild(n);
   card.appendChild(body);
+  pulse(role);
   return card;
 }
+const thread = c => (c.classList.add('thread'), c);
 
 function log(msg) { const d = el('div');
   d.appendChild(el('span', 't', `[e${String(i).padStart(2,'0')}]`));
@@ -178,7 +205,7 @@ function log(msg) { const d = el('div');
 function feedFor(e) {
   const cards = [];
   if (e.type === 'evidence') {
-    const lines = e.lines.map(l => { const d = el('div'); d.appendChild(el('em', '', l)); return d; });
+    const lines = e.lines.map(l => { const d = el('div'); d.appendChild(el('span', 'ev', l)); return d; });
     cards.push(actCard('EVIDENCE ARRIVES', 'var(--muted)', null, lines));
     const outcomes = e.asserts.map(a => `${a.key} = ${a.value} (${a.outcome})`).join(' · ');
     cards.push(actCard('EXTRACTOR', 'var(--extractor)', MODELS.fast,
@@ -190,19 +217,20 @@ function feedFor(e) {
   for (const t of e.events) {
     if (t.kind === 'proposal') cards.push(actCard('PROPOSER', 'var(--wm)', MODELS.strong,
       [el('span', '', `answers “${t.answer}” (confidence ${t.confidence}) from ${t.support.length} beliefs`)]));
-    if (t.kind === 'challenge') cards.push(actCard('SKEPTIC', 'var(--skeptic)', MODELS.mid,
-      [el('span', '', `attacks ${t.key}: `), el('em', '', t.attack)]));
-    if (t.kind === 'verdict') cards.push(actCard('JUDGE', 'var(--judge)', MODELS.strong,
+    if (t.kind === 'challenge') cards.push(thread(actCard('SKEPTIC', 'var(--skeptic)', MODELS.mid,
+      [el('span', '', `attacks ${t.key}: `), el('em', '', t.attack)])));
+    if (t.kind === 'verdict') cards.push(thread(actCard('JUDGE', 'var(--judge)', MODELS.strong,
       [el('span', '', t.upheld ? `upholds ${t.key}` :
-        `overturns ${t.key} → corrected to “${t.corrected}” (written back to the board)`)]));
-    if (t.kind === 'reproposal') cards.push(actCard('PROPOSER (re-proposal)', 'var(--wm)', MODELS.strong,
-      [el('span', '', `now answers “${t.answer}” from the corrected board`)]));
+        `overturns ${t.key} → corrected to “${t.corrected}” (written back to the board)`)])));
+    if (t.kind === 'reproposal') cards.push(thread(actCard('PROPOSER (re-proposal)', 'var(--wm)', MODELS.strong,
+      [el('span', '', `now answers “${t.answer}” from the corrected board`)])));
   }
   const g = e.gate;
   const chip = el('span', 'gatechip ' + (g.fired ? 'debate' : 'commit'),
     g.fired ? '▲ DEBATE' : '✓ COMMIT');
   const gateCard = actCard('WORLD-MODEL GATE', 'var(--ink)', '0 LLM calls', [chip,
     el('span', '', `  p(wrong)=${g.p_wrong} — ${g.reason}`)]);
+  gateCard.classList.add('gatecard');
   cards.splice(2, 0, gateCard); // after question+proposal
   const graded = e.correct !== null && e.correct !== undefined; // live asks have no gold
   const res = graded
@@ -379,6 +407,13 @@ feed; the belief board's <strong>learned world model</strong> re-scores every
 belief as they land; the gate spends debate only where P(wrong) spikes.
 Space = play/pause, arrows = step. Or switch to <strong>live</strong> and feed
 the society your own evidence.</p>
+<div id="society" aria-label="The society">
+<span class="agent" id="ag-extractor" style="--c:var(--extractor)"><i class="dot" style="background:var(--extractor)"></i><span class="nm">EXTRACTOR</span><span class="md">{MODEL_FAST}</span></span>
+<span class="agent" id="ag-proposer" style="--c:var(--wm)"><i class="dot" style="background:var(--wm)"></i><span class="nm">PROPOSER</span><span class="md">{MODEL_STRONG}</span></span>
+<span class="agent" id="ag-gate" style="--c:var(--warn)"><i class="dot" style="background:var(--warn)"></i><span class="nm">WM GATE</span><span class="md">0 LLM calls</span></span>
+<span class="agent" id="ag-skeptic" style="--c:var(--skeptic)"><i class="dot" style="background:var(--skeptic)"></i><span class="nm">SKEPTIC</span><span class="md">{MODEL_MID}</span></span>
+<span class="agent" id="ag-judge" style="--c:var(--judge)"><i class="dot" style="background:var(--judge)"></i><span class="nm">JUDGE</span><span class="md">{MODEL_STRONG}</span></span>
+</div>
 <div class="controls" role="group" aria-label="Replay controls">
 <button id="play" type="button">▶ play</button>
 <label>speed <select id="speed" aria-label="Playback speed">
