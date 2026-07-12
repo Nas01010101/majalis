@@ -85,8 +85,20 @@ section.panel { background:var(--surface); border:1px solid var(--border);
 .chip.auth { background:color-mix(in srgb, var(--wm) 14%, var(--surface)); }
 .chip.weakish { background:color-mix(in srgb, var(--warn) 22%, var(--surface)); }
 .chip.deb { background:color-mix(in srgb, var(--judge) 16%, var(--surface)); }
+#society { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 2px; }
+.agent { display:flex; gap:7px; align-items:center; border:1px solid var(--border);
+  border-radius:10px; padding:4px 11px; background:var(--surface); opacity:.5;
+  transition:opacity .25s, border-color .25s, box-shadow .25s; }
+.agent .dot { width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+.agent .nm { font:700 10.5px/1.5 var(--mono); letter-spacing:.07em; }
+.agent .md { font-family:var(--mono); font-size:10.5px; color:var(--muted); }
+.agent.on { opacity:1; border-color:var(--c); box-shadow:0 0 0 1px var(--c); }
 #feed { display:flex; flex-direction:column; gap:8px; max-height:66vh; overflow-y:auto; }
 .act { border:1px solid var(--grid); border-radius:10px; padding:8px 11px; }
+.act.thread { border-left:3px solid color-mix(in srgb, var(--judge) 55%, var(--surface));
+  margin-left:16px; }
+.act.gatecard { border-color:color-mix(in srgb, var(--warn) 60%, var(--border)); }
+.act .body .ev { display:block; font-family:var(--mono); font-size:12px; color:var(--ink2); }
 .act .who { display:flex; gap:8px; align-items:baseline; margin-bottom:3px; }
 .role { font:700 10.5px/1.5 var(--mono); letter-spacing:.08em; }
 .model { font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:auto; }
@@ -100,8 +112,27 @@ section.panel { background:var(--surface); border:1px solid var(--border);
   margin-top:12px; max-height:180px; overflow-y:auto; }
 #term .t { color:#6f6e68; margin-right:8px; }
 footer { color:var(--muted); font-size:12px; margin-top:14px; }
+.modes { display:flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
+.modes button { border:0; border-radius:0; padding:5px 14px; }
+.modes button[aria-pressed=true] { background:var(--wm); color:#fff; font-weight:650; }
+#livebar { display:none; flex-direction:column; gap:8px; background:var(--surface);
+  border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:10px 0; }
+#livebar textarea { font:12.5px/1.6 var(--mono); color:var(--ink); background:var(--plane);
+  border:1px solid var(--border); border-radius:8px; padding:8px 10px; width:100%;
+  min-height:74px; resize:vertical; }
+#livebar .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+#livebar input[type=text], #livebar input[type=password] { font:inherit; color:var(--ink);
+  background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+#question { flex:1; min-width:240px; }
+#token { width:150px; font-family:var(--mono); font-size:12px; }
+#ingest-btn, #ask-btn { background:var(--wm); color:#fff; border-color:var(--wm); font-weight:650; }
+#ingest-btn:disabled, #ask-btn:disabled { opacity:.5; cursor:wait; }
+#livemsg { font-family:var(--mono); font-size:12px; color:var(--muted); }
+@keyframes hotflash { from { background:color-mix(in srgb, var(--warn) 16%, var(--surface)); }
+  to { background:transparent; } }
 @media (prefers-reduced-motion: no-preference) {
-  .belief, .act { transition:border-color .4s; } }
+  .belief, .act { transition:border-color .4s; }
+  .belief.hot { animation:hotflash 1.2s ease-out; } }
 """
 
 JS_TEMPLATE = """
@@ -141,6 +172,16 @@ function renderBoard(snap, hotKeys) {
   }
 }
 
+const AGENT_IDS = { 'EVIDENCE ARRIVES': 'ag-extractor', 'EXTRACTOR': 'ag-extractor',
+  'PROPOSER': 'ag-proposer', 'PROPOSER (re-proposal)': 'ag-proposer',
+  'WORLD-MODEL GATE': 'ag-gate', 'SKEPTIC': 'ag-skeptic', 'JUDGE': 'ag-judge' };
+function pulse(role) {
+  const n = document.getElementById(AGENT_IDS[role] || '');
+  if (!n) return;
+  n.classList.add('on'); clearTimeout(n._t);
+  n._t = setTimeout(() => n.classList.remove('on'), 1400);
+}
+
 function actCard(role, color, model, bodyNodes) {
   const card = el('div', 'act');
   const who = el('div', 'who');
@@ -151,8 +192,10 @@ function actCard(role, color, model, bodyNodes) {
   const body = el('div', 'body');
   for (const n of bodyNodes) body.appendChild(n);
   card.appendChild(body);
+  pulse(role);
   return card;
 }
+const thread = c => (c.classList.add('thread'), c);
 
 function log(msg) { const d = el('div');
   d.appendChild(el('span', 't', `[e${String(i).padStart(2,'0')}]`));
@@ -162,7 +205,7 @@ function log(msg) { const d = el('div');
 function feedFor(e) {
   const cards = [];
   if (e.type === 'evidence') {
-    const lines = e.lines.map(l => { const d = el('div'); d.appendChild(el('em', '', l)); return d; });
+    const lines = e.lines.map(l => { const d = el('div'); d.appendChild(el('span', 'ev', l)); return d; });
     cards.push(actCard('EVIDENCE ARRIVES', 'var(--muted)', null, lines));
     const outcomes = e.asserts.map(a => `${a.key} = ${a.value} (${a.outcome})`).join(' · ');
     cards.push(actCard('EXTRACTOR', 'var(--extractor)', MODELS.fast,
@@ -174,24 +217,30 @@ function feedFor(e) {
   for (const t of e.events) {
     if (t.kind === 'proposal') cards.push(actCard('PROPOSER', 'var(--wm)', MODELS.strong,
       [el('span', '', `answers “${t.answer}” (confidence ${t.confidence}) from ${t.support.length} beliefs`)]));
-    if (t.kind === 'challenge') cards.push(actCard('SKEPTIC', 'var(--skeptic)', MODELS.mid,
-      [el('span', '', `attacks ${t.key}: `), el('em', '', t.attack)]));
-    if (t.kind === 'verdict') cards.push(actCard('JUDGE', 'var(--judge)', MODELS.strong,
+    if (t.kind === 'challenge') cards.push(thread(actCard('SKEPTIC', 'var(--skeptic)', MODELS.mid,
+      [el('span', '', `attacks ${t.key}: `), el('em', '', t.attack)])));
+    if (t.kind === 'verdict') cards.push(thread(actCard('JUDGE', 'var(--judge)', MODELS.strong,
       [el('span', '', t.upheld ? `upholds ${t.key}` :
-        `overturns ${t.key} → corrected to “${t.corrected}” (written back to the board)`)]));
-    if (t.kind === 'reproposal') cards.push(actCard('PROPOSER (re-proposal)', 'var(--wm)', MODELS.strong,
-      [el('span', '', `now answers “${t.answer}” from the corrected board`)]));
+        `overturns ${t.key} → corrected to “${t.corrected}” (written back to the board)`)])));
+    if (t.kind === 'reproposal') cards.push(thread(actCard('PROPOSER (re-proposal)', 'var(--wm)', MODELS.strong,
+      [el('span', '', `now answers “${t.answer}” from the corrected board`)])));
   }
   const g = e.gate;
   const chip = el('span', 'gatechip ' + (g.fired ? 'debate' : 'commit'),
     g.fired ? '▲ DEBATE' : '✓ COMMIT');
   const gateCard = actCard('WORLD-MODEL GATE', 'var(--ink)', '0 LLM calls', [chip,
     el('span', '', `  p(wrong)=${g.p_wrong} — ${g.reason}`)]);
+  gateCard.classList.add('gatecard');
   cards.splice(2, 0, gateCard); // after question+proposal
-  const res = el('span', e.correct ? 'okmark' : 'badmark',
-    `${e.correct ? '✓' : '✗'} answer “${e.answer}” (gold: ${e.gold}) · ${e.tokens} tokens · $${e.cost_usd}`);
-  cards.push(actCard('RESULT', e.correct ? 'var(--good)' : 'var(--crit)', null, [res]));
-  log(`${e.task_id}: ${g.fired ? 'DEBATE' : 'commit'} p=${g.p_wrong} → ${e.correct ? '✓' : '✗'} ($${e.cost_usd})`);
+  const graded = e.correct !== null && e.correct !== undefined; // live asks have no gold
+  const res = graded
+    ? el('span', e.correct ? 'okmark' : 'badmark',
+        `${e.correct ? '✓' : '✗'} answer “${e.answer}” (gold: ${e.gold}) · ${e.tokens} tokens · $${e.cost_usd}`)
+    : el('span', '', `answer “${e.answer}” · ${e.tokens} tokens · $${e.cost_usd}`);
+  cards.push(actCard('RESULT',
+    graded ? (e.correct ? 'var(--good)' : 'var(--crit)') : 'var(--ink)', null, [res]));
+  log(`${e.task_id}: ${g.fired ? 'DEBATE' : 'commit'} p=${g.p_wrong}` +
+      (graded ? ` → ${e.correct ? '✓' : '✗'}` : '') + ` ($${e.cost_usd})`);
   return cards;
 }
 
@@ -232,11 +281,80 @@ $('speed').addEventListener('change', ev => { speed = +ev.target.value;
   if (playing) { stop(); $('play').click(); } });
 $('scrub').addEventListener('input', ev => { stop(); apply(+ev.target.value, true); });
 document.addEventListener('keydown', ev => {
-  if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'SELECT') return;
+  if (mode !== 'replay') return;
+  if (['INPUT', 'SELECT', 'TEXTAREA'].includes(ev.target.tagName)) return;
   if (ev.code === 'Space') { ev.preventDefault(); $('play').click(); }
   if (ev.key === 'ArrowRight') { stop(); apply(i + 1); }
   if (ev.key === 'ArrowLeft') { stop(); apply(i - 1, true); }
 });
+
+// ---- live mode: your own evidence through the real society ----
+const liveSid = 'live-' + Math.random().toString(36).slice(2, 10);
+let mode = 'replay', liveN = 0, liveCost = 0, liveQ = 0, liveFired = 0, busy = false;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+$('token').value = localStorage.getItem('agora-token') || '';
+$('token').addEventListener('change', ev => localStorage.setItem('agora-token', ev.target.value));
+
+function liveMsg(s) { $('livemsg').textContent = s; }
+function setBusy(b) { busy = b; $('ingest-btn').disabled = b; $('ask-btn').disabled = b; }
+
+function setMode(m) {
+  mode = m; stop();
+  $('mode-replay').setAttribute('aria-pressed', String(m === 'replay'));
+  $('mode-live').setAttribute('aria-pressed', String(m === 'live'));
+  document.querySelector('.controls').style.display = m === 'replay' ? 'flex' : 'none';
+  $('livebar').style.display = m === 'live' ? 'flex' : 'none';
+  feed.replaceChildren(); term.replaceChildren(); board.replaceChildren();
+  if (m === 'replay') { i = -1; apply(0, true); }
+  else { i = liveN;
+    liveMsg('your own evidence, the real society, the real learned gate — every call spends real tokens');
+    log('live session started — feed evidence, then ask'); }
+}
+
+async function liveCall(path, payload) {
+  setBusy(true); liveMsg('society working — real Qwen calls in flight…');
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    const tok = $('token').value.trim();
+    if (tok) headers['X-Agora-Token'] = tok;
+    const r = await fetch(path, { method: 'POST', headers, body: JSON.stringify(payload) });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
+    return data;
+  } finally { setBusy(false); }
+}
+
+function liveRender(e) {
+  liveN += 1; i = liveN; liveCost += e.cost_usd || 0;
+  if (e.type === 'question') { liveQ += 1; liveFired += e.gate.fired ? 1 : 0; }
+  const cards = feedFor(e);
+  const step = REDUCED ? 0 : 380;
+  cards.forEach((c, k) => setTimeout(() => {
+    feed.appendChild(c); feed.scrollTop = feed.scrollHeight; }, k * step));
+  setTimeout(() => {
+    const hot = new Set(e.type === 'evidence' ? e.asserts.map(a => a.key)
+      : (e.events || []).filter(t => t.key).map(t => t.key));
+    renderBoard(e.board, hot);
+    liveMsg(`${e.board.length} beliefs · ${liveQ} asked · ${liveFired} debates · $${liveCost.toFixed(4)} this session`);
+  }, cards.length * step);
+}
+
+$('ingest-btn').addEventListener('click', async () => {
+  if (busy) return;
+  const lines = $('evidence').value.split('\\n').map(s => s.trim()).filter(Boolean);
+  if (!lines.length) return liveMsg('paste at least one evidence line');
+  try { liveRender((await liveCall('/ingest', { session_id: liveSid, lines })).event); }
+  catch (err) { liveMsg(String(err.message || err)); log(`ERROR ${err.message || err}`); }
+});
+$('ask-btn').addEventListener('click', async () => {
+  if (busy) return;
+  const q = $('question').value.trim();
+  if (!q) return liveMsg('type a claim or question first');
+  try { liveRender((await liveCall('/ask', { session_id: liveSid, question: q })).event); }
+  catch (err) { liveMsg(String(err.message || err)); log(`ERROR ${err.message || err}`); }
+});
+$('mode-replay').addEventListener('click', () => setMode('replay'));
+$('mode-live').addEventListener('click', () => setMode('live'));
 apply(0, true);
 """
 
@@ -258,22 +376,44 @@ def main() -> None:
             '<rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/>'
             '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/>'
             '<rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg>')
+    favicon = ('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 '
+               'viewBox=%220 0 64 64%22%3E%3Crect x=%224%22 y=%224%22 width=%2256%22 '
+               'height=%2256%22 rx=%2214%22 fill=%22none%22 stroke=%22%232a78d6%22 '
+               'stroke-width=%224.5%22/%3E%3Crect x=%2216%22 y=%2218%22 width=%2232%22 '
+               'height=%226%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3Crect x=%2216%22 '
+               'y=%2229%22 width=%2216%22 height=%226%22 rx=%223%22 fill=%22%23eda100%22/%3E'
+               '%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23eda100%22/%3E%3Crect '
+               'x=%2216%22 y=%2240%22 width=%2232%22 height=%226%22 rx=%223%22 '
+               'fill=%22%232a78d6%22/%3E%3C/svg%3E')
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Watch Agora's agent society process a contradictory evidence stream, with the learned world model's risk meters live.">
+<link rel="icon" href="{favicon}">
 <title>Agora — society view (live replay)</title><style>{CSS}</style></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header>
 {mark}<span class="word">agora</span><span class="view">/ society view</span>
-<span class="status">REPLAY · seed {replay['seed']} · {replay['steps']} steps ·
+<div class="modes" role="group" aria-label="Viewer mode">
+<button id="mode-replay" type="button" aria-pressed="true">recorded run</button>
+<button id="mode-live" type="button" aria-pressed="false">live — try it</button>
+</div>
+<span class="status">seed {replay['seed']} · {replay['steps']} steps ·
 {s['correct']}/{s['questions']} correct · ${s['total_cost_usd']} total · recorded {date.today().isoformat()}</span>
-<nav aria-label="Product links"><a href="/">Benchmarks</a><a href="/docs">API playground</a></nav>
+<nav aria-label="Product links"><a href="/">Benchmarks</a><a href="/docs">API playground</a><a href="/zh/live" hreflang="zh-CN" lang="zh-CN">中文</a></nav>
 </header>
 <p style="color:var(--ink2);max-width:78ch;margin:2px 0 6px">A real recorded run
 (not a mock): dated filings, stale echoes and rumors arrive on the left of the
 feed; the belief board's <strong>learned world model</strong> re-scores every
 belief as they land; the gate spends debate only where P(wrong) spikes.
-Space = play/pause, arrows = step.</p>
+Space = play/pause, arrows = step. Or switch to <strong>live</strong> and feed
+the society your own evidence.</p>
+<div id="society" aria-label="The society">
+<span class="agent" id="ag-extractor" style="--c:var(--extractor)"><i class="dot" style="background:var(--extractor)"></i><span class="nm">EXTRACTOR</span><span class="md">{MODEL_FAST}</span></span>
+<span class="agent" id="ag-proposer" style="--c:var(--wm)"><i class="dot" style="background:var(--wm)"></i><span class="nm">PROPOSER</span><span class="md">{MODEL_STRONG}</span></span>
+<span class="agent" id="ag-gate" style="--c:var(--warn)"><i class="dot" style="background:var(--warn)"></i><span class="nm">WM GATE</span><span class="md">0 LLM calls</span></span>
+<span class="agent" id="ag-skeptic" style="--c:var(--skeptic)"><i class="dot" style="background:var(--skeptic)"></i><span class="nm">SKEPTIC</span><span class="md">{MODEL_MID}</span></span>
+<span class="agent" id="ag-judge" style="--c:var(--judge)"><i class="dot" style="background:var(--judge)"></i><span class="nm">JUDGE</span><span class="md">{MODEL_STRONG}</span></span>
+</div>
 <div class="controls" role="group" aria-label="Replay controls">
 <button id="play" type="button">▶ play</button>
 <label>speed <select id="speed" aria-label="Playback speed">
@@ -283,6 +423,18 @@ Space = play/pause, arrows = step.</p>
  aria-label="Timeline scrubber">
 <span class="readout" id="readout"></span>
 <span class="stats" id="stats"></span>
+</div>
+<div id="livebar" role="group" aria-label="Live session controls">
+<label for="evidence" style="font:600 11px/1.5 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.09em">Evidence — one dated line each, filings beat rumors</label>
+<textarea id="evidence" spellcheck="false">[Jan 2026] Filing: Acme Robotics's CEO is Jane Doe.
+[Mar 2026] Rumor: acme robotics's ceo is John Roe.</textarea>
+<div class="row">
+<button id="ingest-btn" type="button">⇢ feed the society</button>
+<input id="question" type="text" value="Claim: &quot;Acme Robotics's CEO is currently John Roe.&quot; Policy: filings are authoritative; rumors are unreliable and never override a filing. True or false?" aria-label="Question or claim">
+<button id="ask-btn" type="button">▶ ask</button>
+<input id="token" type="password" placeholder="token (optional)" aria-label="Access token" autocomplete="off">
+</div>
+<span id="livemsg">anonymous callers share a small daily budget — real Qwen calls, ~$0.01 per question</span>
 </div>
 <div id="live-status" class="sr" role="status" aria-live="polite"
  style="position:absolute;left:-9999px"></div>
