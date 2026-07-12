@@ -17,6 +17,9 @@ _BACKOFF_S = 2.0
 
 # USD per 1M tokens (input, output) — Qwen Cloud base rates, <=256K tier
 # (docs.qwencloud.com/developer-guides/getting-started/pricing, 2026-07).
+# Re-verified 2026-07-12 against the Model Studio international (Singapore)
+# price list and the real July bill: within 10% of list, conservative vs
+# current promo discounts.
 PRICES = {
     "qwen3.7-max": (2.50, 7.50),
     "qwen3.7-plus": (0.40, 1.60),
