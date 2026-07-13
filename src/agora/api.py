@@ -37,6 +37,10 @@ def _spend_guard(token: str | None) -> None:
     today = datetime.now(timezone.utc).date().isoformat()
     if _spent["day"] != today:
         _spent.update(day=today, calls=0)
+    if cap <= 0:
+        raise HTTPException(429, detail=(
+            "the shared live demo is paused — watch the recorded run, "
+            "or send X-Agora-Token to run live"))
     if _spent["calls"] >= cap:
         raise HTTPException(429, detail=(
             f"today's shared live-demo budget ({cap} calls) is spent — "
