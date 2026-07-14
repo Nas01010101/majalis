@@ -25,8 +25,9 @@ from dashboard_panels import auroc_bars, reliability_panel, scaling_chart  # noq
 RESULTS, DATA = ROOT / "results", ROOT / "data"
 OUT = ROOT / "dashboard" / "index.html"
 # Astryx neutral design tokens (vendored, see scripts/extract_astryx_tokens.py)
-# + Figtree inlined so the page stays one self-contained file.
-TOKENS = (ROOT / "web" / "astryx-tokens.css").read_text()
+# + the Agora skin overrides + Figtree, inlined: one self-contained file.
+TOKENS = ((ROOT / "web" / "astryx-tokens.css").read_text()
+          + (ROOT / "web" / "agora-skin.css").read_text())
 FONT = (ROOT / "web" / "figtree.css").read_text()
 
 # Categorical slots in fixed order (validated); color follows the entity.

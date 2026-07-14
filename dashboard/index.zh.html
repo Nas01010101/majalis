@@ -155,6 +155,36 @@
   --shadow-inset-warning: inset 0px 0px 0px 2px #ffce2f4D;
   --shadow-inset-error: inset 0px 0px 0px 2px #e33f4a4D;
 }
+/* Agora skin — a thin override layer on the Astryx neutral tokens.
+ * Direction: "mission control for a society of minds". Near-black canvas,
+ * 3-step surface ladder, 7%-alpha hairlines, one semantic accent (gate
+ * amber = the society spending money), mono reserved for data. */
+:root {
+  /* surface ladder */
+  --color-background-body: light-dark(#f2f2f0, #101012);
+  --color-background-surface: light-dark(#fbfbfa, #17171a);
+  --color-background-card: light-dark(#fbfbfa, #17171a);
+  --color-background-popover: light-dark(#ffffff, #1d1d21);
+  --color-background-muted: light-dark(#e9e9e6, #1d1d21);
+  /* hairlines, not borders */
+  --color-border: light-dark(rgba(20,20,18,.10), rgba(255,255,255,.07));
+  --color-border-emphasized: light-dark(rgba(20,20,18,.22), rgba(255,255,255,.16));
+  /* ink */
+  --color-text-primary: light-dark(#1a1a18, #ededf0);
+  --color-text-secondary: light-dark(#6d6d68, #9b9ba3);
+  --color-text-disabled: light-dark(#a6a6a0, #5b5b62);
+  --color-accent: light-dark(#232320, #ededf0);
+  /* the one accent: gate amber (spend / attention) */
+  --gate: light-dark(#9a6700, #e8a33d);
+  --gate-rail: light-dark(#d99a23, #e8a33d);
+  --gate-bg: light-dark(rgba(217,154,35,.13), rgba(232,163,61,.12));
+  /* quiet status */
+  --color-success: light-dark(#20713a, #3fb56b);
+  --color-error: light-dark(#a53434, #e05d5d);
+  --color-success-muted: light-dark(rgba(32,113,58,.12), rgba(63,181,107,.14));
+  --color-warning-muted: var(--gate-bg);
+  --color-warning: var(--gate);
+}
 /* Figtree (SIL OFL 1.1, github.com/erikdkennedy/figtree) — variable weight,
  * latin subset, inlined so the dashboard stays a single self-contained file. */
 @font-face { font-family:'Figtree'; font-style:normal; font-weight:300 900;
@@ -260,8 +290,7 @@ footer li { margin:3px 0; }
 <a class="skip" href="#main">跳转到正文</a>
 <header>
 <div class="brand"><svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="currentColor" stroke-width="4.5"/><rect x="16" y="18" width="32" height="6" rx="3" fill="currentColor"/><rect x="16" y="29" width="16" height="6" rx="3" fill="currentColor" opacity=".45"/><path d="M42 26 l6 6 -6 6 -6 -6 z" fill="currentColor" opacity=".45"/><rect x="16" y="40" width="32" height="6" rx="3" fill="currentColor"/></svg><span class="word">agora</span></div>
-<p class="eyebrow" style="margin-top:18px">Qwen Cloud · Track 3 — agent
-society · learned world model</p>
+<p class="eyebrow" style="margin-top:18px"><b>Qwen Cloud · 赛道 3</b> — 智能体社会 · 学习世界模型</p>
 <h1>你的智能体辩论太多了。世界模型来决定何时值得辩论。</h1>
 <p class="sub">一群 Qwen 智能体共享一块信念板；两个<strong>在社会自身运行日志上训练的</strong>预测头 (<code>wrong_now</code>,
 <code>superseded_next</code>）加上共形阈值，只在信念板可能被污染的地方触发辩论——<strong>每次门控决策零 LLM 调用</strong>。</p>
@@ -291,7 +320,7 @@ society · learned world model</p>
 <div class='legend'><span><span class='key' style='background:var(--wm)'></span>学习（在运行日志上训练）</span><span><span class='key' style='background:var(--base)'></span>手工基线</span></div>
 <figure class="chart"><svg viewBox="0 0 680 300" role="img" aria-label="AUROC, learned heads vs 手工基线s"><line x1="52" y1="248.0" x2="628" y2="248.0" class="grid"/><text x="44" y="248.0" text-anchor="end" dy="4" class="tick">0.0</text><line x1="52" y1="150.0" x2="628" y2="150.0" class="grid"/><text x="44" y="150.0" text-anchor="end" dy="4" class="tick">0.5</text><line x1="52" y1="52.0" x2="628" y2="52.0" class="grid"/><text x="44" y="52.0" text-anchor="end" dy="4" class="tick">1.0</text><line x1="52" y1="150.0" x2="628" y2="150.0" class="ref"/><text x="632" y="150.0" dy="4" class="tick">随机</text><line x1="52" y1="248.0" x2="628" y2="248.0" class="axis"/><path d="M125.0,248.0 V56.2 Q125.0,52.2 129.0,52.2 H143.0 Q147.0,52.2 147.0,56.2 V248.0 Z" fill="var(--wm)" class="bar" data-tip="wrong_now (board value incorrect) — learned: AUROC 0.999 (11.7k 条留出样本)" tabindex="0"/><text x="136.0" y="46.2" text-anchor="middle" class="cap">0.999</text><path d="M149.0,248.0 V96.8 Q149.0,92.8 153.0,92.8 H167.0 Q171.0,92.8 171.0,96.8 V248.0 Z" fill="var(--base)" class="bar" data-tip="wrong_now (board value incorrect) — hand-set doubt blend: AUROC 0.792 (11.7k 条留出样本)" tabindex="0"/><path d="M317.0,248.0 V123.2 Q317.0,119.2 321.0,119.2 H335.0 Q339.0,119.2 339.0,123.2 V248.0 Z" fill="var(--wm)" class="bar" data-tip="superseded_next (fact overturned) — learned: AUROC 0.657 (11.7k 条留出样本)" tabindex="0"/><text x="328.0" y="113.2" text-anchor="middle" class="cap">0.657</text><path d="M341.0,248.0 V154.7 Q341.0,150.7 345.0,150.7 H359.0 Q363.0,150.7 363.0,154.7 V248.0 Z" fill="var(--base)" class="bar" data-tip="superseded_next (fact overturned) — fixed Lomax prior: AUROC 0.496 (11.7k 条留出样本)" tabindex="0"/><path d="M509.0,248.0 V56.7 Q509.0,52.7 513.0,52.7 H527.0 Q531.0,52.7 531.0,56.7 V248.0 Z" fill="var(--wm)" class="bar" data-tip="commit_risk (gate score) — learned: AUROC 0.996 (1600 held-out questions)" tabindex="0"/><text x="520.0" y="46.7" text-anchor="middle" class="cap">0.996</text><path d="M533.0,248.0 V71.5 Q533.0,67.5 537.0,67.5 H551.0 Q555.0,67.5 555.0,71.5 V248.0 Z" fill="var(--base)" class="bar" data-tip="commit_risk (gate score) — hand-set risk blend: AUROC 0.921 (1600 held-out questions)" tabindex="0"/><text x="148.0" y="266" text-anchor="middle" class="tick">wrong_now (board value incorrect)</text><text x="340.0" y="266" text-anchor="middle" class="tick">superseded_next (fact overturned)</text><text x="532.0" y="266" text-anchor="middle" class="tick">commit_risk (gate score)</text></svg></figure>
 <details><summary>表格视图 — 精确 AUROC 数值</summary><div class='wrap'><table><tr><th>预测目标</th><th>学习</th><th>基线</th><th>基线模型</th><th>数据</th></tr><tr><td>wrong_now (board value incorrect)</td><td>0.999</td><td>0.792</td><td>hand-set doubt blend</td><td>11.7k held-out rows</td></tr><tr><td>superseded_next (fact overturned)</td><td>0.657</td><td>0.496</td><td>fixed Lomax prior</td><td>11.7k held-out rows</td></tr><tr><td>commit_risk (gate score)</td><td>0.996</td><td>0.921</td><td>hand-set risk blend</td><td>1600 held-out questions</td></tr></table></div></details>
-<p class="sub">门控决策质量（100 条未见过的流、1600 个问题）— 学习门控：触发 12.4%, 捕获 86.2% of corrupted boards, 0.9%
+<p class="sub">门控决策质量（100 条未见过的流、1600 个问题）— 学习门控：触发 12.4%, 捕获 86.2% 的被污染信念板， 0.9%
 误触发，接受后错误率 2.1% ≤ α=0.05.
 手工门控：触发 23.8% （2 倍辩论量），捕获
 78.8% ，误触发 15.1%

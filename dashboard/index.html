@@ -155,6 +155,36 @@
   --shadow-inset-warning: inset 0px 0px 0px 2px #ffce2f4D;
   --shadow-inset-error: inset 0px 0px 0px 2px #e33f4a4D;
 }
+/* Agora skin — a thin override layer on the Astryx neutral tokens.
+ * Direction: "mission control for a society of minds". Near-black canvas,
+ * 3-step surface ladder, 7%-alpha hairlines, one semantic accent (gate
+ * amber = the society spending money), mono reserved for data. */
+:root {
+  /* surface ladder */
+  --color-background-body: light-dark(#f2f2f0, #101012);
+  --color-background-surface: light-dark(#fbfbfa, #17171a);
+  --color-background-card: light-dark(#fbfbfa, #17171a);
+  --color-background-popover: light-dark(#ffffff, #1d1d21);
+  --color-background-muted: light-dark(#e9e9e6, #1d1d21);
+  /* hairlines, not borders */
+  --color-border: light-dark(rgba(20,20,18,.10), rgba(255,255,255,.07));
+  --color-border-emphasized: light-dark(rgba(20,20,18,.22), rgba(255,255,255,.16));
+  /* ink */
+  --color-text-primary: light-dark(#1a1a18, #ededf0);
+  --color-text-secondary: light-dark(#6d6d68, #9b9ba3);
+  --color-text-disabled: light-dark(#a6a6a0, #5b5b62);
+  --color-accent: light-dark(#232320, #ededf0);
+  /* the one accent: gate amber (spend / attention) */
+  --gate: light-dark(#9a6700, #e8a33d);
+  --gate-rail: light-dark(#d99a23, #e8a33d);
+  --gate-bg: light-dark(rgba(217,154,35,.13), rgba(232,163,61,.12));
+  /* quiet status */
+  --color-success: light-dark(#20713a, #3fb56b);
+  --color-error: light-dark(#a53434, #e05d5d);
+  --color-success-muted: light-dark(rgba(32,113,58,.12), rgba(63,181,107,.14));
+  --color-warning-muted: var(--gate-bg);
+  --color-warning: var(--gate);
+}
 /* Figtree (SIL OFL 1.1, github.com/erikdkennedy/figtree) — variable weight,
  * latin subset, inlined so the dashboard stays a single self-contained file. */
 @font-face { font-family:'Figtree'; font-style:normal; font-weight:300 900;
