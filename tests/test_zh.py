@@ -18,7 +18,7 @@ def test_translate_zh_generates_pages():
     assert 'lang="zh-CN"' in zh_index and 'lang="zh-CN"' in zh_live
     for needle in ("世界模型", "每问成本", "信念板", "诚实性说明"):
         assert needle in zh_index, needle
-    for needle in ("社会实况", "质疑者", "裁决者", "▲ 辩论"):
+    for needle in ("社会实况", "质疑者", "裁决者", "'辩论'"):
         assert needle in zh_live, needle
     # Code identifiers survive untranslated (the chart keys series by them).
     assert "agora-wm" in zh_index and "wrong_now" in zh_index

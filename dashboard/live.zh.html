@@ -1,127 +1,373 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="观看 Agora 智能体社会处理相互矛盾的证据流，学习世界模型的风险仪表实时可见。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%224%22 y=%224%22 width=%2256%22 height=%2256%22 rx=%2214%22 fill=%22none%22 stroke=%22%232a78d6%22 stroke-width=%224.5%22/%3E%3Crect x=%2216%22 y=%2218%22 width=%2232%22 height=%226%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3Crect x=%2216%22 y=%2229%22 width=%2216%22 height=%226%22 rx=%223%22 fill=%22%23eda100%22/%3E%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23eda100%22/%3E%3Crect x=%2216%22 y=%2240%22 width=%2232%22 height=%226%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3C/svg%3E">
-<title>Agora — 社会实况（真实运行回放）</title><style>
-:root { --surface:#fcfcfb; --plane:#f6f6f2; --ink:#151412; --ink2:#52514e;
-  --muted:#8a8780; --grid:#e3e1da; --border:rgba(21,20,18,.11);
-  --wm:#2a78d6; --extractor:#1baf7a; --skeptic:#e34948; --judge:#4a3aa7;
-  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --term:#111311; --termink:#cfcec5;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-@media (prefers-color-scheme: dark) {
-  :root { --surface:#191b1a; --plane:#0f1110; --ink:#f4f4f1; --ink2:#c3c2b7;
-    --grid:#2b2d2b; --border:rgba(244,244,241,.11);
-    --wm:#3987e5; --extractor:#199e70; --skeptic:#e66767; --judge:#9085e9;
-    --term:#0a0c0a; --termink:#c3c2b7; } }
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%224%22 y=%224%22 width=%2256%22 height=%2256%22 rx=%2214%22 fill=%22none%22 stroke=%22%23171717%22 stroke-width=%224.5%22/%3E%3Crect x=%2216%22 y=%2218%22 width=%2232%22 height=%226%22 rx=%223%22 fill=%22%23171717%22/%3E%3Crect x=%2216%22 y=%2229%22 width=%2216%22 height=%226%22 rx=%223%22 fill=%22%23737373%22/%3E%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23737373%22/%3E%3Crect x=%2216%22 y=%2240%22 width=%2232%22 height=%226%22 rx=%223%22 fill=%22%23171717%22/%3E%3C/svg%3E">
+<title>Agora — 社会实况（真实运行回放）</title>
+<style>/* Astryx neutral theme tokens — extracted from @astryxdesign/theme-neutral (astryxdesign-theme-neutral-0.1.5)
+ * (facebook/astryx, MIT). Flattened @scope -> :root for the static dashboard.
+ * Regenerate: python scripts/extract_astryx_tokens.py */
+:root { color-scheme: light dark;
+  --font-size-4xs: 0.375rem;
+  --font-size-3xs: 0.4375rem;
+  --font-size-2xs: 0.5rem;
+  --font-size-xs: 0.625rem;
+  --font-size-sm: 0.75rem;
+  --font-size-base: 0.875rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.8125rem;
+  --font-size-4xl: 2.1875rem;
+  --font-size-5xl: 2.625rem;
+  --text-heading-1-size: var(--font-size-2xl);
+  --text-heading-1-weight: var(--font-weight-semibold);
+  --text-heading-1-leading: 1.3333;
+  --text-heading-2-size: var(--font-size-xl);
+  --text-heading-2-weight: var(--font-weight-semibold);
+  --text-heading-2-leading: 1.4;
+  --text-heading-3-size: var(--font-size-lg);
+  --text-heading-3-weight: var(--font-weight-bold);
+  --text-heading-3-leading: 1.4118;
+  --text-heading-4-size: var(--font-size-base);
+  --text-heading-4-weight: var(--font-weight-bold);
+  --text-heading-4-leading: 1.4286;
+  --text-heading-5-size: var(--font-size-sm);
+  --text-heading-5-weight: var(--font-weight-semibold);
+  --text-heading-5-leading: 1.6667;
+  --text-heading-6-size: var(--font-size-xs);
+  --text-heading-6-weight: var(--font-weight-semibold);
+  --text-heading-6-leading: 1.6;
+  --text-body-size: var(--font-size-base);
+  --text-body-weight: var(--font-weight-normal);
+  --text-body-leading: 1.4286;
+  --text-large-size: var(--font-size-lg);
+  --text-large-weight: var(--font-weight-semibold);
+  --text-large-leading: 1.4118;
+  --text-label-size: var(--font-size-base);
+  --text-label-weight: var(--font-weight-medium);
+  --text-label-leading: 1.4286;
+  --text-code-size: var(--font-size-base);
+  --text-code-weight: var(--font-weight-normal);
+  --text-code-leading: 1.4286;
+  --text-supporting-size: var(--font-size-sm);
+  --text-supporting-weight: var(--font-weight-normal);
+  --text-supporting-leading: 1.6667;
+  --text-display-1-size: var(--font-size-5xl);
+  --text-display-1-weight: var(--font-weight-normal);
+  --text-display-1-leading: 1.2381;
+  --text-display-2-size: var(--font-size-4xl);
+  --text-display-2-weight: var(--font-weight-normal);
+  --text-display-2-leading: 1.2571;
+  --text-display-3-size: var(--font-size-3xl);
+  --text-display-3-weight: var(--font-weight-normal);
+  --text-display-3-leading: 1.3793;
+  --font-family-body: Figtree, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-heading: Figtree, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-code: ui-monospace, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-background-surface: light-dark(#ffffff, #262626);
+  --color-background-body: light-dark(#f1f1f1, #1b1b1b);
+  --color-background-card: light-dark(#ffffff, #1b1b1b);
+  --color-background-popover: light-dark(#ffffff, #1b1b1b);
+  --color-background-muted: light-dark(#f1f1f1, #1b1b1b);
+  --color-accent: light-dark(#262626, #ebebeb);
+  --color-accent-muted: light-dark(#f1f1f1, #262626);
+  --color-neutral: light-dark(#0000000F, #FFFFFF1A);
+  --color-overlay: light-dark(#00000080, #000000CC);
+  --color-overlay-hover: light-dark(#0000000D, #FFFFFF0D);
+  --color-overlay-pressed: light-dark(#0000001A, #FFFFFF1A);
+  --color-text-primary: light-dark(#171717, #fafafa);
+  --color-text-secondary: light-dark(#737373, #a3a3a3);
+  --color-text-disabled: light-dark(#a3a3a3, #525252);
+  --color-text-accent: light-dark(#262626, #ebebeb);
+  --color-on-dark: #ffffff;
+  --color-on-light: #171717;
+  --color-on-accent: light-dark(#ffffff, #171717);
+  --color-on-success: light-dark(#ffffff, #171717);
+  --color-on-error: light-dark(#ffffff, #171717);
+  --color-on-warning: #171717;
+  --color-icon-accent: light-dark(#262626, #ebebeb);
+  --color-icon-primary: light-dark(#171717, #fafafa);
+  --color-icon-secondary: light-dark(#737373, #a3a3a3);
+  --color-icon-disabled: light-dark(#a3a3a3, #525252);
+  --color-success: light-dark(#007004, #9fe59b);
+  --color-error: light-dark(#a50c25, #ffc6c1);
+  --color-warning: light-dark(#745b00, #fdcf4f);
+  --color-success-muted: light-dark(#c5e5c0, #84c9803D);
+  --color-error-muted: light-dark(#facecb, #ff9e973D);
+  --color-warning-muted: light-dark(#f8da9d, #deb4333D);
+  --color-border: light-dark(#ebebeb, #FFFFFF1A);
+  --color-border-emphasized: light-dark(#d4d4d4, #525252);
+  --color-skeleton: light-dark(#ebebeb, #525252);
+  --color-shadow: light-dark(#0000001A, #0000004D);
+  --color-tint-hover: light-dark(black, white);
+  --color-background-red: light-dark(#facecb, #ff9e973D);
+  --color-border-red: light-dark(#e6bab8, #ff6f6c);
+  --color-icon-red: light-dark(#89001a, #ff9e97);
+  --color-text-red: light-dark(#89001a, #ffc6c1);
+  --color-background-orange: light-dark(#fad0b5, #ffa2583D);
+  --color-border-orange: light-dark(#e6bda2, #e2883e);
+  --color-icon-orange: light-dark(#6e3500, #ffa258);
+  --color-text-orange: light-dark(#6e3500, #ffc9a2);
+  --color-background-yellow: light-dark(#f8da9d, #deb4333D);
+  --color-border-yellow: light-dark(#e4c279, #c0990e);
+  --color-icon-yellow: light-dark(#584400, #deb433);
+  --color-text-yellow: light-dark(#584400, #fdcf4f);
+  --color-background-green: light-dark(#c5e5c0, #84c9803D);
+  --color-border-green: light-dark(#b2d1ac, #69ad67);
+  --color-icon-green: light-dark(#0c5700, #84c980);
+  --color-text-green: light-dark(#0c5700, #9fe59b);
+  --color-background-teal: light-dark(#a5e3d6, #7ec6b83D);
+  --color-border-teal: light-dark(#94d6c8, #63ab9d);
+  --color-icon-teal: light-dark(#005348, #7ec6b8);
+  --color-text-teal: light-dark(#005348, #99e2d3);
+  --color-background-cyan: light-dark(#a3e0ef, #83c2d43D);
+  --color-border-cyan: light-dark(#91d3e3, #67a7b8);
+  --color-icon-cyan: light-dark(#00505f, #83c2d4);
+  --color-text-cyan: light-dark(#00505f, #9edef0);
+  --color-background-blue: light-dark(#c4ddfb, #9eb7ff3D);
+  --color-border-blue: light-dark(#b1c9e7, #6d9cfe);
+  --color-icon-blue: light-dark(#00458c, #9eb7ff);
+  --color-text-blue: light-dark(#00458c, #c7d3ff);
+  --color-background-purple: light-dark(#eccef3, #f297ff3D);
+  --color-border-purple: light-dark(#d8bbdf, #dd74f0);
+  --color-icon-purple: light-dark(#700084, #f297ff);
+  --color-text-purple: light-dark(#700084, #fac1ff);
+  --color-background-pink: light-dark(#fccadc, #ff99c33D);
+  --color-border-pink: light-dark(#e7b7c8, #f273aa);
+  --color-icon-pink: light-dark(#83004b, #ff99c3);
+  --color-text-pink: light-dark(#83004b, #ffc3da);
+  --color-background-gray: light-dark(#e5e5e5, var(--color-neutral));
+  --color-border-gray: light-dark(#d4d4d4, #262626);
+  --color-icon-gray: light-dark(#525252, #a3a3a3);
+  --color-text-gray: light-dark(#262626, #e5e5e5);
+  --radius-none: 0.25rem;
+  --radius-inner: 0.375rem;
+  --radius-element: 0.625rem;
+  --radius-container: 0.75rem;
+  --radius-page: 1.75rem;
+  --radius-full: 9999px;
+  --shadow-low: 0 2px 4px light-dark(oklch(0 0 0 / 5%), oklch(0 0 0 / 25%)), 0 4px 8px light-dark(oklch(0 0 0 / 10%), oklch(0 0 0 / 40%)), inset 0 0 0 1px light-dark(transparent, oklch(1 0 0 / 8%));
+  --shadow-med: 0 2px 4px light-dark(oklch(0 0 0 / 5%), oklch(0 0 0 / 35%)), 0 4px 12px light-dark(oklch(0 0 0 / 10%), oklch(0 0 0 / 50%)), inset 0 0 0 1px light-dark(transparent, oklch(1 0 0 / 12%));
+  --shadow-high: 0 4px 6px light-dark(oklch(0 0 0 / 10%), oklch(0 0 0 / 50%)), 0 12px 24px light-dark(oklch(0 0 0 / 15%), oklch(0 0 0 / 70%)), inset 0 0 0 1px light-dark(transparent, oklch(1 0 0 / 15%));
+  --shadow-inset-hover: inset 0px 0px 0px 2px #0074e24D;
+  --shadow-inset-selected: inset 0px 0px 0px 2px #0074e280;
+  --shadow-inset-success: inset 0px 0px 0px 2px #1981004D;
+  --shadow-inset-warning: inset 0px 0px 0px 2px #ffce2f4D;
+  --shadow-inset-error: inset 0px 0px 0px 2px #e33f4a4D;
+}
+/* Agora skin — a thin override layer on the Astryx neutral tokens.
+ * Direction: "mission control for a society of minds". Near-black canvas,
+ * 3-step surface ladder, 7%-alpha hairlines, one semantic accent (gate
+ * amber = the society spending money), mono reserved for data. */
+:root {
+  /* surface ladder */
+  --color-background-body: light-dark(#f2f2f0, #101012);
+  --color-background-surface: light-dark(#fbfbfa, #17171a);
+  --color-background-card: light-dark(#fbfbfa, #17171a);
+  --color-background-popover: light-dark(#ffffff, #1d1d21);
+  --color-background-muted: light-dark(#e9e9e6, #1d1d21);
+  /* hairlines, not borders */
+  --color-border: light-dark(rgba(20,20,18,.10), rgba(255,255,255,.07));
+  --color-border-emphasized: light-dark(rgba(20,20,18,.22), rgba(255,255,255,.16));
+  /* ink */
+  --color-text-primary: light-dark(#1a1a18, #ededf0);
+  --color-text-secondary: light-dark(#6d6d68, #9b9ba3);
+  --color-text-disabled: light-dark(#a6a6a0, #5b5b62);
+  --color-accent: light-dark(#232320, #ededf0);
+  /* the one accent: gate amber (spend / attention) */
+  --gate: light-dark(#9a6700, #e8a33d);
+  --gate-rail: light-dark(#d99a23, #e8a33d);
+  --gate-bg: light-dark(rgba(217,154,35,.13), rgba(232,163,61,.12));
+  /* quiet status */
+  --color-success: light-dark(#20713a, #3fb56b);
+  --color-error: light-dark(#a53434, #e05d5d);
+  --color-success-muted: light-dark(rgba(32,113,58,.12), rgba(63,181,107,.14));
+  --color-warning-muted: var(--gate-bg);
+  --color-warning: var(--gate);
+}
+/* Figtree (SIL OFL 1.1, github.com/erikdkennedy/figtree) — variable weight,
+ * latin subset, inlined so the dashboard stays a single self-contained file. */
+@font-face { font-family:'Figtree'; font-style:normal; font-weight:300 900;
+  font-display:swap; src:url(data:font/woff2;base64,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) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
+/* MiroFish-style research console: light-locked editorial chrome, the belief
+   world as a living graph (canvas), numbered activity on the right, black
+   system-dashboard strip below. Colorful data, quiet chrome. */
+:root { color-scheme:light;
+  --plane:#f7f7f8; --surface:#ffffff; --ink:#17171a; --ink2:#6e6e76;
+  --faint:#a0a0a8; --hairline:rgba(17,17,20,.08); --hairline2:rgba(17,17,20,.16);
+  --crimson:#d6336c; --blue:#2563c9; --orange:#e8590c; --purple:#6f42c1;
+  --green:#2f9e44; --risk:#d13438;
+  --good:var(--green); --warn:var(--orange); --crit:var(--risk);
+  --wm:var(--blue); --extractor:#0ca678; --skeptic:var(--crimson); --judge:var(--purple);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace; }
 * { box-sizing:border-box; }
-body { background:var(--plane); color:var(--ink); margin:0 auto; max-width:1240px;
-  padding:22px 20px 36px; font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
-a { color:var(--wm); text-decoration:none; font-weight:560; } a:hover { text-decoration:underline; }
+body { background:var(--plane); color:var(--ink); margin:0; padding:0;
+  font:13.5px/1.5 Figtree,-apple-system,"Segoe UI",sans-serif; }
+.page { max-width:1440px; margin:0 auto; padding:0 20px 20px; }
+a { color:var(--ink2); text-decoration:none; } a:hover { color:var(--ink); }
 .skip { position:absolute; left:-9999px; } .skip:focus { left:12px; top:8px;
   background:var(--surface); padding:8px 12px; border-radius:8px; z-index:9; }
-:focus-visible { outline:2px solid var(--wm); outline-offset:2px; }
-header { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
-.word { font-size:21px; font-weight:650; } .view { color:var(--muted); font-size:15px; }
-.status { font-family:var(--mono); font-size:11.5px; color:var(--ink2);
-  border:1px solid var(--border); border-radius:9px; padding:3px 10px;
-  letter-spacing:.02em; font-variant-numeric:tabular-nums; }
-nav { margin-left:auto; display:flex; gap:14px; font-size:13px; }
+:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+header { display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:14px 0 12px; border-bottom:1px solid var(--hairline); }
+.word { font:700 15px/1 var(--mono); letter-spacing:.14em; }
+.view { color:var(--faint); font-size:12.5px; }
+.modes { display:flex; background:#ececef; border-radius:9px; padding:3px; gap:2px; }
+.modes button { border:0; border-radius:7px; padding:4px 14px; font-size:12.5px;
+  color:var(--ink2); background:transparent; cursor:pointer; }
+.modes button[aria-pressed=true] { background:var(--surface); color:var(--ink);
+  font-weight:600; box-shadow:0 1px 3px rgba(17,17,20,.12); }
+.status { font-family:var(--mono); font-size:11px; color:var(--ink2);
+  font-variant-numeric:tabular-nums; display:flex; align-items:center; gap:7px; }
+.status::before { content:""; width:7px; height:7px; border-radius:50%;
+  background:var(--green); flex:0 0 auto; }
+nav { margin-left:auto; display:flex; gap:16px; font-size:12.5px; }
+.lede { color:var(--ink2); max-width:80ch; margin:10px 0 2px; font-size:13px; }
+.lede strong { color:var(--ink); font-weight:600; }
+#society { display:flex; gap:14px; flex-wrap:wrap; margin:8px 0 2px;
+  font-size:11.5px; color:var(--ink2); }
+.agent { display:flex; gap:6px; align-items:center; opacity:.75; transition:opacity .25s; }
+.agent .dot { width:7px; height:7px; border-radius:50%; flex:0 0 auto; }
+.agent .nm { font-weight:600; color:var(--ink2); }
+.agent .md { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+.agent.on { opacity:1; } .agent.on .nm { color:var(--ink); }
 .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap;
-  background:var(--surface); border:1px solid var(--border); border-radius:12px;
-  padding:10px 14px; margin:10px 0; }
-button, select { font:inherit; color:var(--ink); background:var(--surface);
-  border:1px solid var(--border); border-radius:8px; padding:5px 12px; cursor:pointer; }
-button:hover { border-color:var(--wm); }
-#play { background:var(--wm); color:#fff; border-color:var(--wm);
-  font-weight:650; padding:6px 16px; min-width:100px; }
-#play:hover { filter:brightness(1.08); }
-input[type=range] { flex:1; min-width:160px; accent-color:var(--wm); }
-.readout { font-family:var(--mono); font-size:12.5px; color:var(--ink2);
-  min-width:130px; font-variant-numeric:tabular-nums; }
-.stats { display:flex; gap:16px; font-family:var(--mono); font-variant-numeric:tabular-nums;
-  font-size:12.5px; color:var(--ink2); flex-wrap:wrap; }
-.stats b { color:var(--ink); font-weight:650; }
-main { display:grid; grid-template-columns:minmax(340px,5fr) minmax(360px,7fr); gap:12px; }
-@media (max-width:900px) { main { grid-template-columns:1fr; } }
-section.panel { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:12px 14px; min-height:200px; }
-.panel h2 { font:600 11px/1.5 var(--mono); margin:0 0 10px; color:var(--muted);
-  text-transform:uppercase; letter-spacing:.09em; }
-.panel h2 .n { color:var(--muted); font-weight:550; }
-#board { display:flex; flex-direction:column; gap:8px; max-height:66vh; overflow-y:auto; }
-.belief { border:1px solid var(--grid); border-radius:10px; padding:8px 10px; }
-.belief.hot { border-color:var(--warn); }
-.belief .k { font-family:var(--mono); font-size:12px; color:var(--ink2); }
-.belief .v { font-weight:650; margin:1px 0 4px; }
-.meter { height:6px; border-radius:3px; background:color-mix(in srgb, var(--wm) 15%, var(--surface));
-  overflow:hidden; } .meter i { display:block; height:100%; border-radius:3px; }
-.belief .m { display:flex; gap:8px; align-items:center; font-size:11.5px; color:var(--muted);
-  font-family:var(--mono); font-variant-numeric:tabular-nums; margin-top:3px; }
-.chip { font-size:11px; font-weight:650; border-radius:8px; padding:0 7px;
-  border:1px solid var(--border); white-space:nowrap; }
-.chip.auth { background:color-mix(in srgb, var(--wm) 14%, var(--surface)); }
-.chip.weakish { background:color-mix(in srgb, var(--warn) 22%, var(--surface)); }
-.chip.deb { background:color-mix(in srgb, var(--judge) 16%, var(--surface)); }
-#society { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 2px; }
-.agent { display:flex; gap:7px; align-items:center; border:1px solid var(--border);
-  border-radius:10px; padding:4px 11px; background:var(--surface); opacity:.5;
-  transition:opacity .25s, border-color .25s, box-shadow .25s; }
-.agent .dot { width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
-.agent .nm { font:700 10.5px/1.5 var(--mono); letter-spacing:.07em; }
-.agent .md { font-family:var(--mono); font-size:10.5px; color:var(--muted); }
-.agent.on { opacity:1; border-color:var(--c); box-shadow:0 0 0 1px var(--c); }
-#feed { display:flex; flex-direction:column; gap:8px; max-height:66vh; overflow-y:auto; }
-.act { border:1px solid var(--grid); border-radius:10px; padding:8px 11px; }
-.act.thread { border-left:3px solid color-mix(in srgb, var(--judge) 55%, var(--surface));
-  margin-left:16px; }
-.act.gatecard { border-color:color-mix(in srgb, var(--warn) 60%, var(--border)); }
-.act .body .ev { display:block; font-family:var(--mono); font-size:12px; color:var(--ink2); }
-.act .who { display:flex; gap:8px; align-items:baseline; margin-bottom:3px; }
-.role { font:700 10.5px/1.5 var(--mono); letter-spacing:.08em; }
-.model { font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:auto; }
-.act .body { font-size:13px; } .act .body em { color:var(--ink2); }
-.gatechip { font-weight:650; font-size:12px; padding:1px 8px; border-radius:9px; }
-.gatechip.commit { background:color-mix(in srgb, var(--good) 15%, var(--surface)); }
-.gatechip.debate { background:color-mix(in srgb, var(--warn) 25%, var(--surface)); }
-.okmark { color:var(--good); font-weight:700; } .badmark { color:var(--crit); font-weight:700; }
-#term { background:var(--term); color:var(--termink); border-radius:12px;
-  font-family:var(--mono); font-size:12px; line-height:1.65; padding:12px 16px;
-  margin-top:12px; max-height:180px; overflow-y:auto; }
-#term .t { color:#6f6e68; margin-right:8px; }
-footer { color:var(--muted); font-size:12px; margin-top:14px; }
-.modes { display:flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
-.modes button { border:0; border-radius:0; padding:5px 14px; }
-.modes button[aria-pressed=true] { background:var(--wm); color:#fff; font-weight:650; }
-#livebar { display:none; flex-direction:column; gap:8px; background:var(--surface);
-  border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:10px 0; }
-#livebar textarea { font:12.5px/1.6 var(--mono); color:var(--ink); background:var(--plane);
-  border:1px solid var(--border); border-radius:8px; padding:8px 10px; width:100%;
-  min-height:74px; resize:vertical; }
+  padding:10px 0 12px; }
+button, select { font:inherit; font-size:12.5px; color:var(--ink);
+  background:var(--surface); border:1px solid var(--hairline2); border-radius:8px;
+  padding:4px 12px; cursor:pointer; }
+button:hover { border-color:var(--ink2); }
+#play { background:var(--ink); color:#fff; border-color:var(--ink);
+  font-weight:600; padding:5px 18px; min-width:88px; }
+#play:hover { opacity:.85; }
+input[type=range] { flex:1; min-width:140px; accent-color:var(--ink); }
+.readout { font-family:var(--mono); font-size:11.5px; color:var(--ink2);
+  min-width:104px; font-variant-numeric:tabular-nums; }
+/* stat tiles, MiroFish-style big numbers */
+.stats { display:flex; gap:10px; flex-wrap:wrap; }
+.stats span { background:var(--surface); border:1px solid var(--hairline);
+  border-radius:10px; padding:7px 16px 8px; display:grid; justify-items:center;
+  gap:1px; font-size:10.5px; color:var(--ink2); min-width:86px; }
+.stats b { font:600 17px/1.2 var(--mono); color:var(--ink);
+  font-variant-numeric:tabular-nums; }
+main { display:grid; grid-template-columns:minmax(400px,11fr) minmax(360px,9fr);
+  gap:14px; }
+@media (max-width:960px) { main { grid-template-columns:1fr; } }
+section.panel { background:var(--surface); border:1px solid var(--hairline);
+  border-radius:12px; padding:14px 16px; min-height:200px; }
+.panel h2 { font-size:12.5px; font-weight:600; margin:0 0 8px; color:var(--ink); }
+.panel h2 .n { color:var(--faint); font-weight:400; }
+/* the graph: dot-grid canvas, floating legend + node card */
+.graphwrap { position:relative; height:46vh; min-height:330px; margin:0 -16px;
+  border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline);
+  background-image:radial-gradient(circle, #dededf 1px, transparent 1.2px);
+  background-size:18px 18px; overflow:hidden; }
+#graph { position:absolute; inset:0; width:100%; height:100%; cursor:default; }
+.legend { position:absolute; left:12px; bottom:12px; background:var(--surface);
+  border:1px solid var(--hairline); border-radius:10px; padding:9px 12px;
+  box-shadow:0 6px 20px rgba(17,17,20,.08); font-size:11px; color:var(--ink2); }
+.legend .lt { font:600 10px/1 var(--mono); letter-spacing:.1em; color:var(--faint);
+  text-transform:uppercase; margin-bottom:7px; }
+.legend div.li { display:flex; align-items:center; gap:7px; margin:3px 0; }
+.legend i { width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+#nodecard { position:absolute; right:12px; top:12px; width:250px;
+  background:var(--surface); border:1px solid var(--hairline); border-radius:12px;
+  padding:12px 14px; box-shadow:0 10px 30px rgba(17,17,20,.14); z-index:4; }
+#nodecard .nchead { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+#nodecard .nctitle { font-weight:600; font-size:12.5px; }
+#nodecard .ncchip { font-size:10px; font-weight:600; border-radius:999px;
+  padding:2px 9px; color:#fff; }
+#ncclose { margin-left:auto; border:0; background:transparent; color:var(--faint);
+  font-size:15px; padding:0 2px; line-height:1; }
+#ncclose:hover { color:var(--ink); }
+#nodecard .ncrow { display:flex; justify-content:space-between; gap:10px;
+  font-size:11.5px; color:var(--ink2); padding:3px 0;
+  border-top:1px solid var(--hairline); }
+#nodecard .ncrow b { color:var(--ink); font-weight:600; text-align:right;
+  font-variant-numeric:tabular-nums; }
+#nodecard .ncrow .mono { font-family:var(--mono); font-size:10.5px; }
+/* belief ledger under the graph */
+#board { display:flex; flex-direction:column; max-height:24vh; overflow-y:auto;
+  margin-top:4px; }
+.belief { padding:8px 2px 9px 12px; border-bottom:1px solid var(--hairline);
+  position:relative; }
+.belief.hot::before { content:""; position:absolute; left:0; top:9px; bottom:11px;
+  width:2px; background:var(--orange); border-radius:1px; }
+.belief .k { font-family:var(--mono); font-size:11px; color:var(--faint); }
+.belief .v { font-weight:600; font-size:13px; margin:2px 0 5px; }
+.meter { height:2px; border-radius:1px; background:#ececef; overflow:hidden; }
+.meter i { display:block; height:100%; }
+.belief .m { display:flex; gap:12px; align-items:center; font-size:10.5px;
+  color:var(--faint); font-family:var(--mono); font-variant-numeric:tabular-nums;
+  margin-top:5px; }
+.chip { font-size:10px; font-weight:600; border-radius:999px; padding:1px 8px;
+  white-space:nowrap; margin-left:auto; background:#ececef; color:var(--ink2); }
+.chip.auth { background:rgba(37,99,201,.12); color:var(--blue); }
+.chip.weakish { background:rgba(232,89,12,.12); color:var(--orange); margin-left:0; }
+.chip.deb { background:rgba(111,66,193,.12); color:var(--purple); margin-left:0; }
+.belief .v .chip { margin-left:8px; }
+/* feed: activation-sequence cards */
+#feed { display:flex; flex-direction:column; gap:10px; max-height:74vh;
+  overflow-y:auto; padding-right:4px; }
+.turn { border:1px solid var(--hairline); border-radius:10px; padding:2px 12px; }
+.turn.debated { border-color:rgba(214,51,108,.45);
+  box-shadow:0 0 0 1px rgba(214,51,108,.14); }
+.evblock { border:1px dashed var(--hairline2); border-radius:10px; padding:2px 12px; }
+.act { padding:8px 0; }
+.act + .act { border-top:1px solid var(--hairline); }
+.act .body .ev { display:block; font-family:var(--mono); font-size:11px;
+  color:var(--ink2); line-height:1.7; }
+.act .who { display:flex; gap:8px; align-items:baseline; margin-bottom:2px; }
+.role { font:600 10px/1.5 var(--mono); letter-spacing:.1em; text-transform:uppercase; }
+.model { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-left:auto; }
+.act .body { font-size:12.5px; color:var(--ink); } .act .body em { color:var(--ink2); }
+.gatechip { font-weight:600; font-size:10.5px; padding:2px 9px; border-radius:999px;
+  font-family:var(--mono); background:#ececef; color:var(--ink2); }
+.gatechip.commit { background:rgba(47,158,68,.13); color:var(--green); }
+.gatechip.debate { background:rgba(214,51,108,.13); color:var(--crimson); }
+.act.gatecard .body { font-family:var(--mono); font-size:11px; }
+.okmark { color:var(--green); font-weight:600; } .badmark { color:var(--risk); font-weight:600; }
+/* black system-dashboard strip */
+#termwrap { background:#101013; border-radius:12px; margin-top:14px; overflow:hidden; }
+.termhead { display:flex; justify-content:space-between; align-items:center;
+  padding:8px 16px 0; font:600 10px/1 var(--mono); letter-spacing:.12em;
+  color:#8f8f96; }
+#term { color:#c9c9cf; font-family:var(--mono); font-size:11.5px; line-height:1.8;
+  padding:8px 16px 12px; max-height:150px; overflow-y:auto; }
+#term .t { color:#5f5f66; margin-right:8px; }
+footer { color:var(--faint); font-size:11.5px; margin-top:10px; }
+#livebar { display:none; flex-direction:column; gap:8px; padding:12px 0; }
+#livebar textarea { font:12px/1.7 var(--mono); color:var(--ink);
+  background:var(--surface); border:1px solid var(--hairline2); border-radius:8px;
+  padding:8px 10px; width:100%; min-height:74px; resize:vertical; }
 #livebar .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-#livebar input[type=text], #livebar input[type=password] { font:inherit; color:var(--ink);
-  background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+#livebar input[type=text], #livebar input[type=password] { font:inherit;
+  font-size:12.5px; color:var(--ink); background:var(--surface);
+  border:1px solid var(--hairline2); border-radius:8px; padding:6px 10px; }
 #question { flex:1; min-width:240px; }
-#token { width:150px; font-family:var(--mono); font-size:12px; }
-#ingest-btn, #ask-btn { background:var(--wm); color:#fff; border-color:var(--wm); font-weight:650; }
+#token { width:150px; font-family:var(--mono); font-size:11.5px; }
+#ingest-btn, #ask-btn { background:var(--ink); color:#fff; border-color:var(--ink);
+  font-weight:600; }
 #ingest-btn:disabled, #ask-btn:disabled { opacity:.5; cursor:wait; }
-#livemsg { font-family:var(--mono); font-size:12px; color:var(--muted); }
-@keyframes hotflash { from { background:color-mix(in srgb, var(--warn) 16%, var(--surface)); }
-  to { background:transparent; } }
+#livemsg { font-family:var(--mono); font-size:11.5px; color:var(--faint); }
+@keyframes hotflash { from { opacity:.35; } to { opacity:1; } }
 @media (prefers-reduced-motion: no-preference) {
-  .belief, .act { transition:border-color .4s; }
   .belief.hot { animation:hotflash 1.2s ease-out; } }
 </style></head><body>
 <a class="skip" href="#main">跳转到正文</a>
+<div class="page">
 <header>
-<svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="var(--wm)" stroke-width="4.5"/><rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/><rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/><path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/><rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg><span class="word">agora</span><span class="view">/ 社会实况</span>
+<svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="currentColor" stroke-width="4.5"/><rect x="16" y="18" width="32" height="6" rx="3" fill="currentColor"/><rect x="16" y="29" width="16" height="6" rx="3" fill="currentColor" opacity=".45"/><path d="M42 26 l6 6 -6 6 -6 -6 z" fill="currentColor" opacity=".45"/><rect x="16" y="40" width="32" height="6" rx="3" fill="currentColor"/></svg><span class="word">AGORA</span><span class="view">/ 社会实况</span>
 <div class="modes" role="group" aria-label="查看模式">
 <button id="mode-replay" type="button" aria-pressed="true">录制回放</button>
 <button id="mode-live" type="button" aria-pressed="false">实况 — 试一试</button>
 </div>
-<span class="status">种子 0 · 8 步 · 16/16 正确 · $0.0911 总成本 · 录制于 2026-07-11</span>
+<span class="status">种子 0 · 8 步 · 16/16 正确 · $0.0911 总成本 · 录制于 2026-07-13</span>
 <nav aria-label="Product links"><a href="/zh">基准结果</a><a href="/docs">API 演练场</a><a href="/live" hreflang="en" lang="en">English</a></nav>
 </header>
-<p style="color:var(--ink2);max-width:78ch;margin:2px 0 6px">一次真实录制的运行（并非模拟数据）：带日期的公告、过期回声与谣言依次到达；信念板的<strong>学习世界模型</strong>随之为每条信念实时重新打分；门控只在 P(wrong) 飙升处发起辩论。空格 = 播放/暂停，方向键 = 逐帧。 也可以切换到<strong>实况</strong>模式，把你自己的证据喂给这个社会。</p>
+<p class="lede">一次真实录制的运行（并非模拟数据）：带日期的公告、过期回声与谣言依次到达；信念板的<strong>学习世界模型</strong>随之为每条信念实时重新打分；门控只在 P(wrong) 飙升处发起辩论。空格 = 播放/暂停，方向键 = 逐帧。 也可以切换到<strong>实况</strong>模式，把你自己的证据喂给这个社会。</p>
 <div id="society" aria-label="智能体社会">
 <span class="agent" id="ag-extractor" style="--c:var(--extractor)"><i class="dot" style="background:var(--extractor)"></i><span class="nm">抽取器</span><span class="md">qwen3.6-flash</span></span>
 <span class="agent" id="ag-proposer" style="--c:var(--wm)"><i class="dot" style="background:var(--wm)"></i><span class="nm">提议者</span><span class="md">qwen3.7-max</span></span>
@@ -130,7 +376,7 @@ footer { color:var(--muted); font-size:12px; margin-top:14px; }
 <span class="agent" id="ag-judge" style="--c:var(--judge)"><i class="dot" style="background:var(--judge)"></i><span class="nm">裁决者</span><span class="md">qwen3.7-max</span></span>
 </div>
 <div class="controls" role="group" aria-label="回放控制">
-<button id="play" type="button">▶ 播放</button>
+<button id="play" type="button">播放</button>
 <label>速度 <select id="speed" aria-label="播放速度">
 <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
 </select></label>
@@ -140,13 +386,13 @@ footer { color:var(--muted); font-size:12px; margin-top:14px; }
 <span class="stats" id="stats"></span>
 </div>
 <div id="livebar" role="group" aria-label="实况会话控制">
-<label for="evidence" style="font:600 11px/1.5 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.09em">证据 — 每行一条、带日期；公告优先于谣言（示例保留英文，抽取器按英文模板解析）</label>
+<label for="evidence" style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--muted)">证据 — 每行一条、带日期；公告优先于谣言（示例保留英文，抽取器按英文模板解析）</label>
 <textarea id="evidence" spellcheck="false">[Jan 2026] Filing: Acme Robotics's CEO is Jane Doe.
 [Mar 2026] Rumor: acme robotics's ceo is John Roe.</textarea>
 <div class="row">
-<button id="ingest-btn" type="button">⇢ 喂给社会</button>
+<button id="ingest-btn" type="button">喂给社会</button>
 <input id="question" type="text" value="Claim: &quot;Acme Robotics's CEO is currently John Roe.&quot; Policy: filings are authoritative; rumors are unreliable and never override a filing. True or false?" aria-label="问题或断言">
-<button id="ask-btn" type="button">▶ 提问</button>
+<button id="ask-btn" type="button">提问</button>
 <input id="token" type="password" placeholder="令牌（可选）" aria-label="访问令牌" autocomplete="off">
 </div>
 <span id="livemsg">匿名访问共享每日小额预算 — 真实 Qwen 调用，每问约 $0.01</span>
@@ -156,13 +402,33 @@ footer { color:var(--muted); font-size:12px; margin-top:14px; }
 <main id="main">
 <section class="panel" aria-label="信念板">
 <h2>信念板 <span class="n">— 每条信念的学习 P(wrong)</span></h2>
+<div class="graphwrap">
+<canvas id="graph" aria-label="信念图谱"></canvas>
+<div class="legend"><div class="lt">信念图谱</div>
+<div class="li"><i style="background:var(--blue)"></i>公告</div>
+<div class="li"><i style="background:var(--orange)"></i>谣言 / 弱信源</div>
+<div class="li"><i style="background:var(--purple)"></i>已裁决</div>
+<div class="li"><i style="background:var(--risk)"></i>红圈 = P(wrong)</div>
+<div class="li"><i style="background:var(--crimson)"></i>辩论边</div></div>
+<div id="nodecard" hidden>
+<div class="nchead"><span class="nctitle" id="nckey">—</span>
+<span class="ncchip" id="ncsrc"></span>
+<button id="ncclose" type="button" aria-label="Close">×</button></div>
+<div class="ncrow"><span>取值</span><b id="ncval"></b></div>
+<div class="ncrow"><span>P(wrong)</span><b id="ncw"></b></div>
+<div class="ncrow"><span>P(overturned)</span><b id="ncs"></b></div>
+<div class="ncrow"><span>更替次数</span><b id="ncc"></b></div>
+</div>
+</div>
 <div id="board"></div></section>
 <section class="panel" aria-label="社会动态">
 <h2>社会动态 <span class="n">— 抽取 · 提议 · 门控 · 质疑 · 裁决</span></h2>
 <div id="feed" role="log" aria-label="智能体动态"></div></section>
 </main>
-<div id="term" role="log" aria-label="系统日志"></div>
+<div id="termwrap"><div class="termhead"><span>SYSTEM DASHBOARD</span><span>agora 社会运行时</span></div>
+<div id="term" role="log" aria-label="系统日志"></div></div>
 <footer>骨干模型：提议者/裁决者 qwen3.7-max · 质疑者 qwen3.7-plus · 抽取器 qwen3.6-flash. 门控：学习世界模型 + 共形阈值，每次决策 0 次 LLM 调用。 Generated by scripts/build_live.py from results/replay_s0.json.</footer>
+</div>
 <script>
 const R = {"seed": 0, "steps": 8, "summary": {"questions": 16, "correct": 16, "gate_fired": 2, "ingest_cost_usd": 0.0277, "total_cost_usd": 0.0911}, "events": [{"type": "evidence", "lines": ["[Feb 2025] Filing: Aster Materials's flagship product is Prism.", "[Mar 2025] Filing: Lumen Biotech's headcount is 2200.", "[Feb 2025] Filing: Nimbus Health's flagship product is Atlas.", "[Mar 2025] Filing: Nimbus Health's flagship product is Nova."], "asserts": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "outcome": "new"}, {"key": "lumen biotech::headcount", "value": "2200", "source": "Filing", "outcome": "new"}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "outcome": "new"}, {"key": "nimbus health::flagship product", "value": "nova", "source": "Filing", "outcome": "superseded"}], "cost_usd": 0.00306, "board": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "2200", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "nova", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.536, "weak": false, "churn": 1, "conflicts": 0}]}, {"type": "question", "task_id": "s0-q0", "question": "Claim: \"Nimbus Health's flagship product is currently Nova.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["nimbus health::flagship product"], "confidence": 1.0}], "cost_usd": 0.00346, "tokens": 581, "board": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "2200", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "nova", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.536, "weak": false, "churn": 1, "conflicts": 0}]}, {"type": "question", "task_id": "s0-q1", "question": "Claim: \"Nimbus Health's flagship product is currently Atlas.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "false", "answer": "false", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "false", "support": ["nimbus health::flagship product"], "confidence": 1.0}], "cost_usd": 0.00202, "tokens": 389, "board": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "2200", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "nova", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.536, "weak": false, "churn": 1, "conflicts": 0}]}, {"type": "evidence", "lines": ["[Jul 2025] Rumor: Skylark Compute's headquarters is now Toronto.", "[Jun 2025] Filing: Cascade Semiconductors's ceo is Tanaka.", "[May 2025] Filing: Lumen Biotech's headcount is 780.", "[Jun 2025] Filing: Skylark Compute's headquarters is Porto.", "[Jul 2025] Filing: Nimbus Health's flagship product is Atlas."], "asserts": [{"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "outcome": "new"}, {"key": "cascade semiconductors::ceo", "value": "tanaka", "source": "Filing", "outcome": "new"}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "outcome": "superseded"}, {"key": "skylark compute::headquarters", "value": "porto", "source": "Filing", "outcome": "stale-echo"}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "outcome": "superseded"}], "cost_usd": 0.00313, "board": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.373, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "tanaka", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.442, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.483, "weak": false, "churn": 2, "conflicts": 0}, {"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.483, "weak": false, "churn": 1, "conflicts": 1}]}, {"type": "question", "task_id": "s0-q2", "question": "Claim: \"Cascade Semiconductors's ceo is currently Tanaka.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["cascade semiconductors::ceo"], "confidence": 1.0}], "cost_usd": 0.00222, "tokens": 432, "board": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.373, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "tanaka", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.442, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.483, "weak": false, "churn": 2, "conflicts": 0}, {"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.483, "weak": false, "churn": 1, "conflicts": 1}]}, {"type": "question", "task_id": "s0-q3", "question": "Claim: \"Nimbus Health's flagship product is currently Nova.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "false", "answer": "false", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "false", "support": ["nimbus health::flagship product"], "confidence": 1.0}], "cost_usd": 0.00193, "tokens": 391, "board": [{"key": "aster materials::flagship product", "value": "prism", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.373, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "tanaka", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.442, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.483, "weak": false, "churn": 2, "conflicts": 0}, {"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.483, "weak": false, "churn": 1, "conflicts": 1}]}, {"type": "evidence", "lines": ["[Nov 2025] Filing: Nimbus Health's flagship product is Kestrel.", "[Nov 2025] Filing: Cascade Semiconductors's ceo is Larsson.", "[Aug 2025] Blog recap: sources describe Cascade Semiconductors's ceo as Tanaka.", "[Nov 2025] Filing: Aster Materials's flagship product is Atlas.", "[Oct 2025] Filing: Lumen Biotech's funding round is Series C."], "asserts": [{"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "outcome": "superseded"}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "outcome": "superseded"}, {"key": "cascade semiconductors::ceo", "value": "tanaka", "source": "Blog recap", "outcome": "stale-echo"}, {"key": "aster materials::flagship product", "value": "atlas", "source": "Filing", "outcome": "superseded"}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "outcome": "new"}], "cost_usd": 0.00287, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.348, "weak": false, "churn": 1, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.02, "superseded_next": 0.388, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.376, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.432, "weak": false, "churn": 3, "conflicts": 0}, {"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.415, "weak": false, "churn": 1, "conflicts": 1}]}, {"type": "question", "task_id": "s0-q4", "question": "Claim: \"Lumen Biotech's funding round is currently Series B.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "false", "answer": "false", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "false", "support": ["lumen biotech::funding round"], "confidence": 1.0}], "cost_usd": 0.00276, "tokens": 513, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.348, "weak": false, "churn": 1, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.02, "superseded_next": 0.388, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.376, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.432, "weak": false, "churn": 3, "conflicts": 0}, {"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.415, "weak": false, "churn": 1, "conflicts": 1}]}, {"type": "question", "task_id": "s0-q5", "question": "Claim: \"Cascade Semiconductors's ceo is currently Larsson.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.037, "disagreement": 0.0, "max_doubt": 0.02, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["cascade semiconductors::ceo"], "confidence": 1.0}], "cost_usd": 0.00209, "tokens": 424, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.348, "weak": false, "churn": 1, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.02, "superseded_next": 0.388, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.376, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.432, "weak": false, "churn": 3, "conflicts": 0}, {"key": "skylark compute::headquarters", "value": "toronto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.415, "weak": false, "churn": 1, "conflicts": 1}]}, {"type": "evidence", "lines": ["[Feb 2026] Filing: Skylark Compute's headquarters is Austin.", "[Jan 2026] Blog recap: sources describe Skylark Compute's headquarters as Porto.", "[Feb 2026] Filing: Onyx Mobility's headcount is 340.", "[Jan 2026] Filing: Onyx Mobility's headcount is 120.", "[Dec 2025] Filing: Aster Materials's funding round is Series C.", "[Dec 2025] Rumor: Aster Materials's flagship product is now Kestrel."], "asserts": [{"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "outcome": "superseded"}, {"key": "skylark compute::headquarters", "value": "porto", "source": "Blog recap", "outcome": "stale-echo"}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "outcome": "new"}, {"key": "onyx mobility::headcount", "value": "120", "source": "Filing", "outcome": "stale-echo"}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "outcome": "new"}, {"key": "aster materials::flagship product", "value": "kestrel", "source": "Rumor", "outcome": "superseded-by-weaker-source"}], "cost_usd": 0.0038, "board": [{"key": "aster materials::flagship product", "value": "kestrel", "source": "Rumor", "wrong_now": 0.998, "superseded_next": 0.329, "weak": true, "churn": 2, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.424, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.344, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.393, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.311, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.376, "weak": false, "churn": 3, "conflicts": 0}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.569, "weak": false, "churn": 1, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.03, "superseded_next": 0.382, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q6", "question": "Claim: \"Aster Materials's flagship product is currently Atlas.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": true, "p_wrong": 0.427, "disagreement": 0.0, "max_doubt": 0.998, "weak_current": true, "reason": "policy:weak-source"}, "events": [{"kind": "proposal", "answer": "false", "support": ["aster materials::flagship product"], "confidence": 1.0}, {"kind": "challenge", "key": "aster materials::flagship product", "attack": "The belief that Kestrel is Aster Materials' flagship product rests entirely on a Dec 2025 entry tagged as 'Rumor,' which is explicitly an unreliable source type. The most recent authoritative Filing ("}, {"kind": "verdict", "key": "aster materials::flagship product", "upheld": false, "corrected": "atlas"}, {"kind": "reproposal", "answer": "true"}], "cost_usd": 0.01174, "tokens": 3514, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.02, "superseded_next": 0.337, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.424, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.344, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.393, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.311, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.375, "weak": false, "churn": 3, "conflicts": 0}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.566, "weak": false, "churn": 1, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.029, "superseded_next": 0.381, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q7", "question": "Claim: \"Aster Materials's flagship product is currently Prism.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "false", "answer": "false", "correct": true, "gate": {"fired": false, "p_wrong": 0.037, "disagreement": 0.0, "max_doubt": 0.02, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "false", "support": ["aster materials::flagship product"], "confidence": 1.0}], "cost_usd": 0.00211, "tokens": 440, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.02, "superseded_next": 0.337, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.424, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.344, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.393, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.311, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.375, "weak": false, "churn": 3, "conflicts": 0}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.566, "weak": false, "churn": 1, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.029, "superseded_next": 0.381, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "evidence", "lines": ["[Apr 2026] Filing: Onyx Mobility's headcount is 780.", "[Jun 2026] Filing: Halcyon Systems's headquarters is Austin.", "[Jun 2026] Filing: Nimbus Health's flagship product is Atlas.", "[May 2026] Filing: Onyx Mobility's headcount is 340.", "[Dec 2025] Blog recap: sources describe Nimbus Health's flagship product as Kestrel.", "[Mar 2026] Blog recap: sources describe Onyx Mobility's headcount as 340."], "asserts": [{"key": "onyx mobility::headcount", "value": "780", "source": "Filing", "outcome": "superseded"}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "outcome": "new"}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "outcome": "superseded"}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "outcome": "superseded"}, {"key": "nimbus health::flagship product", "value": "kestrel", "source": "Blog recap", "outcome": "stale-echo"}, {"key": "onyx mobility::headcount", "value": "340", "source": "Blog recap", "outcome": "refresh"}], "cost_usd": 0.00285, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.237, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.354, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.304, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.316, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.232, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.272, "weak": false, "churn": 5, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.57, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.003, "superseded_next": 0.291, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q8", "question": "Claim: \"Lumen Biotech's headcount is currently 780.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["lumen biotech::headcount"], "confidence": 1.0}], "cost_usd": 0.0034, "tokens": 622, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.237, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.354, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.304, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.316, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.232, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.272, "weak": false, "churn": 5, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.57, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.003, "superseded_next": 0.291, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q9", "question": "Claim: \"Lumen Biotech's headcount is currently 780.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["lumen biotech::headcount"], "confidence": 1.0}], "cost_usd": 0.00234, "tokens": 481, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.237, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.354, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.304, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.316, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.232, "weak": false, "churn": 1, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.272, "weak": false, "churn": 5, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.57, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.003, "superseded_next": 0.291, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "evidence", "lines": ["[Oct 2025] Blog recap: sources describe Lumen Biotech's headcount as 780.", "[Jul 2026] Blog recap: sources describe Nimbus Health's flagship product as Atlas.", "[Sep 2026] Filing: Nimbus Health's flagship product is Zephyr.", "[Mar 2026] Blog recap: sources describe Lumen Biotech's funding round as Series C.", "[Aug 2026] Filing: Lumen Biotech's headcount is 340.", "[Oct 2026] Filing: Lumen Biotech's funding round is Series A.", "[Sep 2026] Filing: Lumen Biotech's funding round is Series B."], "asserts": [{"key": "lumen biotech::headcount", "value": "780", "source": "Blog recap", "outcome": "refresh"}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Blog recap", "outcome": "refresh"}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "outcome": "superseded"}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Blog recap", "outcome": "refresh"}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "outcome": "superseded"}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "outcome": "superseded"}, {"key": "lumen biotech::funding round", "value": "series b", "source": "Filing", "outcome": "stale-echo"}], "cost_usd": 0.00388, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.142, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.279, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.207, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.393, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.028, "superseded_next": 0.455, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.132, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.199, "weak": false, "churn": 6, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.001, "superseded_next": 0.467, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.217, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q10", "question": "Claim: \"Lumen Biotech's funding round is currently Series A.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.038, "disagreement": 0.0, "max_doubt": 0.028, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["lumen biotech::funding round"], "confidence": 1.0}], "cost_usd": 0.00419, "tokens": 728, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.142, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.279, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.207, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.393, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.028, "superseded_next": 0.455, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.132, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.199, "weak": false, "churn": 6, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.001, "superseded_next": 0.467, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.217, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q11", "question": "Claim: \"Onyx Mobility's headcount is currently 340.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.001, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["onyx mobility::headcount"], "confidence": 1.0}], "cost_usd": 0.00362, "tokens": 652, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.142, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series c", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.279, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.005, "superseded_next": 0.207, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.393, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.028, "superseded_next": 0.455, "weak": false, "churn": 2, "conflicts": 1}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.132, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.199, "weak": false, "churn": 6, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.001, "superseded_next": 0.467, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.217, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "evidence", "lines": ["[Dec 2026] Filing: Aster Materials's funding round is Series D.", "[Nov 2026] Filing: Aster Materials's headcount is 780.", "[Jul 2026] Industry note: Lumen Biotech's funding round remains Series C.", "[Nov 2026] Filing: Aster Materials's funding round is Series A.", "[Dec 2026] Filing: Lumen Biotech's flagship product is Nova."], "asserts": [{"key": "aster materials::funding round", "value": "series d", "source": "Filing", "outcome": "superseded"}, {"key": "aster materials::headcount", "value": "780", "source": "Filing", "outcome": "new"}, {"key": "lumen biotech::funding round", "value": "series c", "source": "Industry note", "outcome": "stale-echo"}, {"key": "aster materials::funding round", "value": "series a", "source": "Filing", "outcome": "stale-echo"}, {"key": "lumen biotech::flagship product", "value": "nova", "source": "Filing", "outcome": "new"}], "cost_usd": 0.00356, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.109, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series d", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.335, "weak": false, "churn": 2, "conflicts": 1}, {"key": "aster materials::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.006, "superseded_next": 0.163, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.354, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::flagship product", "value": "nova", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.044, "superseded_next": 0.434, "weak": false, "churn": 3, "conflicts": 2}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.105, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.168, "weak": false, "churn": 6, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.427, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.174, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q12", "question": "Claim: \"Cascade Semiconductors's ceo is currently Larsson.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.037, "disagreement": 0.0, "max_doubt": 0.006, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["cascade semiconductors::ceo"], "confidence": 1.0}], "cost_usd": 0.00258, "tokens": 530, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.109, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series d", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.335, "weak": false, "churn": 2, "conflicts": 1}, {"key": "aster materials::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.006, "superseded_next": 0.163, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.354, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::flagship product", "value": "nova", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.044, "superseded_next": 0.434, "weak": false, "churn": 3, "conflicts": 2}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.105, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.168, "weak": false, "churn": 6, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.427, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.174, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "question", "task_id": "s0-q13", "question": "Claim: \"Aster Materials's headcount is currently 120.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "false", "answer": "false", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.0, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "false", "support": ["aster materials::headcount"], "confidence": 1.0}], "cost_usd": 0.00242, "tokens": 509, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.109, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series d", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.335, "weak": false, "churn": 2, "conflicts": 1}, {"key": "aster materials::headcount", "value": "780", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.422, "weak": false, "churn": 0, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.006, "superseded_next": 0.163, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.354, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::flagship product", "value": "nova", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.044, "superseded_next": 0.434, "weak": false, "churn": 3, "conflicts": 2}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.105, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.168, "weak": false, "churn": 6, "conflicts": 1}, {"key": "onyx mobility::headcount", "value": "340", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.427, "weak": false, "churn": 3, "conflicts": 1}, {"key": "skylark compute::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.174, "weak": false, "churn": 3, "conflicts": 2}]}, {"type": "evidence", "lines": ["[Apr 2026] Rumor: Skylark Compute's headquarters is now Porto.", "[Jan 2027] Blog recap: sources describe Lumen Biotech's flagship product as Nova.", "[Feb 2027] Filing: Onyx Mobility's headcount is 120.", "[Jan 2027] Blog recap: sources describe Onyx Mobility's headcount as 340.", "[Apr 2025] Industry note: Nimbus Health's flagship product remains Atlas.", "[Mar 2027] Filing: Lumen Biotech's flagship product is Kestrel.", "[Apr 2027] Filing: Halcyon Systems's headcount is 340.", "[Feb 2027] Filing: Aster Materials's headcount is 1500."], "asserts": [{"key": "skylark compute::headquarters", "value": "porto", "source": "Rumor", "outcome": "superseded-by-weaker-source"}, {"key": "lumen biotech::flagship product", "value": "nova", "source": "Blog recap", "outcome": "refresh"}, {"key": "onyx mobility::headcount", "value": "120", "source": "Filing", "outcome": "superseded"}, {"key": "onyx mobility::headcount", "value": "340", "source": "Blog recap", "outcome": "stale-echo"}, {"key": "nimbus health::flagship product", "value": "atlas", "source": "Industry note", "outcome": "stale-echo"}, {"key": "lumen biotech::flagship product", "value": "kestrel", "source": "Filing", "outcome": "superseded"}, {"key": "halcyon systems::headcount", "value": "340", "source": "Filing", "outcome": "new"}, {"key": "aster materials::headcount", "value": "1500", "source": "Filing", "outcome": "superseded"}], "cost_usd": 0.0046, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.063, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series d", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.23, "weak": false, "churn": 2, "conflicts": 1}, {"key": "aster materials::headcount", "value": "1500", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.427, "weak": false, "churn": 1, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.007, "superseded_next": 0.099, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.279, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.369, "weak": false, "churn": 1, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.023, "superseded_next": 0.331, "weak": false, "churn": 3, "conflicts": 2}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.062, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.107, "weak": false, "churn": 7, "conflicts": 2}, {"key": "onyx mobility::headcount", "value": "120", "source": "Filing", "wrong_now": 0.004, "superseded_next": 0.359, "weak": false, "churn": 5, "conflicts": 2}, {"key": "skylark compute::headquarters", "value": "porto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.115, "weak": true, "churn": 4, "conflicts": 4}]}, {"type": "question", "task_id": "s0-q14", "question": "Claim: \"Lumen Biotech's flagship product is currently Kestrel.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": false, "p_wrong": 0.036, "disagreement": 0.0, "max_doubt": 0.002, "weak_current": false, "reason": "conformal(alpha=0.05)"}, "events": [{"kind": "proposal", "answer": "true", "support": ["lumen biotech::flagship product"], "confidence": 1.0}], "cost_usd": 0.00254, "tokens": 535, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.063, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series d", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.23, "weak": false, "churn": 2, "conflicts": 1}, {"key": "aster materials::headcount", "value": "1500", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.427, "weak": false, "churn": 1, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.007, "superseded_next": 0.099, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.415, "weak": false, "churn": 0, "conflicts": 0}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.279, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.369, "weak": false, "churn": 1, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.023, "superseded_next": 0.331, "weak": false, "churn": 3, "conflicts": 2}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.062, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.107, "weak": false, "churn": 7, "conflicts": 2}, {"key": "onyx mobility::headcount", "value": "120", "source": "Filing", "wrong_now": 0.004, "superseded_next": 0.359, "weak": false, "churn": 5, "conflicts": 2}, {"key": "skylark compute::headquarters", "value": "porto", "source": "Rumor", "wrong_now": 1.0, "superseded_next": 0.115, "weak": true, "churn": 4, "conflicts": 4}]}, {"type": "question", "task_id": "s0-q15", "question": "Claim: \"Skylark Compute's headquarters is currently Austin.\" Policy: filings are authoritative; blog recaps, industry notes and rumors are unreliable and never override a filing. Based on the most recent authoritative evidence, is this claim true or false? Answer 'true' or 'false'.", "gold": "true", "answer": "true", "correct": true, "gate": {"fired": true, "p_wrong": 0.427, "disagreement": 0.0, "max_doubt": 1.0, "weak_current": true, "reason": "policy:weak-source"}, "events": [{"kind": "proposal", "answer": "false", "support": ["skylark compute::headquarters"], "confidence": 1.0}, {"kind": "challenge", "key": "skylark compute::headquarters", "attack": "The belief that headquarters = Porto is stale and contradicted by the most recent authoritative source. The Feb 2026 Filing\u2014the latest authoritative record\u2014states Austin as headquarters. All subsequen"}, {"kind": "verdict", "key": "skylark compute::headquarters", "upheld": false, "corrected": "austin"}, {"kind": "reproposal", "answer": "true"}], "cost_usd": 0.0139, "tokens": 3512, "board": [{"key": "aster materials::flagship product", "value": "atlas", "source": "debate", "wrong_now": 0.008, "superseded_next": 0.062, "weak": false, "churn": 3, "conflicts": 2}, {"key": "aster materials::funding round", "value": "series d", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.229, "weak": false, "churn": 2, "conflicts": 1}, {"key": "aster materials::headcount", "value": "1500", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.426, "weak": false, "churn": 1, "conflicts": 0}, {"key": "cascade semiconductors::ceo", "value": "larsson", "source": "Filing", "wrong_now": 0.007, "superseded_next": 0.099, "weak": false, "churn": 2, "conflicts": 1}, {"key": "halcyon systems::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.414, "weak": false, "churn": 0, "conflicts": 0}, {"key": "halcyon systems::headquarters", "value": "austin", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.279, "weak": false, "churn": 0, "conflicts": 0}, {"key": "lumen biotech::flagship product", "value": "kestrel", "source": "Filing", "wrong_now": 0.002, "superseded_next": 0.369, "weak": false, "churn": 1, "conflicts": 0}, {"key": "lumen biotech::funding round", "value": "series a", "source": "Filing", "wrong_now": 0.023, "superseded_next": 0.331, "weak": false, "churn": 3, "conflicts": 2}, {"key": "lumen biotech::headcount", "value": "340", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.062, "weak": false, "churn": 2, "conflicts": 0}, {"key": "nimbus health::flagship product", "value": "zephyr", "source": "Filing", "wrong_now": 0.0, "superseded_next": 0.106, "weak": false, "churn": 7, "conflicts": 2}, {"key": "onyx mobility::headcount", "value": "120", "source": "Filing", "wrong_now": 0.004, "superseded_next": 0.358, "weak": false, "churn": 5, "conflicts": 2}, {"key": "skylark compute::headquarters", "value": "austin", "source": "debate", "wrong_now": 0.009, "superseded_next": 0.092, "weak": false, "churn": 5, "conflicts": 4}]}]};
 const MODELS = {"strong": "qwen3.7-max", "mid": "qwen3.7-plus", "fast": "qwen3.6-flash"};
@@ -171,7 +437,7 @@ let i = -1, playing = null, speed = 1;
 const $ = id => document.getElementById(id);
 const board = $('board'), feed = $('feed'), term = $('term');
 
-function meterColor(p) { return p >= 0.7 ? 'var(--crit)' : p >= 0.35 ? 'var(--warn)' : 'var(--wm)'; }
+function meterColor(p) { return p >= 0.7 ? 'var(--crit)' : p >= 0.35 ? 'var(--gate-rail)' : 'var(--color-border-emphasized)'; }
 function el(tag, cls, text) { const e = document.createElement(tag);
   if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 
@@ -182,8 +448,8 @@ function renderBoard(snap, hotKeys) {
     const card = el('div', 'belief' + (hotKeys.has(b.key) ? ' hot' : ''));
     card.appendChild(el('div', 'k', b.key));
     const v = el('div', 'v', b.value);
-    if (b.weak) { const c = el('span', 'chip weakish', '▲ 弱信源'); c.style.marginLeft = '8px'; v.appendChild(c); }
-    if (b.source === 'debate') { const c = el('span', 'chip deb', '⚖ 已裁决'); c.style.marginLeft = '8px'; v.appendChild(c); }
+    if (b.weak) { const c = el('span', 'chip weakish', '弱信源'); c.style.marginLeft = '8px'; v.appendChild(c); }
+    if (b.source === 'debate') { const c = el('span', 'chip deb', '已裁决'); c.style.marginLeft = '8px'; v.appendChild(c); }
     card.appendChild(v);
     const meter = el('div', 'meter'); const fill = el('i');
     fill.style.width = Math.max(2, b.wrong_now * 100) + '%';
@@ -239,7 +505,9 @@ function feedFor(e) {
     cards.push(actCard('抽取器', 'var(--extractor)', MODELS.fast,
       [el('span', '', `断言了 ${e.asserts.length} 条事实 — ${outcomes}`)]));
     log(`evidence batch: ${e.lines.length} lines → ${e.asserts.length} asserts ($${e.cost_usd})`);
-    return cards;
+    const block = el('div', 'evblock');
+    for (const c of cards) block.appendChild(c);
+    return [block];
   }
   cards.push(actCard('问题', 'var(--muted)', null, [el('span', '', e.question.split(' Policy:')[0])]));
   for (const t of e.events) {
@@ -254,8 +522,8 @@ function feedFor(e) {
       [el('span', '', `基于更正后的信念板改答 “${t.answer}”`)])));
   }
   const g = e.gate;
-  const chip = el('span', 'gatechip ' + (g.fired ? 'debate' : 'commit'),
-    g.fired ? '▲ 辩论' : '✓ 提交');
+  const chip = el('span', 'gatechip ' + (g.fired ? '辩论' : '提交'),
+    g.fired ? '辩论' : '提交');
   const gateCard = actCard('世界模型门控', 'var(--ink)', '0 次 LLM 调用', [chip,
     el('span', '', `  p(wrong)=${g.p_wrong} — ${g.reason}`)]);
   gateCard.classList.add('gatecard');
@@ -269,7 +537,9 @@ function feedFor(e) {
     graded ? (e.correct ? 'var(--good)' : 'var(--crit)') : 'var(--ink)', null, [res]));
   log(`${e.task_id}: ${g.fired ? 'DEBATE' : 'commit'} p=${g.p_wrong}` +
       (graded ? ` → ${e.correct ? '✓' : '✗'}` : '') + ` ($${e.cost_usd})`);
-  return cards;
+  const turn = el('div', 'turn' + (g.fired ? ' debated' : ''));
+  for (const c of cards) turn.appendChild(c);
+  return [turn];
 }
 
 function apply(n, rebuild) {
@@ -282,6 +552,7 @@ function apply(n, rebuild) {
   const hot = new Set(e.type === 'evidence' ? e.asserts.map(a => a.key)
     : (e.events || []).filter(t => t.key).map(t => t.key));
   renderBoard(e.board, hot);
+  updateGraph(e);
   feed.scrollTop = feed.scrollHeight;
   $('scrub').value = n;
   $('readout').textContent = `事件 ${n + 1}/${evs.length}`;
@@ -297,11 +568,11 @@ function apply(n, rebuild) {
     (e.type === 'question' ? ` — ${e.task_id} ${e.gate.fired ? 'debated' : 'committed'}` : ' — evidence batch');
 }
 
-function stop() { clearInterval(playing); playing = null; $('play').textContent = '▶ 播放'; }
+function stop() { clearInterval(playing); playing = null; $('play').textContent = '播放'; }
 $('play').addEventListener('click', () => {
   if (playing) return stop();
   if (i >= evs.length - 1) apply(0, true);
-  $('play').textContent = '⏸ 暂停';
+  $('play').textContent = '暂停';
   playing = setInterval(() => { if (i >= evs.length - 1) return stop(); apply(i + 1); },
     1800 / speed);
 });
@@ -315,6 +586,170 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'ArrowRight') { stop(); apply(i + 1); }
   if (ev.key === 'ArrowLeft') { stop(); apply(i - 1, true); }
 });
+
+
+// ---- society graph: beliefs + agents on a force-laid canvas ----
+const gc = $('graph'), gctx = gc.getContext('2d');
+const G = { nodes: new Map(), fx: [], alpha: 0, w: 0, h: 0, sel: null };
+const AGENTS = [
+  { id: 'EXTRACTOR', color: '#0ca678' }, { id: 'PROPOSER', color: '#2563c9' },
+  { id: 'GATE', color: '#e8a33d' }, { id: 'SKEPTIC', color: '#d6336c' },
+  { id: 'JUDGE', color: '#6f42c1' }];
+function srcColor(src, weak) {
+  if (/debate/i.test(src || '')) return '#6f42c1';
+  if (weak || /rumor|blog|forum/i.test(src || '')) return '#e8590c';
+  if (/filing/i.test(src || '')) return '#2563c9';
+  return '#8a8a92';
+}
+function sizeGraph() {
+  const r = gc.parentElement.getBoundingClientRect();
+  G.w = r.width; G.h = r.height;
+  const dpr = devicePixelRatio || 1;
+  gc.width = G.w * dpr; gc.height = G.h * dpr;
+  gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  AGENTS.forEach((a, k) => {   // pinned pentagon, slightly high
+    const th = -Math.PI / 2 + k * 2 * Math.PI / AGENTS.length;
+    a.x = G.w / 2 + Math.cos(th) * Math.min(G.w, G.h) * 0.40;
+    a.y = G.h / 2 + Math.sin(th) * Math.min(G.h, G.w) * 0.38; });
+  G.alpha = 1;
+}
+new ResizeObserver(sizeGraph).observe(gc.parentElement);
+function updateGraph(e) {
+  const seen = new Set();
+  let k = 0;
+  for (const b of e.board) {
+    seen.add(b.key);
+    let n = G.nodes.get(b.key);
+    if (!n) {                                  // enter near the extractor
+      n = { x: AGENTS[0].x + (Math.random() - 0.5) * 60,
+            y: AGENTS[0].y + (Math.random() - 0.5) * 60, vx: 0, vy: 0, flash: 0 };
+      G.nodes.set(b.key, n);
+    }
+    n.b = b; n.ent = b.key.split('::')[0]; n.ord = k++;
+  }
+  for (const key of [...G.nodes.keys()]) if (!seen.has(key)) G.nodes.delete(key);
+  const hit = key => { const n = G.nodes.get(key); if (n) n.flash = 90; return n; };
+  if (e.type === 'evidence') {
+    for (const a of e.asserts) { hit(a.key);
+      G.fx.push({ from: AGENTS[0], key: a.key, color: '#0ca678', ttl: 110 }); }
+  } else {
+    for (const t of e.events || []) {
+      if (t.kind === 'proposal') for (const sk of (t.support || []))
+        G.fx.push({ from: AGENTS[1], key: sk, color: '#2563c9', ttl: 110 });
+      if (t.kind === 'challenge' && t.key)
+        G.fx.push({ from: AGENTS[3], key: t.key, color: '#d6336c', ttl: 150 }), hit(t.key);
+      if (t.kind === 'verdict' && t.key)
+        G.fx.push({ from: AGENTS[4], key: t.key, color: '#6f42c1', ttl: 150 }), hit(t.key);
+    }
+    if (e.gate && e.gate.fired) G.fx.push({ from: AGENTS[2], key: null,
+      color: '#e8a33d', ttl: 130 });
+  }
+  if (G.fx.length > 40) G.fx.splice(0, G.fx.length - 40);
+  G.alpha = 1;
+}
+function stepPhysics() {
+  const ns = [...G.nodes.values()];
+  const cents = {};                             // entity centroids
+  for (const n of ns) { (cents[n.ent] ||= { x: 0, y: 0, c: 0 });
+    cents[n.ent].x += n.x; cents[n.ent].y += n.y; cents[n.ent].c++; }
+  for (const c of Object.values(cents)) { c.x /= c.c; c.y /= c.c; }
+  for (const n of ns) {
+    let fx = (G.w / 2 - n.x) * 0.0060, fy = (G.h / 2 - n.y) * 0.0060;
+    for (const m of ns) { if (m === n) continue;
+      const dx = n.x - m.x, dy = n.y - m.y, d2 = dx * dx + dy * dy + 40;
+      const f = (n.ent === m.ent ? 900 : 1700) / d2;
+      fx += dx * f / Math.sqrt(d2); fy += dy * f / Math.sqrt(d2); }
+    const c = cents[n.ent];
+    fx += (c.x - n.x) * 0.012; fy += (c.y - n.y) * 0.012;
+    for (const a of AGENTS) {                   // keep clear of the agent ring
+      const dx = n.x - a.x, dy = n.y - a.y, d2 = dx * dx + dy * dy + 40;
+      const af = 5200 / d2;
+      fx += dx * af / Math.sqrt(d2); fy += dy * af / Math.sqrt(d2); }
+    n.vx = (n.vx + fx) * 0.82; n.vy = (n.vy + fy) * 0.82;
+    n.x += n.vx * G.alpha * 2.2; n.y += n.vy * G.alpha * 2.2;
+    n.x = Math.max(46, Math.min(G.w - 46, n.x));
+    n.y = Math.max(40, Math.min(G.h - 34, n.y));
+  }
+  G.alpha = Math.max(0, G.alpha - 0.004);
+}
+function drawGraph() {
+  gctx.clearRect(0, 0, G.w, G.h);
+  const ns = [...G.nodes.values()];
+  gctx.lineWidth = 1; gctx.strokeStyle = 'rgba(17,17,20,.10)';
+  const byEnt = {};
+  for (const n of ns) (byEnt[n.ent] ||= []).push(n);
+  for (const g of Object.values(byEnt))         // same-entity hairlines
+    for (let a = 0; a < g.length; a++) for (let b = a + 1; b < g.length; b++) {
+      gctx.beginPath(); gctx.moveTo(g[a].x, g[a].y); gctx.lineTo(g[b].x, g[b].y);
+      gctx.stroke(); }
+  for (const f of G.fx) {                       // agent -> belief action edges
+    const to = f.key ? G.nodes.get(f.key) : { x: G.w / 2, y: G.h / 2 };
+    if (!to) continue;
+    const a = Math.min(1, f.ttl / 90);
+    gctx.strokeStyle = f.color + Math.round(a * 200).toString(16).padStart(2, '0');
+    gctx.lineWidth = 1.6;
+    const mx = (f.from.x + to.x) / 2, my = (f.from.y + to.y) / 2 - 26;
+    gctx.beginPath(); gctx.moveTo(f.from.x, f.from.y);
+    gctx.quadraticCurveTo(mx, my, to.x, to.y); gctx.stroke();
+    f.ttl -= 1;
+  }
+  G.fx = G.fx.filter(f => f.ttl > 0);
+  gctx.font = '9.5px ui-monospace,Menlo,monospace'; gctx.textAlign = 'center';
+  for (const [ent, g] of Object.entries(byEnt)) {  // entity label
+    const cx = Math.max(50, Math.min(G.w - 50,
+      g.reduce((s, n) => s + n.x, 0) / g.length));
+    const cy = Math.max(12, Math.min(...g.map(n => n.y)) - 16);
+    gctx.fillStyle = 'rgba(17,17,20,.42)';
+    gctx.fillText(ent, cx, cy);
+  }
+  for (const n of ns) {
+    const b = n.b, r = 6 + Math.min(b.churn || 0, 4) * 1.6;
+    if (n.flash > 0) { gctx.beginPath();       // amber halo on touch
+      gctx.arc(n.x, n.y, r + 7 + (n.flash % 30) / 6, 0, 7);
+      gctx.strokeStyle = 'rgba(232,163,61,' + (n.flash / 160) + ')';
+      gctx.lineWidth = 2; gctx.stroke(); n.flash -= 1; }
+    if (b.wrong_now > 0.05) { gctx.beginPath(); // the risk ring
+      gctx.arc(n.x, n.y, r + 3.5, 0, 7);
+      gctx.strokeStyle = 'rgba(209,52,56,' + (0.25 + b.wrong_now * 0.75) + ')';
+      gctx.lineWidth = 1.5 + b.wrong_now * 2.5; gctx.stroke(); }
+    gctx.beginPath(); gctx.arc(n.x, n.y, r, 0, 7);
+    gctx.fillStyle = srcColor(b.source, b.weak); gctx.fill();
+    if (G.sel === b.key) { gctx.beginPath(); gctx.arc(n.x, n.y, r + 6, 0, 7);
+      gctx.strokeStyle = '#17171a'; gctx.lineWidth = 1.2; gctx.stroke(); }
+    gctx.fillStyle = 'rgba(17,17,20,.55)';
+    gctx.fillText(b.key.split('::')[1] || '',
+      Math.max(44, Math.min(G.w - 44, n.x)), n.y + r + 11);
+  }
+  gctx.font = '600 9px ui-monospace,Menlo,monospace';
+  for (const a of AGENTS) {                     // pinned agents
+    gctx.beginPath(); gctx.arc(a.x, a.y, 9, 0, 7);
+    gctx.fillStyle = '#ffffff'; gctx.fill();
+    gctx.strokeStyle = a.color; gctx.lineWidth = 2; gctx.stroke();
+    gctx.fillStyle = a.color; gctx.fillText(a.id, a.x, a.y - 15);
+  }
+}
+(function loop() { stepPhysics(); drawGraph(); requestAnimationFrame(loop); })();
+gc.addEventListener('click', ev => {
+  const r = gc.getBoundingClientRect();
+  const x = ev.clientX - r.left, y = ev.clientY - r.top;
+  let best = null, bd = 18 * 18;
+  for (const [key, n] of G.nodes) { const d = (n.x - x) ** 2 + (n.y - y) ** 2;
+    if (d < bd) { bd = d; best = key; } }
+  G.sel = best;
+  const card = $('nodecard');
+  if (!best) { card.hidden = true; return; }
+  const b = G.nodes.get(best).b;
+  $('nckey').textContent = b.key;
+  $('ncsrc').textContent = b.source || 'unsourced';
+  $('ncsrc').style.background = srcColor(b.source, b.weak);
+  $('ncval').textContent = b.value;
+  $('ncw').textContent = b.wrong_now.toFixed(2);
+  $('ncs').textContent = b.superseded_next.toFixed(2);
+  $('ncc').textContent = String(b.churn || 0);
+  card.hidden = false;
+});
+$('ncclose').addEventListener('click', () => { G.sel = null; $('nodecard').hidden = true; });
+sizeGraph();
 
 // ---- live mode: your own evidence through the real society ----
 const liveSid = 'live-' + Math.random().toString(36).slice(2, 10);
@@ -333,6 +768,7 @@ function setMode(m) {
   document.querySelector('.controls').style.display = m === 'replay' ? 'flex' : 'none';
   $('livebar').style.display = m === 'live' ? 'flex' : 'none';
   feed.replaceChildren(); term.replaceChildren(); board.replaceChildren();
+  G.nodes.clear(); G.fx = []; G.sel = null; $('nodecard').hidden = true;
   if (m === 'replay') { i = -1; apply(0, true); }
   else { i = liveN;
     liveMsg('你自己的证据、真实的社会、真实的学习门控 — 每次调用都消耗真实 token');
@@ -363,6 +799,7 @@ function liveRender(e) {
     const hot = new Set(e.type === 'evidence' ? e.asserts.map(a => a.key)
       : (e.events || []).filter(t => t.key).map(t => t.key));
     renderBoard(e.board, hot);
+    updateGraph(e);
     liveMsg(`${e.board.length} 条信念 · 已问 ${liveQ} · 辩论 ${liveFired} · 本会话已花 $${liveCost.toFixed(4)}`);
   }, cards.length * step);
 }

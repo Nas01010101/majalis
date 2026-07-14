@@ -85,6 +85,7 @@ def test_spend_guard_cap_and_token(client, monkeypatch):
     monkeypatch.setenv("AGORA_LIVE_DAILY_CAP", "0")
     r = client.post("/ask", json={"question": "q"})
     assert r.status_code == 429
+    assert "paused" in r.json()["detail"]  # cap 0 = paused, not "try tomorrow"
     monkeypatch.setenv("AGORA_LIVE_TOKEN", "s3cret")
     ok = client.post("/ask", json={"question": "q"},
                      headers={"X-Agora-Token": "s3cret"})

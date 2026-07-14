@@ -24,6 +24,11 @@ from dashboard_panels import auroc_bars, reliability_panel, scaling_chart  # noq
 
 RESULTS, DATA = ROOT / "results", ROOT / "data"
 OUT = ROOT / "dashboard" / "index.html"
+# Astryx neutral design tokens (vendored, see scripts/extract_astryx_tokens.py)
+# + the Agora skin overrides + Figtree, inlined: one self-contained file.
+TOKENS = ((ROOT / "web" / "astryx-tokens.css").read_text()
+          + (ROOT / "web" / "agora-skin.css").read_text())
+FONT = (ROOT / "web" / "figtree.css").read_text()
 
 # Categorical slots in fixed order (validated); color follows the entity.
 LIGHT = {"agora-wm": "#2a78d6", "agora": "#1baf7a", "single": "#eda100",
@@ -32,56 +37,62 @@ DARK = {"agora-wm": "#3987e5", "agora": "#199e70", "single": "#c98500",
         "learned": "#3987e5", "baseline": "#898781"}
 
 CSS = """
-:root { --surface:#fcfcfb; --plane:#f6f6f2; --ink:#151412; --ink2:#52514e;
-  --muted:#8a8780; --grid:#e3e1da; --axis:#c4c2ba; --good:#0ca30c;
-  --warn:#fab219; --crit:#d03b3b; --border:rgba(21,20,18,.11);
-  --wm:#2a78d6; --ag:#1baf7a; --si:#eda100; --base:#898781;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-@media (prefers-color-scheme: dark) {
-  :root { --surface:#191b1a; --plane:#0f1110; --ink:#f4f4f1; --ink2:#c3c2b7;
-    --muted:#8a8780; --grid:#2b2d2b; --axis:#3a3c3a; --good:#0ca30c;
-    --warn:#fab219; --crit:#d03b3b; --border:rgba(244,244,241,.11);
-    --wm:#3987e5; --ag:#199e70; --si:#c98500; } }
+/* Page styles on Astryx neutral tokens (web/astryx-tokens.css). Aliases keep
+   the chart generators' var() names stable; series hues stay the validated
+   categorical palette (color = data identity, not theme). */
+:root { --surface:var(--color-background-surface); --plane:var(--color-background-body);
+  --ink:var(--color-text-primary); --ink2:var(--color-text-secondary);
+  --muted:var(--color-text-secondary); --grid:var(--color-border);
+  --axis:var(--color-border-emphasized); --border:var(--color-border);
+  --good:var(--color-success); --warn:var(--color-warning); --crit:var(--color-error);
+  --accent:var(--color-accent);
+  --wm:light-dark(#2a78d6,#3987e5); --ag:light-dark(#1baf7a,#199e70);
+  --si:light-dark(#eda100,#c98500); --base:#898781;
+  --mono:var(--font-family-code); }
 * { box-sizing:border-box; }
 body { background:var(--plane); color:var(--ink); margin:0 auto;
-  padding:32px 24px 48px; max-width:1120px;
-  font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
-h1 { font-size:30px; line-height:1.18; font-weight:680; letter-spacing:-0.015em;
-  margin:10px 0 8px; max-width:40ch; text-wrap:balance; }
-.eyebrow { font:600 11px/1 var(--mono); letter-spacing:.09em;
-  text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
-.eyebrow b { color:var(--wm); font-weight:600; }
-h2 { font-size:17px; font-weight:650; letter-spacing:-0.01em; margin:2px 0 6px;
-  text-wrap:balance; }
+  padding:32px 24px 48px; max-width:1080px;
+  font:var(--font-size-base)/1.55 var(--font-family-body);
+  font-size:14.5px; }
+h1 { font-size:var(--font-size-2xl); line-height:1.3; font-weight:var(--font-weight-semibold);
+  margin:10px 0 8px; max-width:44ch; text-wrap:balance; }
+.eyebrow { font-size:var(--font-size-sm); font-weight:var(--font-weight-semibold);
+  color:var(--ink2); margin:0 0 8px; }
+h2 { font-size:var(--font-size-lg); font-weight:var(--font-weight-semibold);
+  margin:2px 0 6px; text-wrap:balance; }
 .skip { position:absolute; left:-9999px; top:0; background:var(--surface);
-  color:var(--ink); padding:8px 14px; border-radius:8px; z-index:20; }
+  color:var(--ink); padding:8px 14px; border-radius:var(--radius-element); z-index:20; }
 .skip:focus { left:12px; top:12px; }
-:focus-visible { outline:2px solid var(--wm); outline-offset:2px; border-radius:3px; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px;
+  border-radius:var(--radius-inner); }
 .brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
 .brand svg { flex:0 0 auto; }
-.brand .word { font-size:24px; font-weight:650; letter-spacing:.2px; }
-nav.links { display:flex; gap:16px; flex-wrap:wrap; font-size:13.5px; margin:12px 0 2px; }
-nav.links a { color:var(--wm); text-decoration:none; font-weight:560; }
-nav.links a:hover { text-decoration:underline; }
+.brand .word { font-size:var(--font-size-xl); font-weight:var(--font-weight-semibold); }
+nav.links { display:flex; gap:16px; flex-wrap:wrap; font-size:var(--font-size-base);
+  margin:12px 0 2px; }
+nav.links a { color:var(--ink); text-decoration:underline;
+  text-decoration-color:var(--color-border-emphasized); text-underline-offset:3px; }
+nav.links a:hover { text-decoration-color:var(--accent); }
 code, .mono { font-family:var(--mono); font-size:.9em;
-  background:color-mix(in srgb, var(--ink) 6%, var(--surface));
-  padding:1px 5px; border-radius:5px; }
+  background:var(--color-background-muted); padding:1px 5px;
+  border-radius:var(--radius-inner); }
 pre.try { font-family:var(--mono); font-size:12.5px; line-height:1.7;
-  background:#111311; color:#cfcec5; border:1px solid var(--border);
-  border-radius:10px; padding:12px 15px; overflow-x:auto; margin:14px 0 0; }
-pre.try .p { color:#5fa86a; } pre.try .c { color:#787771; }
+  background:var(--surface); color:var(--ink); border:1px solid var(--border);
+  border-radius:var(--radius-element); padding:12px 15px; overflow-x:auto; margin:14px 0 0; }
+pre.try .p, pre.try .c { color:var(--ink2); }
 .sub { color:var(--ink2); margin:0 0 8px; max-width:72ch; }
 .card { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:18px 20px; margin:12px 0; }
+  border-radius:var(--radius-container); padding:18px 20px; margin:12px 0; }
 .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:12px; margin:20px 0 8px; }
 .tile { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:16px 18px; }
-.tile .v { font-size:32px; font-weight:680; letter-spacing:-0.02em; line-height:1.1; }
-.tile .k { color:var(--ink2); font-size:12.5px; margin-top:5px; line-height:1.4; }
-.tile .d { font-size:12px; margin-top:5px; color:var(--ink2); }
+  border-radius:var(--radius-container); padding:16px 18px; }
+.tile .v { font-size:var(--font-size-3xl); font-weight:var(--font-weight-semibold);
+  line-height:1.1; font-variant-numeric:tabular-nums; }
+.tile .k { color:var(--ink2); font-size:var(--font-size-sm); margin-top:5px; line-height:1.4; }
+.tile .d { font-size:var(--font-size-sm); margin-top:5px; color:var(--ink2); }
 .tile .d.up { color:var(--good); }
-.legend { display:flex; gap:18px; font-size:13px; color:var(--ink2);
+.legend { display:flex; gap:18px; font-size:var(--font-size-sm); color:var(--ink2);
   margin:2px 0 6px; flex-wrap:wrap; }
 .key { display:inline-block; width:14px; height:3px; border-radius:2px;
   vertical-align:3px; margin-right:6px; }
@@ -94,7 +105,7 @@ svg .grid { stroke:var(--grid); stroke-width:1; }
 svg .axis { stroke:var(--axis); stroke-width:1; }
 svg .ref { stroke:var(--muted); stroke-width:1; }
 svg .xhair { stroke:var(--muted); stroke-width:1; }
-svg text { fill:var(--ink2); font:11px system-ui,sans-serif; }
+svg text { fill:var(--ink2); font:11px Figtree,system-ui,sans-serif; }
 svg .tick { fill:var(--muted); font-variant-numeric:tabular-nums; }
 svg .cap { fill:var(--ink2); font-weight:600; }
 svg .endlabel { fill:var(--ink2); font-weight:600; font-size:12px; }
@@ -102,22 +113,24 @@ svg .subtitle { fill:var(--ink2); font-weight:600; font-size:12px; }
 svg .bar, svg .dot { cursor:default; } svg .bar:hover, svg .bar:focus,
 svg .dot:hover, svg .dot:focus { opacity:.85; outline:none; }
 .wrap { overflow-x:auto; }
-table { border-collapse:collapse; width:100%; font-size:13px; }
+table { border-collapse:collapse; width:100%; font-size:var(--font-size-sm); }
 th,td { text-align:left; padding:5px 10px; border-bottom:1px solid var(--grid);
   font-variant-numeric:tabular-nums; }
-th { color:var(--ink2); font-weight:550; }
-.chip { font-size:12px; font-weight:650; padding:1px 8px; border-radius:9px;
-  border:1px solid var(--border); white-space:nowrap; }
-.chip.fire { color:var(--ink); background:color-mix(in srgb, var(--warn) 22%, var(--surface)); }
-.chip.ok { color:var(--ink); background:color-mix(in srgb, var(--good) 16%, var(--surface)); }
+th { color:var(--ink2); font-weight:var(--font-weight-normal); }
+.chip { font-size:var(--font-size-sm); font-weight:var(--font-weight-semibold);
+  padding:1px 8px; border-radius:var(--radius-full); border:1px solid var(--border);
+  white-space:nowrap; }
+.chip.fire { color:var(--ink); background:var(--color-warning-muted); }
+.chip.ok { color:var(--ink); background:var(--color-success-muted); }
 .good { color:var(--good); } .crit { color:var(--crit); }
-details { margin:8px 0; } summary { color:var(--ink2); cursor:pointer; font-size:13px; }
-#tip { position:fixed; display:none; background:var(--surface); color:var(--ink);
-  border:1px solid var(--border); border-radius:8px; padding:8px 10px;
-  font-size:12.5px; pointer-events:none; box-shadow:0 4px 14px rgba(0,0,0,.15);
+details { margin:8px 0; } summary { color:var(--ink2); cursor:pointer;
+  font-size:var(--font-size-sm); }
+#tip { position:fixed; display:none; background:var(--color-background-popover);
+  color:var(--ink); border:1px solid var(--border); border-radius:var(--radius-element);
+  padding:8px 10px; font-size:12.5px; pointer-events:none; box-shadow:var(--shadow-med);
   max-width:320px; z-index:9; }
-#tip .val { font-weight:650; } #tip .lbl { color:var(--ink2); }
-footer { color:var(--muted); font-size:12.5px; margin-top:28px; max-width:80ch; }
+#tip .val { font-weight:var(--font-weight-semibold); } #tip .lbl { color:var(--ink2); }
+footer { color:var(--muted); font-size:var(--font-size-sm); margin-top:28px; max-width:80ch; }
 footer li { margin:3px 0; }
 """
 
@@ -233,8 +246,8 @@ def gate_table(path: Path) -> str:
         r = json.loads(line)
         g = r.get("gate") or {}
         fired = g.get("fired")
-        chip = ("<span class='chip fire'>▲ DEBATE</span>" if fired
-                else "<span class='chip ok'>✓ commit</span>")
+        chip = ("<span class='chip fire'>debate</span>" if fired
+                else "<span class='chip ok'>commit</span>")
         okmark = ("<span class='good'>✓</span>" if r["correct"]
                   else "<span class='crit'>✗</span>")
         rows += (f"<tr><td>{esc(r['task_id'])}</td><td>{chip}</td>"
@@ -308,31 +321,31 @@ def main() -> None:
             f"{esc(k)}</span>" for k, v in items) + "</div>")
 
     mark_svg = (
-        '<svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">'
+        '<svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">'
         '<rect x="4" y="4" width="56" height="56" rx="14" fill="none" '
-        'stroke="var(--wm)" stroke-width="4.5"/>'
-        '<rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/>'
-        '<rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/>'
-        '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/>'
-        '<rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg>')
+        'stroke="currentColor" stroke-width="4.5"/>'
+        '<rect x="16" y="18" width="32" height="6" rx="3" fill="currentColor"/>'
+        '<rect x="16" y="29" width="16" height="6" rx="3" fill="currentColor" opacity=".45"/>'
+        '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="currentColor" opacity=".45"/>'
+        '<rect x="16" y="40" width="32" height="6" rx="3" fill="currentColor"/></svg>')
     favicon = ("data:image/svg+xml," + html.escape(
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
         '<rect x="4" y="4" width="56" height="56" rx="14" fill="none" '
-        'stroke="%232a78d6" stroke-width="4.5"/>'
-        '<rect x="16" y="18" width="32" height="6" rx="3" fill="%232a78d6"/>'
-        '<rect x="16" y="29" width="16" height="6" rx="3" fill="%23eda100"/>'
-        '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="%23eda100"/>'
-        '<rect x="16" y="40" width="32" height="6" rx="3" fill="%232a78d6"/></svg>'))
+        'stroke="%23171717" stroke-width="4.5"/>'
+        '<rect x="16" y="18" width="32" height="6" rx="3" fill="%23171717"/>'
+        '<rect x="16" y="29" width="16" height="6" rx="3" fill="%23737373"/>'
+        '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="%23737373"/>'
+        '<rect x="16" y="40" width="32" height="6" rx="3" fill="%23171717"/></svg>'))
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Agora — a multi-agent debate society whose learned world model decides when debate is worth the tokens.">
 <link rel="icon" href="{favicon}">
 <title>Agora — a debate society steered by a learned world model</title>
-<style>{CSS}</style></head><body>
+<style>{TOKENS}{FONT}{CSS}</style></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header>
 <div class="brand">{mark_svg}<span class="word">agora</span></div>
-<p class="eyebrow" style="margin-top:18px"><b>Qwen Cloud · Track 3</b> — agent
+<p class="eyebrow" style="margin-top:18px">Qwen Cloud · Track 3 — agent
 society · learned world model</p>
 <h1>Your agents debate too much. The world model decides when it's worth it.</h1>
 <p class="sub">A society of Qwen agents shares one belief board; two heads
