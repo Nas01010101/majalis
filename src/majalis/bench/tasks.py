@@ -8,7 +8,7 @@ deciding evidence. This is the regime where debate has literature support
 (verification/factuality) and where a belief-state substrate should shine.
 
 Family B — "multihop": multi-hop QA control. Per Tran & Kiela (2604.02460)
-a single agent at equal budget should match or win here — Agora's gate is
+a single agent at equal budget should match or win here — Majalis's gate is
 expected to stay mostly CLOSED. We report this honestly as the negative
 control that shows the world model knows when debate is not worth tokens.
 

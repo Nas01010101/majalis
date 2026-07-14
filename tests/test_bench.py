@@ -1,8 +1,8 @@
 import re
 
-from agora.beliefs import parse_date_ord
-from agora.bench.stats import wilson_ci
-from agora.bench.tasks import grade, load_tasks
+from majalis.beliefs import parse_date_ord
+from majalis.bench.stats import wilson_ci
+from majalis.bench.tasks import grade, load_tasks
 
 
 def test_churn_gold_matches_latest_dated_evidence():

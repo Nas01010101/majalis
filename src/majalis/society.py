@@ -1,4 +1,4 @@
-"""The Agora society: star-topology orchestrator over role agents.
+"""The Majalis society: star-topology orchestrator over role agents.
 
 The orchestrator is deterministic Python — the only component that touches
 the belief board (sole-writer, mirrors Tenet's single-writer constraint).
@@ -124,7 +124,7 @@ def adjudicate(task: Task, board: BeliefBoard, proposal: Proposal,
 
 # --- Orchestrator -------------------------------------------------------------
 
-def run_agora(task: Task, *, seed: int = 0,
+def run_majalis(task: Task, *, seed: int = 0,
               model_strong: str = MODEL_STRONG,
               model_fast: str = MODEL_FAST,
               gate_mode: str = "wm",  # wm | always | never (ablations)
@@ -198,7 +198,7 @@ def run_agora(task: Task, *, seed: int = 0,
     return result
 
 
-class AgoraSession:
+class MajalisSession:
     """Incremental society over an evidence STREAM: ingest each batch once,
     answer every question from the compact board; debates read per-key
     dockets. This is where the world model's cost structure pays —
@@ -278,13 +278,13 @@ class AgoraSession:
         return result
 
 
-def _agora_arm(task: Task, *, seed: int = 0) -> ArmResult:
-    return run_agora(task, seed=seed)
+def _majalis_arm(task: Task, *, seed: int = 0) -> ArmResult:
+    return run_majalis(task, seed=seed)
 
 
-ARMS["agora"] = _agora_arm
+ARMS["majalis"] = _majalis_arm
 # Ablations: isolate the value of the gate (sparsity), of debate itself
 # (belief board perception only), and of EIG targeting.
-ARMS["agora-nogate"] = lambda task, *, seed=0: run_agora(task, seed=seed, gate_mode="always")
-ARMS["agora-nodebate"] = lambda task, *, seed=0: run_agora(task, seed=seed, gate_mode="never")
-ARMS["agora-noeig"] = lambda task, *, seed=0: run_agora(task, seed=seed, eig_targeting=False)
+ARMS["majalis-nogate"] = lambda task, *, seed=0: run_majalis(task, seed=seed, gate_mode="always")
+ARMS["majalis-nodebate"] = lambda task, *, seed=0: run_majalis(task, seed=seed, gate_mode="never")
+ARMS["majalis-noeig"] = lambda task, *, seed=0: run_majalis(task, seed=seed, eig_targeting=False)

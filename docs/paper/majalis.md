@@ -1,5 +1,5 @@
 ---
-title: "Agora: A Learned World Model Decides When Multi-Agent Debate Is Worth the Tokens"
+title: "Majalis: A Learned World Model Decides When Multi-Agent Debate Is Worth the Tokens"
 author: "Anas — Global AI Hackathon with Qwen Cloud, Track 3: Agent Society"
 date: "July 11, 2026"
 mainfont: "Times New Roman"
@@ -10,7 +10,7 @@ numbersections: true
 abstract: |
   Multi-agent debate (MAD) on a shared backbone largely re-purchases
   self-consistency at a premium, and a single agent at equal token budget is
-  a strong baseline. We present Agora, a small society of heterogeneous Qwen
+  a strong baseline. We present Majalis, a small society of heterogeneous Qwen
   agents whose debate lifecycle is controlled by a world model **trained on
   the society's own logged episodes** rather than by hand-set heuristics. A
   shared belief board amortizes perception across an evidence stream; two
@@ -33,7 +33,7 @@ abstract: |
   reproduce from seeds in the repository.
 
   **摘要** — 多智能体辩论在同构模型上大多以更高成本重复自洽采样。本文提出
-  Agora：一个由异构 Qwen 智能体组成的小型社会，其辩论全流程由一个**在
+  Majalis：一个由异构 Qwen 智能体组成的小型社会，其辩论全流程由一个**在
   社会自身运行日志上训练的世界模型**调控。共享信念板将感知成本在证据流上
   摊销；两个训练头（`wrong_now`：当前信念是否错误；`superseded_next`：
   是否将被权威信息推翻）与在真实日志上拟合的融合器共同给出风险评分，
@@ -60,7 +60,7 @@ communication topology (DySCo [7]; PEAR [8]). These controllers
 are *stateless*: each query is gated in isolation, and whatever the gate
 learned about the world is discarded.
 
-Agora moves the controller into a **persistent, learned world model**. A
+Majalis moves the controller into a **persistent, learned world model**. A
 society of heterogeneous Qwen agents maintains one shared belief board over
 a stream of dated, contradictory evidence; the board is both the working
 memory that amortizes perception and the substrate the world model reads.
@@ -102,7 +102,7 @@ self-critique text to trigger debate per query (up to 92% token reduction,
 accuracy cost in an industrial setting; ARMOR-MAD [5] routes by
 round-0 agreement, stops on convergence, and down-weights outliers,
 training-free; a Wald-SPRT governor [6] cuts calls 3.7× on GSM8K but
-inherits its judge's mis-calibration elsewhere. Agora differs in *state*:
+inherits its judge's mis-calibration elsewhere. Majalis differs in *state*:
 its gate reads a persistent belief board whose risk estimates compound
 across a stream, catches corruption that per-query classifiers cannot see
 (all samples read the same corrupted board), and costs zero LLM calls at
@@ -112,26 +112,26 @@ decision time.
 trains a LightGBM on a 22-dimensional debate fingerprint from 686 logged
 episodes to decide when to overturn majority voting — and shows an
 LLM-as-judge *degrades* performance. This validates small trained tabular
-controllers on logged episodes; Agora applies the recipe upstream of the
+controllers on logged episodes; Majalis applies the recipe upstream of the
 debate (commit-vs-debate) rather than after it.
 
 **Conformal control for agent decisions.** Conformal Social Choice
 [10] applies split conformal prediction over pooled agent probabilities
 for act-versus-escalate decisions with a marginal coverage guarantee.
-Agora's guarantee has the same form (split CRC, exchangeable calibration
+Majalis's guarantee has the same form (split CRC, exchangeable calibration
 split) but calibrates a *learned* score over a persistent belief state, and
 routes risk to a debate that can repair the state instead of escalating to
 a human.
 
 **Belief substrates.** Typed belief stores with supersession and epistemic
 status are established 2026 art — Tenure [12], TOKI's write-time
-contradiction control [13], WorldDB [14]. Agora claims no novelty
+contradiction control [13], WorldDB [14]. Majalis claims no novelty
 for the substrate; the contribution is what it is wired to — the substrate
 is the world model's feature source and the debate's write-back target.
 
 **Multi-agent failure taxonomies.** MAST [15] attributes multi-agent
 failures to inter-agent misalignment and weak verification/termination.
-Agora's answers are structural: star topology (no agent-to-agent chat),
+Majalis's answers are structural: star topology (no agent-to-agent chat),
 typed artifact handoffs, author≠validator separation across backbones, and
 termination owned by the world model.
 
@@ -246,11 +246,11 @@ identically against generator truth, with one shared token/USD ledger
 
 **single** — one qwen3.7-max agent that re-reads the stream-so-far for
 every question (O(stream) input tokens per question). **mad** — vanilla
-3-agent × 3-round debate per question. **agora (heuristic)** — identical
+3-agent × 3-round debate per question. **majalis (heuristic)** — identical
 society with the original hand-set gate (logistic blend with hand-chosen
-weights + fixed-prior Lomax survival), preserved as `AGORA_WM=heuristic`.
-**agora-nodebate** — board and gate, debates disabled (isolates what
-debate adds). **agora-wm** — the learned world model of §3.
+weights + fixed-prior Lomax survival), preserved as `MAJALIS_WM=heuristic`.
+**majalis-nodebate** — board and gate, debates disabled (isolates what
+debate adds). **majalis-wm** — the learned world model of §3.
 
 ## Metrics
 
@@ -270,18 +270,18 @@ Pooled session results (Wilson 95% CIs in the repository dashboard):
 |---|---|---|---|---|
 | single | 8 | 80/80 | 0.00787 | 1,481 |
 | mad (3×3) | 8 | 32/32 | **0.07086** | 15,614 |
-| agora (heuristic) | 8 | 111/112 | 0.00563 | 2,840 |
-| agora-nodebate | 8 | 77/80 (96.2%) | 0.00595 | 3,328 |
-| **agora-wm (learned)** | 8 | **16/16** | 0.00569 | **2,141** |
+| majalis (heuristic) | 8 | 111/112 | 0.00563 | 2,840 |
+| majalis-nodebate | 8 | 77/80 (96.2%) | 0.00595 | 3,328 |
+| **majalis-wm (learned)** | 8 | **16/16** | 0.00569 | **2,141** |
 | single | 16 | 64/64 | 0.00974 | 2,141 |
-| agora (heuristic) | 16 | 64/64 | 0.00658 | 3,569 |
-| **agora-wm (learned)** | 16 | **32/32** | **0.00540** | 2,153 |
+| majalis (heuristic) | 16 | 64/64 | 0.00658 | 3,569 |
+| **majalis-wm (learned)** | 16 | **32/32** | **0.00540** | 2,153 |
 | single | 32 | 128/128 | 0.01370 | 3,525 |
-| agora (heuristic) | 32 | 128/128 | 0.00665 | 3,891 |
+| majalis (heuristic) | 32 | 128/128 | 0.00665 | 3,891 |
 
 The single agent's cost grows linearly with stream length (re-reading);
-Agora's is flat, 2.1× cheaper at 32 steps and still growing apart. Vanilla
-MAD pays 12.6× Agora's cost for the same accuracy. The no-debate ablation
+Majalis's is flat, 2.1× cheaper at 32 steps and still growing apart. Vanilla
+MAD pays 12.6× Majalis's cost for the same accuracy. The no-debate ablation
 shows the honest value of debate here: its three errors are exactly the
 rumor-poisoned beliefs the world model flags, and gated debate corrects all
 three for +$0.0004 per question. The learned arm additionally cuts tokens
@@ -387,11 +387,11 @@ All numbers reproduce from seeds with five commands against the released
 repository: `make test` (27 tests), `python scripts/gen_wm_dataset.py`
 (dataset, 1.4s, zero API), `python train/train_wm.py` (18s GPU or ~1min
 CPU), `python scripts/offline_bench.py` (Table 3, zero API, <1s), and
-`python -m agora.bench.session --arms single,agora,mad,agora-wm` (paid
+`python -m majalis.bench.session --arms single,majalis,mad,majalis-wm` (paid
 cells; finished cells resume free from raw logs). Calibration:
-`python -m agora.bench.calibrate --session-seeds 100,101,102` then
+`python -m majalis.bench.calibrate --session-seeds 100,101,102` then
 `python scripts/refit_gate_learned.py` (offline). The heuristic arm is
-preserved under `AGORA_WM=heuristic`.
+preserved under `MAJALIS_WM=heuristic`.
 
 # References
 

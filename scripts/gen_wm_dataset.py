@@ -21,9 +21,9 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from agora.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
-from agora.bench.stream import make_session  # noqa: E402
-from agora.wmfeat import key_features, parse_line, replay_stream  # noqa: E402
+from majalis.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
+from majalis.bench.stream import make_session  # noqa: E402
+from majalis.wmfeat import key_features, parse_line, replay_stream  # noqa: E402
 
 OUT = ROOT / "data"
 

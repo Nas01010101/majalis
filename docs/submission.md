@@ -1,13 +1,13 @@
 # Devpost submission draft — Track 3: Agent Society
 
-**Title**: Agora — a world-model-modulated debate society
+**Title**: Majalis — a world-model-modulated debate society
 
 **Tagline**: Agents that know when a disagreement is worth the tokens.
 
 ## Description (paste into Devpost)
 
 Multi-agent debate has a dirty secret: on a single backbone it mostly re-buys
-self-consistency at 10× the cost (arXiv:2502.08788, 2604.02460). Agora is a
+self-consistency at 10× the cost (arXiv:2502.08788, 2604.02460). Majalis is a
 society of heterogeneous Qwen agents (qwen3.7-max / plus / 3.6-flash) whose
 debates are governed by a shared **world model**: a persistent belief board
 with keyed supersession, per-belief survival estimates, provenance dockets,
@@ -36,7 +36,7 @@ corrects all 3.
 
 **Measurable efficiency gain** (track requirement c, one command, Wilson 95%
 CIs, identical events + shared token/USD ledger per arm): on evidence streams
-with interleaved questions, Agora matches single-agent and vanilla-MAD
+with interleaved questions, Majalis matches single-agent and vanilla-MAD
 accuracy exactly (272/272) while its cost per question stays **flat**
 ($0.0056) as the stream grows — the single agent re-reads the stream every
 question and grows linearly ($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD
@@ -47,7 +47,7 @@ seeds).
 **Qwen Cloud usage**: three Qwen backbones via the OpenAI-compatible API
 (model heterogeneity is the one debate lever with robust evidence —
 2502.08788's "universal antidote"); backend deployed on Alibaba Cloud ECS
-(`src/agora/api.py`); real Qwen Cloud pricing in the cost ledger.
+(`src/majalis/api.py`); real Qwen Cloud pricing in the cost ledger.
 
 **Honest limits**: guarantees are marginal over exchangeable tasks and apply
 to the ACCEPT decision; benchmark families are synthetic-but-property-tested
@@ -56,9 +56,9 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 
 ## Form checklist
 - Track: 3 (Agent Society)
-- Repo: github.com/Nas01010101/agora (public by submit; MIT LICENSE in About)
+- Repo: github.com/Nas01010101/majalis (public by submit; MIT LICENSE in About)
 - Architecture diagram: docs/architecture.md (+ dashboard screenshot)
 - Demo video: <3min YouTube (scripts/demo.sh flow + dashboard + bench table)
 - Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
-  + /ingest + /ask from public IP; code file: src/agora/api.py
+  + /ingest + /ask from public IP; code file: src/majalis/api.py
 - Testing access: instance stays up through judging (Jul 31)

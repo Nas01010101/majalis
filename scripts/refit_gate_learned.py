@@ -16,11 +16,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from agora.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
-from agora.bench.stream import make_session  # noqa: E402
-from agora.wm import AcceptGate  # noqa: E402
-from agora.wmfeat import parse_line  # noqa: E402
-from agora.wmnet import LearnedWM  # noqa: E402
+from majalis.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
+from majalis.bench.stream import make_session  # noqa: E402
+from majalis.wm import AcceptGate  # noqa: E402
+from majalis.wmfeat import parse_line  # noqa: E402
+from majalis.wmnet import LearnedWM  # noqa: E402
 
 
 def main() -> None:

@@ -1,7 +1,7 @@
 import re
 
-from agora.beliefs import parse_date_ord
-from agora.bench.stream import make_session
+from majalis.beliefs import parse_date_ord
+from majalis.bench.stream import make_session
 
 _VALUE_RE = re.compile(r"\b(?:is|as|remains) (.+?)\.$")
 

@@ -1,9 +1,9 @@
 """Session benchmark runner — the deployment-shaped eval.
 
-    python -m agora.bench.session --arms single,mad,agora --seeds 0,1,2
+    python -m majalis.bench.session --arms single,mad,majalis --seeds 0,1,2
 
 Every arm sees the SAME event sequence. Baselines re-read the full stream-
-so-far per question (that is the honest no-memory best practice); the agora
+so-far per question (that is the honest no-memory best practice); the majalis
 arm ingests incrementally and answers from its persistent board.
 """
 from __future__ import annotations
@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ..config import MODEL_STRONG
 from ..llm import Ledger, chat
-from ..society import AgoraSession
+from ..society import MajalisSession
 from .arms import _extract, vanilla_mad
 from .stats import fmt_acc
 from .stream import make_session
@@ -59,8 +59,8 @@ def _replay_mad(events, seed: int) -> list[dict]:
     return records
 
 
-def _replay_agora(events, seed: int, gate_mode: str = "wm") -> list[dict]:
-    session = AgoraSession(seed=seed, gate_mode=gate_mode)
+def _replay_majalis(events, seed: int, gate_mode: str = "wm") -> list[dict]:
+    session = MajalisSession(seed=seed, gate_mode=gate_mode)
     records = []
     for ev in events:
         if ev.kind == "evidence":
@@ -79,14 +79,14 @@ def _replay_agora(events, seed: int, gate_mode: str = "wm") -> list[dict]:
 REPLAYS = {
     "single": _replay_single,
     "mad": _replay_mad,
-    "agora": _replay_agora,
+    "majalis": _replay_majalis,
     # Ablation: same board, debates never fire — isolates what debate adds.
-    "agora-nodebate": lambda ev, seed: _replay_agora(ev, seed, gate_mode="never"),
+    "majalis-nodebate": lambda ev, seed: _replay_majalis(ev, seed, gate_mode="never"),
     # Learned world model (trained heads + stacker; wm.py auto-loads
     # data/wm_weights.json). A separate arm name means separate raw files —
     # the frozen heuristic-gate numbers are never clobbered. Reproduce the
-    # heuristic arm exactly with AGORA_WM=heuristic.
-    "agora-wm": _replay_agora,
+    # heuristic arm exactly with MAJALIS_WM=heuristic.
+    "majalis-wm": _replay_majalis,
 }
 
 
@@ -145,7 +145,7 @@ def run_session_arm(arm: str, seed: int, n_steps: int = 8) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arms", default="single,agora")
+    ap.add_argument("--arms", default="single,majalis")
     ap.add_argument("--seeds", default="0")
     ap.add_argument("--steps", default="8", help="comma list of stream lengths")
     args = ap.parse_args()

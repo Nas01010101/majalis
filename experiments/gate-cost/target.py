@@ -1,4 +1,4 @@
-"""Autoresearch target: measure agora $/question on held-out seeds 5,6.
+"""Autoresearch target: measure majalis $/question on held-out seeds 5,6.
 
 EDITABLE KNOBS (the only thing iterations change):
 """
@@ -12,23 +12,23 @@ import pathlib
 import subprocess
 import sys
 
-AGORA = pathlib.Path.home() / "Projects" / "agora"
+AGORA = pathlib.Path.home() / "Projects" / "majalis"
 SEEDS = (5, 6)
 
 for seed in SEEDS:  # never resume a cached cell — force live measurement
-    (AGORA / "results" / "raw" / f"session_agora_s{seed}_t8.jsonl").unlink(missing_ok=True)
+    (AGORA / "results" / "raw" / f"session_majalis_s{seed}_t8.jsonl").unlink(missing_ok=True)
 
-env = dict(os.environ, AGORA_GATE_K=GATE_K, AGORA_GATE_SKIP_DOUBT=SKIP_DOUBT)
+env = dict(os.environ, MAJALIS_GATE_K=GATE_K, MAJALIS_GATE_SKIP_DOUBT=SKIP_DOUBT)
 proc = subprocess.run(
-    [str(AGORA / ".venv" / "bin" / "python"), "-m", "agora.bench.session",
-     "--arms", "agora", "--seeds", ",".join(map(str, SEEDS)), "--steps", "8"],
+    [str(AGORA / ".venv" / "bin" / "python"), "-m", "majalis.bench.session",
+     "--arms", "majalis", "--seeds", ",".join(map(str, SEEDS)), "--steps", "8"],
     cwd=AGORA, env=env, capture_output=True, text=True, timeout=1700)
 print(proc.stdout[-1500:], proc.stderr[-500:], file=sys.stderr)
 
 correct = n = 0
 cost = 0.0
 for seed in SEEDS:
-    for line in (AGORA / "results" / "raw" / f"session_agora_s{seed}_t8.jsonl").read_text().splitlines():
+    for line in (AGORA / "results" / "raw" / f"session_majalis_s{seed}_t8.jsonl").read_text().splitlines():
         r = json.loads(line)
         n += 1
         correct += r["correct"]

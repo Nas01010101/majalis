@@ -14,24 +14,24 @@ self-contained: one small ECS instance, no managed extras.
 
 ```bash
 sudo apt-get update && sudo apt-get install -y python3-venv git
-git clone https://github.com/Nas01010101/agora && cd agora
+git clone https://github.com/Nas01010101/majalis && cd majalis
 python3 -m venv .venv && .venv/bin/pip install -e ".[api]"
 # secrets: copy .env to the instance out-of-band (scp); never commit it
-scp .env <instance>:agora/.env && chmod 600 .env
+scp .env <instance>:majalis/.env && chmod 600 .env
 
 # run under systemd so it survives reboots
-sudo tee /etc/systemd/system/agora.service <<'EOF'
+sudo tee /etc/systemd/system/majalis.service <<'EOF'
 [Unit]
-Description=Agora debate society API
+Description=Majalis debate society API
 After=network.target
 [Service]
-WorkingDirectory=/root/agora
-ExecStart=/root/agora/.venv/bin/uvicorn agora.api:app --host 0.0.0.0 --port 8080
+WorkingDirectory=/root/majalis
+ExecStart=/root/majalis/.venv/bin/uvicorn majalis.api:app --host 0.0.0.0 --port 8080
 Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOF
-sudo systemctl enable --now agora
+sudo systemctl enable --now majalis
 curl -s localhost:8080/healthz   # {"ok": true}
 ```
 
@@ -39,5 +39,5 @@ curl -s localhost:8080/healthz   # {"ok": true}
 
 1. Screen recording: ECS console showing the instance + `curl /healthz` +
    one `/ingest` + `/ask` round-trip from the public IP.
-2. Code pointer for the submission form: `src/agora/api.py` (service) +
-   `src/agora/llm.py` (DashScope/Qwen Cloud API usage).
+2. Code pointer for the submission form: `src/majalis/api.py` (service) +
+   `src/majalis/llm.py` (DashScope/Qwen Cloud API usage).

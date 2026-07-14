@@ -5,7 +5,7 @@
 3. SPEAKER   (society picks the challenger per target; heterogeneous when unlocked)
 4. STOP      committable() + round cap; AnytimeAlarm bounds runaway debates
 5. ACCEPT    CalibratedGate (preact-wm): E[error | accepted] <= alpha, split-CRC
-6. WRITE-BACK society.run_agora writes adjudicated corrections into the board
+6. WRITE-BACK society.run_majalis writes adjudicated corrections into the board
 
 The sampling-frequency law is CSD's honest core (wm-reasoner): the model's
 own K-sample distribution over answers is the world model's predictive law;
@@ -61,8 +61,8 @@ class GateDecision:
 # Tuned by the autoresearch loop (experiments/gate-cost/journal.jsonl):
 # K=2 + skip-below-0.15 cut cost/question 8% on held-out seeds and 12% on
 # eval seeds at unchanged accuracy (80/80). Env-overridable for re-tuning.
-_K_SAMPLES = int(os.environ.get("AGORA_GATE_K", "2"))
-_SKIP_SAMPLER_BELOW_DOUBT = float(os.environ.get("AGORA_GATE_SKIP_DOUBT", "0.15"))
+_K_SAMPLES = int(os.environ.get("MAJALIS_GATE_K", "2"))
+_SKIP_SAMPLER_BELOW_DOUBT = float(os.environ.get("MAJALIS_GATE_SKIP_DOUBT", "0.15"))
 
 
 def sample_disagreement(task: Task, board: BeliefBoard, ledger: Ledger,
@@ -111,7 +111,7 @@ class AcceptGate:
         self.gate = CalibratedGate()
         self.calibrated = False
         # Learned world model (trained on logged episodes; train/train_wm.py).
-        # None when weights are absent or AGORA_WM=heuristic — the hand-set
+        # None when weights are absent or MAJALIS_WM=heuristic — the hand-set
         # blend below remains the fallback and the ablation arm.
         self.wm = load_wm()
         if self.wm and _GATE_STATE_LEARNED.exists():

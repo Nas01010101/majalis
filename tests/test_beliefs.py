@@ -1,4 +1,4 @@
-from agora.beliefs import BeliefBoard, parse_date_ord
+from majalis.beliefs import BeliefBoard, parse_date_ord
 
 
 def _board():
