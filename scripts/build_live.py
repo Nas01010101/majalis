@@ -627,7 +627,7 @@ def main() -> None:
 <a class="skip" href="#main">Skip to content</a>
 <div class="page">
 <header>
-{mark}<span class="word">AGORA</span><span class="view">/ society view</span>
+{mark}<span class="word">MAJALIS</span><span class="view">/ society view</span>
 <div class="modes" role="group" aria-label="Viewer mode">
 <button id="mode-replay" type="button" aria-pressed="true">recorded run</button>
 <button id="mode-live" type="button" aria-pressed="false">live — try it</button>
