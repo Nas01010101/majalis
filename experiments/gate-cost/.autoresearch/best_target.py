@@ -1,4 +1,4 @@
-"""Autoresearch target: measure agora $/question on held-out seeds 5,6.
+"""Autoresearch target: measure majalis $/question on held-out seeds 5,6.
 
 EDITABLE KNOBS (the only thing iterations change):
 """
@@ -12,7 +12,7 @@ import pathlib
 import subprocess
 import sys
 
-AGORA = pathlib.Path.home() / "Projects" / "agora"
+AGORA = pathlib.Path.home() / "Projects" / "majalis"
 SEEDS = (5, 6)
 
 for seed in SEEDS:  # never resume a cached cell — force live measurement
@@ -20,8 +20,8 @@ for seed in SEEDS:  # never resume a cached cell — force live measurement
 
 env = dict(os.environ, AGORA_GATE_K=GATE_K, AGORA_GATE_SKIP_DOUBT=SKIP_DOUBT)
 proc = subprocess.run(
-    [str(AGORA / ".venv" / "bin" / "python"), "-m", "agora.bench.session",
-     "--arms", "agora", "--seeds", ",".join(map(str, SEEDS)), "--steps", "8"],
+    [str(AGORA / ".venv" / "bin" / "python"), "-m", "majalis.bench.session",
+     "--arms", "majalis", "--seeds", ",".join(map(str, SEEDS)), "--steps", "8"],
     cwd=AGORA, env=env, capture_output=True, text=True, timeout=1700)
 print(proc.stdout[-1500:], proc.stderr[-500:], file=sys.stderr)
 
