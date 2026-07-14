@@ -25,8 +25,8 @@ abstract: |
   a 0.9% false-fire rate, versus 23.8% / 78.8% / 15.1% for the hand-set
   gate it replaced; the fixed-prior survival model it displaced scores at
   chance (AUROC 0.496 vs 0.657 learned). End-to-end, the society matches a
-  single agent's accuracy (272/272 heuristic; 48/48 learned) while cost per
-  question stays flat in stream length ($0.0054–0.0057/q) against the
+  single agent's accuracy (272/272 heuristic; 240/240 learned) while cost per
+  question stays flat in stream length ($0.0049–0.0054/q) against the
   single agent's linear growth ($0.0137/q at 32 steps), and vanilla 3×3
   MAD costs 12.6× more. All experiments run on Qwen Cloud backbones; the
   full benchmark, training pipeline, and a zero-API offline evaluation
@@ -41,8 +41,8 @@ abstract: |
   **零 LLM 调用**。在留出流上，学习门控以 12.4% 的触发率捕获 86.2% 的
   被污染信念（误触发 0.9%），全面优于其替代的手工门控（23.8% / 78.8% /
   15.1%）；被替换的固定参数生存先验仅达随机水平（AUROC 0.496 对 0.657）。
-  端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0054–
-  0.0057/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
+  端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
+  0.0054/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
   成本高出 12.6 倍。全部实验基于 Qwen Cloud，代码与种子可完整复现。
 ---
 
@@ -272,12 +272,13 @@ Pooled session results (Wilson 95% CIs in the repository dashboard):
 | mad (3×3) | 8 | 32/32 | **0.07086** | 15,614 |
 | majalis (heuristic) | 8 | 111/112 | 0.00563 | 2,840 |
 | majalis-nodebate | 8 | 77/80 (96.2%) | 0.00595 | 3,328 |
-| **majalis-wm (learned)** | 8 | **16/16** | 0.00569 | **2,141** |
+| **majalis-wm (learned)** | 8 | **48/48** | **0.00493** | **1,949** |
 | single | 16 | 64/64 | 0.00974 | 2,141 |
 | majalis (heuristic) | 16 | 64/64 | 0.00658 | 3,569 |
-| **majalis-wm (learned)** | 16 | **32/32** | **0.00540** | 2,153 |
+| **majalis-wm (learned)** | 16 | **64/64** | **0.00512** | 2,062 |
 | single | 32 | 128/128 | 0.01370 | 3,525 |
 | majalis (heuristic) | 32 | 128/128 | 0.00665 | 3,891 |
+| **majalis-wm (learned)** | 32 | **128/128** | **0.00538** | 2,193 |
 
 The single agent's cost grows linearly with stream length (re-reading);
 Majalis's is flat, 2.1× cheaper at 32 steps and still growing apart. Vanilla
@@ -285,9 +286,11 @@ MAD pays 12.6× Majalis's cost for the same accuracy. The no-debate ablation
 shows the honest value of debate here: its three errors are exactly the
 rumor-poisoned beliefs the world model flags, and gated debate corrects all
 three for +$0.0004 per question. The learned arm additionally cuts tokens
-per question 25% versus the heuristic gate at 8 steps (2,141 vs 2,840) by
-eliminating sampler calls. (Learned-arm cells measured on seed 0 at 8 and
-16 steps to date; 32-step cells pending — flagged, not extrapolated.)
+per question 31% versus the heuristic gate at 8 steps (1,949 vs 2,840) by
+eliminating sampler calls, and is the cheapest and flattest arm at every
+stream length ($0.0049–0.0054/q, 2.5× cheaper than the single agent at 32
+steps). (Learned-arm cells now cover 3 seeds at 8 steps and 2 seeds at 16
+and 32 steps — 240/240 correct, all on Qwen Cloud.)
 
 ## The learned heads versus the heuristics they replaced
 
@@ -373,9 +376,8 @@ The evidence streams are synthetic with template-parsable structure; the
 near-ceiling `wrong_now` AUROC reflects that separability, and the honest
 transfer numbers are the real-episode ones (0.937/0.953). Real logged
 episodes number only 96; the stacker has three coefficients partly for
-this reason. Learned-arm live cells cover seed 0 at 8/16 steps (~$1 of
-remaining API budget gates the 32-step and multi-seed cells; they resume
-from raw logs for free once run). The conformal guarantee is marginal over
+this reason. Learned-arm live cells now cover 3 seeds at 8 steps and 2 seeds at 16/32
+steps (240/240 correct, flat $0.0049–0.0054/q). The conformal guarantee is marginal over
 exchangeable tasks and applies to the ACCEPT decision, not to debated
 answers. Per-task families (churn/compare/multihop) saturate on every Qwen
 backbone tested, so no ceiling-accuracy claim is made anywhere — the

@@ -290,5 +290,55 @@
     "cost_usd": 0.1727,
     "latency_s": 0.0,
     "resumed": true
+  },
+  {
+    "arm": "majalis-wm",
+    "seed": 0,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 141517,
+    "cost_usd": 0.3497,
+    "latency_s": 964.5
+  },
+  {
+    "arm": "majalis-wm",
+    "seed": 1,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 30748,
+    "cost_usd": 0.0761,
+    "latency_s": 215.7
+  },
+  {
+    "arm": "majalis-wm",
+    "seed": 1,
+    "steps": 16,
+    "n": 32,
+    "correct": 32,
+    "tokens": 63060,
+    "cost_usd": 0.1548,
+    "latency_s": 446.4
+  },
+  {
+    "arm": "majalis-wm",
+    "seed": 1,
+    "steps": 32,
+    "n": 64,
+    "correct": 64,
+    "tokens": 139249,
+    "cost_usd": 0.3394,
+    "latency_s": 943.1
+  },
+  {
+    "arm": "majalis-wm",
+    "seed": 2,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 28572,
+    "cost_usd": 0.0695,
+    "latency_s": 209.4
   }
 ]
