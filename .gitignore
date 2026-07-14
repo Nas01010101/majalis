@@ -16,3 +16,4 @@ build/
 results/raw/
 .cache/
 data/wm_*.npz
+web/vendor/

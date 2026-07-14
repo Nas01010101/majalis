@@ -24,111 +24,128 @@ sys.path.insert(0, str(ROOT / "src"))
 from agora.config import MODEL_FAST, MODEL_MID, MODEL_STRONG  # noqa: E402
 
 OUT = ROOT / "dashboard" / "live.html"
+# Astryx neutral design tokens (vendored, see scripts/extract_astryx_tokens.py)
+# + Figtree inlined so the page stays one self-contained file.
+TOKENS = (ROOT / "web" / "astryx-tokens.css").read_text()
+FONT = (ROOT / "web" / "figtree.css").read_text()
 
 CSS = """
-:root { --surface:#fcfcfb; --plane:#f6f6f2; --ink:#151412; --ink2:#52514e;
-  --muted:#8a8780; --grid:#e3e1da; --border:rgba(21,20,18,.11);
-  --wm:#2a78d6; --extractor:#1baf7a; --skeptic:#e34948; --judge:#4a3aa7;
-  --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; --term:#111311; --termink:#cfcec5;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-@media (prefers-color-scheme: dark) {
-  :root { --surface:#191b1a; --plane:#0f1110; --ink:#f4f4f1; --ink2:#c3c2b7;
-    --grid:#2b2d2b; --border:rgba(244,244,241,.11);
-    --wm:#3987e5; --extractor:#199e70; --skeptic:#e66767; --judge:#9085e9;
-    --term:#0a0c0a; --termink:#c3c2b7; } }
+/* Page styles on Astryx neutral tokens. Role hues are agent identity
+   (categorical data), so they stay; chrome is all theme tokens. */
+:root { --surface:var(--color-background-surface); --plane:var(--color-background-body);
+  --ink:var(--color-text-primary); --ink2:var(--color-text-secondary);
+  --muted:var(--color-text-secondary); --grid:var(--color-border);
+  --border:var(--color-border); --accent:var(--color-accent);
+  --good:var(--color-success); --warn:var(--color-warning); --crit:var(--color-error);
+  --wm:light-dark(#2a78d6,#3987e5); --extractor:light-dark(#1baf7a,#199e70);
+  --skeptic:light-dark(#e34948,#e66767); --judge:light-dark(#4a3aa7,#9085e9);
+  --mono:var(--font-family-code); }
 * { box-sizing:border-box; }
 body { background:var(--plane); color:var(--ink); margin:0 auto; max-width:1240px;
-  padding:22px 20px 36px; font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
-a { color:var(--wm); text-decoration:none; font-weight:560; } a:hover { text-decoration:underline; }
+  padding:22px 20px 36px; font:14px/1.5 var(--font-family-body); }
+a { color:var(--ink); text-decoration:underline;
+  text-decoration-color:var(--color-border-emphasized); text-underline-offset:3px; }
+a:hover { text-decoration-color:var(--accent); }
 .skip { position:absolute; left:-9999px; } .skip:focus { left:12px; top:8px;
-  background:var(--surface); padding:8px 12px; border-radius:8px; z-index:9; }
-:focus-visible { outline:2px solid var(--wm); outline-offset:2px; }
+  background:var(--surface); padding:8px 12px; border-radius:var(--radius-element); z-index:9; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 header { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
-.word { font-size:21px; font-weight:650; } .view { color:var(--muted); font-size:15px; }
+.word { font-size:var(--font-size-xl); font-weight:var(--font-weight-semibold); }
+.view { color:var(--muted); }
 .status { font-family:var(--mono); font-size:11.5px; color:var(--ink2);
-  border:1px solid var(--border); border-radius:9px; padding:3px 10px;
-  letter-spacing:.02em; font-variant-numeric:tabular-nums; }
-nav { margin-left:auto; display:flex; gap:14px; font-size:13px; }
+  border:1px solid var(--border); border-radius:var(--radius-full); padding:3px 10px;
+  font-variant-numeric:tabular-nums; }
+nav { margin-left:auto; display:flex; gap:14px; font-size:var(--font-size-sm); }
 .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap;
-  background:var(--surface); border:1px solid var(--border); border-radius:12px;
-  padding:10px 14px; margin:10px 0; }
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-container); padding:10px 14px; margin:10px 0; }
 button, select { font:inherit; color:var(--ink); background:var(--surface);
-  border:1px solid var(--border); border-radius:8px; padding:5px 12px; cursor:pointer; }
-button:hover { border-color:var(--wm); }
-#play { background:var(--wm); color:#fff; border-color:var(--wm);
-  font-weight:650; padding:6px 16px; min-width:100px; }
-#play:hover { filter:brightness(1.08); }
-input[type=range] { flex:1; min-width:160px; accent-color:var(--wm); }
+  border:1px solid var(--border); border-radius:var(--radius-element);
+  padding:5px 12px; cursor:pointer; }
+button:hover { border-color:var(--color-border-emphasized); }
+#play { background:var(--accent); color:var(--color-background-body);
+  border-color:var(--accent); font-weight:var(--font-weight-semibold);
+  padding:6px 16px; min-width:100px; }
+#play:hover { opacity:.88; }
+input[type=range] { flex:1; min-width:160px; accent-color:var(--accent); }
 .readout { font-family:var(--mono); font-size:12.5px; color:var(--ink2);
   min-width:130px; font-variant-numeric:tabular-nums; }
 .stats { display:flex; gap:16px; font-family:var(--mono); font-variant-numeric:tabular-nums;
   font-size:12.5px; color:var(--ink2); flex-wrap:wrap; }
-.stats b { color:var(--ink); font-weight:650; }
+.stats b { color:var(--ink); font-weight:var(--font-weight-semibold); }
 main { display:grid; grid-template-columns:minmax(340px,5fr) minmax(360px,7fr); gap:12px; }
 @media (max-width:900px) { main { grid-template-columns:1fr; } }
 section.panel { background:var(--surface); border:1px solid var(--border);
-  border-radius:12px; padding:12px 14px; min-height:200px; }
-.panel h2 { font:600 11px/1.5 var(--mono); margin:0 0 10px; color:var(--muted);
-  text-transform:uppercase; letter-spacing:.09em; }
-.panel h2 .n { color:var(--muted); font-weight:550; }
+  border-radius:var(--radius-container); padding:12px 14px; min-height:200px; }
+.panel h2 { font-size:var(--font-size-sm); font-weight:var(--font-weight-semibold);
+  margin:0 0 10px; color:var(--muted); }
+.panel h2 .n { color:var(--muted); font-weight:var(--font-weight-normal); }
 #board { display:flex; flex-direction:column; gap:8px; max-height:66vh; overflow-y:auto; }
-.belief { border:1px solid var(--grid); border-radius:10px; padding:8px 10px; }
+.belief { border:1px solid var(--grid); border-radius:var(--radius-element); padding:8px 10px; }
 .belief.hot { border-color:var(--warn); }
 .belief .k { font-family:var(--mono); font-size:12px; color:var(--ink2); }
-.belief .v { font-weight:650; margin:1px 0 4px; }
-.meter { height:6px; border-radius:3px; background:color-mix(in srgb, var(--wm) 15%, var(--surface));
+.belief .v { font-weight:var(--font-weight-semibold); margin:1px 0 4px; }
+.meter { height:6px; border-radius:3px; background:var(--color-background-muted);
   overflow:hidden; } .meter i { display:block; height:100%; border-radius:3px; }
 .belief .m { display:flex; gap:8px; align-items:center; font-size:11.5px; color:var(--muted);
   font-family:var(--mono); font-variant-numeric:tabular-nums; margin-top:3px; }
-.chip { font-size:11px; font-weight:650; border-radius:8px; padding:0 7px;
+.chip { font-size:11px; font-weight:var(--font-weight-semibold);
+  border-radius:var(--radius-full); padding:0 7px;
   border:1px solid var(--border); white-space:nowrap; }
-.chip.auth { background:color-mix(in srgb, var(--wm) 14%, var(--surface)); }
-.chip.weakish { background:color-mix(in srgb, var(--warn) 22%, var(--surface)); }
-.chip.deb { background:color-mix(in srgb, var(--judge) 16%, var(--surface)); }
+.chip.auth { background:var(--color-background-muted); }
+.chip.weakish { background:var(--color-warning-muted); }
+.chip.deb { background:var(--color-background-muted); }
 #society { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 2px; }
 .agent { display:flex; gap:7px; align-items:center; border:1px solid var(--border);
-  border-radius:10px; padding:4px 11px; background:var(--surface); opacity:.5;
+  border-radius:var(--radius-full); padding:4px 11px; background:var(--surface); opacity:.55;
   transition:opacity .25s, border-color .25s, box-shadow .25s; }
 .agent .dot { width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
-.agent .nm { font:700 10.5px/1.5 var(--mono); letter-spacing:.07em; }
+.agent .nm { font-size:11px; font-weight:var(--font-weight-semibold); }
 .agent .md { font-family:var(--mono); font-size:10.5px; color:var(--muted); }
 .agent.on { opacity:1; border-color:var(--c); box-shadow:0 0 0 1px var(--c); }
 #feed { display:flex; flex-direction:column; gap:8px; max-height:66vh; overflow-y:auto; }
-.act { border:1px solid var(--grid); border-radius:10px; padding:8px 11px; }
-.act.thread { border-left:3px solid color-mix(in srgb, var(--judge) 55%, var(--surface));
-  margin-left:16px; }
-.act.gatecard { border-color:color-mix(in srgb, var(--warn) 60%, var(--border)); }
+.act { border:1px solid var(--grid); border-radius:var(--radius-element); padding:8px 11px; }
+.act.thread { border-left:3px solid var(--judge); margin-left:16px; }
+.act.gatecard { border-color:var(--warn); }
 .act .body .ev { display:block; font-family:var(--mono); font-size:12px; color:var(--ink2); }
 .act .who { display:flex; gap:8px; align-items:baseline; margin-bottom:3px; }
-.role { font:700 10.5px/1.5 var(--mono); letter-spacing:.08em; }
+.role { font-size:11px; font-weight:var(--font-weight-semibold); }
 .model { font-family:var(--mono); font-size:11px; color:var(--muted); margin-left:auto; }
 .act .body { font-size:13px; } .act .body em { color:var(--ink2); }
-.gatechip { font-weight:650; font-size:12px; padding:1px 8px; border-radius:9px; }
-.gatechip.commit { background:color-mix(in srgb, var(--good) 15%, var(--surface)); }
-.gatechip.debate { background:color-mix(in srgb, var(--warn) 25%, var(--surface)); }
-.okmark { color:var(--good); font-weight:700; } .badmark { color:var(--crit); font-weight:700; }
-#term { background:var(--term); color:var(--termink); border-radius:12px;
+.gatechip { font-weight:var(--font-weight-semibold); font-size:12px; padding:1px 8px;
+  border-radius:var(--radius-full); }
+.gatechip.commit { background:var(--color-success-muted); }
+.gatechip.debate { background:var(--color-warning-muted); }
+.okmark { color:var(--good); font-weight:var(--font-weight-semibold); }
+.badmark { color:var(--crit); font-weight:var(--font-weight-semibold); }
+#term { background:var(--color-background-muted); color:var(--ink2);
+  border:1px solid var(--border); border-radius:var(--radius-container);
   font-family:var(--mono); font-size:12px; line-height:1.65; padding:12px 16px;
   margin-top:12px; max-height:180px; overflow-y:auto; }
-#term .t { color:#6f6e68; margin-right:8px; }
+#term .t { color:var(--color-text-disabled); margin-right:8px; }
 footer { color:var(--muted); font-size:12px; margin-top:14px; }
-.modes { display:flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
+.modes { display:flex; border:1px solid var(--border); border-radius:var(--radius-element);
+  overflow:hidden; }
 .modes button { border:0; border-radius:0; padding:5px 14px; }
-.modes button[aria-pressed=true] { background:var(--wm); color:#fff; font-weight:650; }
+.modes button[aria-pressed=true] { background:var(--accent);
+  color:var(--color-background-body); font-weight:var(--font-weight-semibold); }
 #livebar { display:none; flex-direction:column; gap:8px; background:var(--surface);
-  border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin:10px 0; }
+  border:1px solid var(--border); border-radius:var(--radius-container);
+  padding:12px 14px; margin:10px 0; }
 #livebar textarea { font:12.5px/1.6 var(--mono); color:var(--ink); background:var(--plane);
-  border:1px solid var(--border); border-radius:8px; padding:8px 10px; width:100%;
-  min-height:74px; resize:vertical; }
+  border:1px solid var(--border); border-radius:var(--radius-element); padding:8px 10px;
+  width:100%; min-height:74px; resize:vertical; }
 #livebar .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 #livebar input[type=text], #livebar input[type=password] { font:inherit; color:var(--ink);
-  background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+  background:var(--plane); border:1px solid var(--border);
+  border-radius:var(--radius-element); padding:6px 10px; }
 #question { flex:1; min-width:240px; }
 #token { width:150px; font-family:var(--mono); font-size:12px; }
-#ingest-btn, #ask-btn { background:var(--wm); color:#fff; border-color:var(--wm); font-weight:650; }
+#ingest-btn, #ask-btn { background:var(--accent); color:var(--color-background-body);
+  border-color:var(--accent); font-weight:var(--font-weight-semibold); }
 #ingest-btn:disabled, #ask-btn:disabled { opacity:.5; cursor:wait; }
 #livemsg { font-family:var(--mono); font-size:12px; color:var(--muted); }
-@keyframes hotflash { from { background:color-mix(in srgb, var(--warn) 16%, var(--surface)); }
+@keyframes hotflash { from { background:var(--color-warning-muted); }
   to { background:transparent; } }
 @media (prefers-reduced-motion: no-preference) {
   .belief, .act { transition:border-color .4s; }
@@ -154,8 +171,8 @@ function renderBoard(snap, hotKeys) {
     const card = el('div', 'belief' + (hotKeys.has(b.key) ? ' hot' : ''));
     card.appendChild(el('div', 'k', b.key));
     const v = el('div', 'v', b.value);
-    if (b.weak) { const c = el('span', 'chip weakish', '▲ weak source'); c.style.marginLeft = '8px'; v.appendChild(c); }
-    if (b.source === 'debate') { const c = el('span', 'chip deb', '⚖ adjudicated'); c.style.marginLeft = '8px'; v.appendChild(c); }
+    if (b.weak) { const c = el('span', 'chip weakish', 'weak source'); c.style.marginLeft = '8px'; v.appendChild(c); }
+    if (b.source === 'debate') { const c = el('span', 'chip deb', 'adjudicated'); c.style.marginLeft = '8px'; v.appendChild(c); }
     card.appendChild(v);
     const meter = el('div', 'meter'); const fill = el('i');
     fill.style.width = Math.max(2, b.wrong_now * 100) + '%';
@@ -172,9 +189,9 @@ function renderBoard(snap, hotKeys) {
   }
 }
 
-const AGENT_IDS = { 'EVIDENCE ARRIVES': 'ag-extractor', 'EXTRACTOR': 'ag-extractor',
-  'PROPOSER': 'ag-proposer', 'PROPOSER (re-proposal)': 'ag-proposer',
-  'WORLD-MODEL GATE': 'ag-gate', 'SKEPTIC': 'ag-skeptic', 'JUDGE': 'ag-judge' };
+const AGENT_IDS = { 'Evidence arrives': 'ag-extractor', 'Extractor': 'ag-extractor',
+  'Proposer': 'ag-proposer', 'Proposer (re-proposal)': 'ag-proposer',
+  'World-model gate': 'ag-gate', 'Skeptic': 'ag-skeptic', 'Judge': 'ag-judge' };
 function pulse(role) {
   const n = document.getElementById(AGENT_IDS[role] || '');
   if (!n) return;
@@ -206,29 +223,29 @@ function feedFor(e) {
   const cards = [];
   if (e.type === 'evidence') {
     const lines = e.lines.map(l => { const d = el('div'); d.appendChild(el('span', 'ev', l)); return d; });
-    cards.push(actCard('EVIDENCE ARRIVES', 'var(--muted)', null, lines));
+    cards.push(actCard('Evidence arrives', 'var(--muted)', null, lines));
     const outcomes = e.asserts.map(a => `${a.key} = ${a.value} (${a.outcome})`).join(' · ');
-    cards.push(actCard('EXTRACTOR', 'var(--extractor)', MODELS.fast,
+    cards.push(actCard('Extractor', 'var(--extractor)', MODELS.fast,
       [el('span', '', `asserted ${e.asserts.length} facts — ${outcomes}`)]));
     log(`evidence batch: ${e.lines.length} lines → ${e.asserts.length} asserts ($${e.cost_usd})`);
     return cards;
   }
-  cards.push(actCard('QUESTION', 'var(--muted)', null, [el('span', '', e.question.split(' Policy:')[0])]));
+  cards.push(actCard('Question', 'var(--muted)', null, [el('span', '', e.question.split(' Policy:')[0])]));
   for (const t of e.events) {
-    if (t.kind === 'proposal') cards.push(actCard('PROPOSER', 'var(--wm)', MODELS.strong,
+    if (t.kind === 'proposal') cards.push(actCard('Proposer', 'var(--wm)', MODELS.strong,
       [el('span', '', `answers “${t.answer}” (confidence ${t.confidence}) from ${t.support.length} beliefs`)]));
-    if (t.kind === 'challenge') cards.push(thread(actCard('SKEPTIC', 'var(--skeptic)', MODELS.mid,
+    if (t.kind === 'challenge') cards.push(thread(actCard('Skeptic', 'var(--skeptic)', MODELS.mid,
       [el('span', '', `attacks ${t.key}: `), el('em', '', t.attack)])));
-    if (t.kind === 'verdict') cards.push(thread(actCard('JUDGE', 'var(--judge)', MODELS.strong,
+    if (t.kind === 'verdict') cards.push(thread(actCard('Judge', 'var(--judge)', MODELS.strong,
       [el('span', '', t.upheld ? `upholds ${t.key}` :
         `overturns ${t.key} → corrected to “${t.corrected}” (written back to the board)`)])));
-    if (t.kind === 'reproposal') cards.push(thread(actCard('PROPOSER (re-proposal)', 'var(--wm)', MODELS.strong,
+    if (t.kind === 'reproposal') cards.push(thread(actCard('Proposer (re-proposal)', 'var(--wm)', MODELS.strong,
       [el('span', '', `now answers “${t.answer}” from the corrected board`)])));
   }
   const g = e.gate;
   const chip = el('span', 'gatechip ' + (g.fired ? 'debate' : 'commit'),
-    g.fired ? '▲ DEBATE' : '✓ COMMIT');
-  const gateCard = actCard('WORLD-MODEL GATE', 'var(--ink)', '0 LLM calls', [chip,
+    g.fired ? 'debate' : 'commit');
+  const gateCard = actCard('World-model gate', 'var(--ink)', '0 LLM calls', [chip,
     el('span', '', `  p(wrong)=${g.p_wrong} — ${g.reason}`)]);
   gateCard.classList.add('gatecard');
   cards.splice(2, 0, gateCard); // after question+proposal
@@ -237,7 +254,7 @@ function feedFor(e) {
     ? el('span', e.correct ? 'okmark' : 'badmark',
         `${e.correct ? '✓' : '✗'} answer “${e.answer}” (gold: ${e.gold}) · ${e.tokens} tokens · $${e.cost_usd}`)
     : el('span', '', `answer “${e.answer}” · ${e.tokens} tokens · $${e.cost_usd}`);
-  cards.push(actCard('RESULT',
+  cards.push(actCard('Result',
     graded ? (e.correct ? 'var(--good)' : 'var(--crit)') : 'var(--ink)', null, [res]));
   log(`${e.task_id}: ${g.fired ? 'DEBATE' : 'commit'} p=${g.p_wrong}` +
       (graded ? ` → ${e.correct ? '✓' : '✗'}` : '') + ` ($${e.cost_usd})`);
@@ -269,11 +286,11 @@ function apply(n, rebuild) {
     (e.type === 'question' ? ` — ${e.task_id} ${e.gate.fired ? 'debated' : 'committed'}` : ' — evidence batch');
 }
 
-function stop() { clearInterval(playing); playing = null; $('play').textContent = '▶ play'; }
+function stop() { clearInterval(playing); playing = null; $('play').textContent = 'Play'; }
 $('play').addEventListener('click', () => {
   if (playing) return stop();
   if (i >= evs.length - 1) apply(0, true);
-  $('play').textContent = '⏸ pause';
+  $('play').textContent = 'Pause';
   playing = setInterval(() => { if (i >= evs.length - 1) return stop(); apply(i + 1); },
     1800 / speed);
 });
@@ -369,27 +386,28 @@ def main() -> None:
     js = (JS_TEMPLATE
           .replace("__REPLAY__", json.dumps(replay))
           .replace("__MODELS__", json.dumps(models)))
-    mark = ('<svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">'
+    mark = ('<svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true">'
             '<rect x="4" y="4" width="56" height="56" rx="14" fill="none" '
-            'stroke="var(--wm)" stroke-width="4.5"/>'
-            '<rect x="16" y="18" width="32" height="6" rx="3" fill="var(--wm)"/>'
-            '<rect x="16" y="29" width="16" height="6" rx="3" fill="var(--warn)"/>'
-            '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="var(--warn)"/>'
-            '<rect x="16" y="40" width="32" height="6" rx="3" fill="var(--wm)"/></svg>')
+            'stroke="currentColor" stroke-width="4.5"/>'
+            '<rect x="16" y="18" width="32" height="6" rx="3" fill="currentColor"/>'
+            '<rect x="16" y="29" width="16" height="6" rx="3" fill="currentColor" opacity=".45"/>'
+            '<path d="M42 26 l6 6 -6 6 -6 -6 z" fill="currentColor" opacity=".45"/>'
+            '<rect x="16" y="40" width="32" height="6" rx="3" fill="currentColor"/></svg>')
     favicon = ('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 '
                'viewBox=%220 0 64 64%22%3E%3Crect x=%224%22 y=%224%22 width=%2256%22 '
-               'height=%2256%22 rx=%2214%22 fill=%22none%22 stroke=%22%232a78d6%22 '
+               'height=%2256%22 rx=%2214%22 fill=%22none%22 stroke=%22%23171717%22 '
                'stroke-width=%224.5%22/%3E%3Crect x=%2216%22 y=%2218%22 width=%2232%22 '
-               'height=%226%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3Crect x=%2216%22 '
-               'y=%2229%22 width=%2216%22 height=%226%22 rx=%223%22 fill=%22%23eda100%22/%3E'
-               '%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23eda100%22/%3E%3Crect '
+               'height=%226%22 rx=%223%22 fill=%22%23171717%22/%3E%3Crect x=%2216%22 '
+               'y=%2229%22 width=%2216%22 height=%226%22 rx=%223%22 fill=%22%23737373%22/%3E'
+               '%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23737373%22/%3E%3Crect '
                'x=%2216%22 y=%2240%22 width=%2232%22 height=%226%22 rx=%223%22 '
-               'fill=%22%232a78d6%22/%3E%3C/svg%3E')
+               'fill=%22%23171717%22/%3E%3C/svg%3E')
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Watch Agora's agent society process a contradictory evidence stream, with the learned world model's risk meters live.">
 <link rel="icon" href="{favicon}">
-<title>Agora — society view (live replay)</title><style>{CSS}</style></head><body>
+<title>Agora — society view (live replay)</title>
+<style>{TOKENS}{FONT}{CSS}</style></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header>
 {mark}<span class="word">agora</span><span class="view">/ society view</span>
@@ -408,14 +426,14 @@ belief as they land; the gate spends debate only where P(wrong) spikes.
 Space = play/pause, arrows = step. Or switch to <strong>live</strong> and feed
 the society your own evidence.</p>
 <div id="society" aria-label="The society">
-<span class="agent" id="ag-extractor" style="--c:var(--extractor)"><i class="dot" style="background:var(--extractor)"></i><span class="nm">EXTRACTOR</span><span class="md">{MODEL_FAST}</span></span>
-<span class="agent" id="ag-proposer" style="--c:var(--wm)"><i class="dot" style="background:var(--wm)"></i><span class="nm">PROPOSER</span><span class="md">{MODEL_STRONG}</span></span>
-<span class="agent" id="ag-gate" style="--c:var(--warn)"><i class="dot" style="background:var(--warn)"></i><span class="nm">WM GATE</span><span class="md">0 LLM calls</span></span>
-<span class="agent" id="ag-skeptic" style="--c:var(--skeptic)"><i class="dot" style="background:var(--skeptic)"></i><span class="nm">SKEPTIC</span><span class="md">{MODEL_MID}</span></span>
-<span class="agent" id="ag-judge" style="--c:var(--judge)"><i class="dot" style="background:var(--judge)"></i><span class="nm">JUDGE</span><span class="md">{MODEL_STRONG}</span></span>
+<span class="agent" id="ag-extractor" style="--c:var(--extractor)"><i class="dot" style="background:var(--extractor)"></i><span class="nm">Extractor</span><span class="md">{MODEL_FAST}</span></span>
+<span class="agent" id="ag-proposer" style="--c:var(--wm)"><i class="dot" style="background:var(--wm)"></i><span class="nm">Proposer</span><span class="md">{MODEL_STRONG}</span></span>
+<span class="agent" id="ag-gate" style="--c:var(--warn)"><i class="dot" style="background:var(--warn)"></i><span class="nm">WM gate</span><span class="md">0 LLM calls</span></span>
+<span class="agent" id="ag-skeptic" style="--c:var(--skeptic)"><i class="dot" style="background:var(--skeptic)"></i><span class="nm">Skeptic</span><span class="md">{MODEL_MID}</span></span>
+<span class="agent" id="ag-judge" style="--c:var(--judge)"><i class="dot" style="background:var(--judge)"></i><span class="nm">Judge</span><span class="md">{MODEL_STRONG}</span></span>
 </div>
 <div class="controls" role="group" aria-label="Replay controls">
-<button id="play" type="button">▶ play</button>
+<button id="play" type="button">Play</button>
 <label>speed <select id="speed" aria-label="Playback speed">
 <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
 </select></label>
@@ -425,13 +443,13 @@ the society your own evidence.</p>
 <span class="stats" id="stats"></span>
 </div>
 <div id="livebar" role="group" aria-label="Live session controls">
-<label for="evidence" style="font:600 11px/1.5 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.09em">Evidence — one dated line each, filings beat rumors</label>
+<label for="evidence" style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--muted)">Evidence — one dated line each, filings beat rumors</label>
 <textarea id="evidence" spellcheck="false">[Jan 2026] Filing: Acme Robotics's CEO is Jane Doe.
 [Mar 2026] Rumor: acme robotics's ceo is John Roe.</textarea>
 <div class="row">
-<button id="ingest-btn" type="button">⇢ feed the society</button>
+<button id="ingest-btn" type="button">Feed the society</button>
 <input id="question" type="text" value="Claim: &quot;Acme Robotics's CEO is currently John Roe.&quot; Policy: filings are authoritative; rumors are unreliable and never override a filing. True or false?" aria-label="Question or claim">
-<button id="ask-btn" type="button">▶ ask</button>
+<button id="ask-btn" type="button">Ask</button>
 <input id="token" type="password" placeholder="token (optional)" aria-label="Access token" autocomplete="off">
 </div>
 <span id="livemsg">anonymous callers share a small daily budget — real Qwen calls, ~$0.01 per question</span>
