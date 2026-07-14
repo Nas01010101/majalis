@@ -195,6 +195,16 @@ LIVE = [
     ('>Skeptic<', '>质疑者<'),
     ('>Judge<', '>裁决者<'),
     ('>0 LLM calls<', '>0 次 LLM 调用<'),
+    ('<div class="lt">Belief graph</div>', '<div class="lt">信念图谱</div>'),
+    ('</i>filing</div>', '</i>公告</div>'),
+    ('</i>rumor / weak</div>', '</i>谣言 / 弱信源</div>'),
+    ('</i>adjudicated</div>', '</i>已裁决</div>'),
+    ('</i>ring = P(wrong)</div>', '</i>红圈 = P(wrong)</div>'),
+    ('</i>debate edge</div>', '</i>辩论边</div>'),
+    ('<span>value</span>', '<span>取值</span>'),
+    ('<span>churn</span>', '<span>更替次数</span>'),
+    ('<span>agora society runtime</span>', '<span>agora 社会运行时</span>'),
+    ('aria-label="Belief graph"', 'aria-label="信念图谱"'),
 ]
 
 

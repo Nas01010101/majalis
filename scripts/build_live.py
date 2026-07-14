@@ -31,135 +31,165 @@ TOKENS = ((ROOT / "web" / "astryx-tokens.css").read_text()
 FONT = (ROOT / "web" / "figtree.css").read_text()
 
 CSS = """
-/* Trace-room skin: near-black canvas, surface ladder, 7% hairlines, mono for
-   data only. One accent: gate amber (the society spending money). Belief
-   board = ledger rows; feed = threaded turns with a cause rail. */
-:root { --surface:var(--color-background-surface); --plane:var(--color-background-body);
-  --ink:var(--color-text-primary); --ink2:var(--color-text-secondary);
-  --muted:var(--color-text-secondary); --faint:var(--color-text-disabled);
-  --grid:var(--color-border); --border:var(--color-border);
-  --hairline:var(--color-border); --accent:var(--color-accent);
-  --good:var(--color-success); --warn:var(--gate); --crit:var(--color-error);
-  --wm:light-dark(#3b6ea8,#7da7d9); --extractor:light-dark(#2e7d5b,#5fb894);
-  --skeptic:light-dark(#a34d4d,#cc7a7a); --judge:light-dark(#5c4fa3,#9d92d0);
-  --mono:var(--font-family-code); }
+/* MiroFish-style research console: light-locked editorial chrome, the belief
+   world as a living graph (canvas), numbered activity on the right, black
+   system-dashboard strip below. Colorful data, quiet chrome. */
+:root { color-scheme:light;
+  --plane:#f7f7f8; --surface:#ffffff; --ink:#17171a; --ink2:#6e6e76;
+  --faint:#a0a0a8; --hairline:rgba(17,17,20,.08); --hairline2:rgba(17,17,20,.16);
+  --crimson:#d6336c; --blue:#2563c9; --orange:#e8590c; --purple:#6f42c1;
+  --green:#2f9e44; --risk:#d13438;
+  --good:var(--green); --warn:var(--orange); --crit:var(--risk);
+  --wm:var(--blue); --extractor:#0ca678; --skeptic:var(--crimson); --judge:var(--purple);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace; }
 * { box-sizing:border-box; }
-body { background:var(--plane); color:var(--ink); margin:0 auto; max-width:1280px;
-  padding:18px 22px 30px; font:13.5px/1.5 var(--font-family-body); }
-a { color:var(--ink2); text-decoration:none; }
-a:hover { color:var(--ink); }
+body { background:var(--plane); color:var(--ink); margin:0; padding:0;
+  font:13.5px/1.5 Figtree,-apple-system,"Segoe UI",sans-serif; }
+.page { max-width:1440px; margin:0 auto; padding:0 20px 20px; }
+a { color:var(--ink2); text-decoration:none; } a:hover { color:var(--ink); }
 .skip { position:absolute; left:-9999px; } .skip:focus { left:12px; top:8px;
-  background:var(--surface); padding:8px 12px; border-radius:6px; z-index:9; }
-:focus-visible { outline:2px solid var(--color-border-emphasized); outline-offset:2px; }
+  background:var(--surface); padding:8px 12px; border-radius:8px; z-index:9; }
+:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
 header { display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  padding-bottom:12px; border-bottom:1px solid var(--hairline); }
-.word { font-size:17px; font-weight:var(--font-weight-semibold); letter-spacing:-.02em; }
-.view { color:var(--faint); font-size:13px; }
-.status { font-family:var(--mono); font-size:11px; color:var(--muted);
-  font-variant-numeric:tabular-nums; letter-spacing:.01em; }
+  padding:14px 0 12px; border-bottom:1px solid var(--hairline); }
+.word { font:700 15px/1 var(--mono); letter-spacing:.14em; }
+.view { color:var(--faint); font-size:12.5px; }
+.modes { display:flex; background:#ececef; border-radius:9px; padding:3px; gap:2px; }
+.modes button { border:0; border-radius:7px; padding:4px 14px; font-size:12.5px;
+  color:var(--ink2); background:transparent; cursor:pointer; }
+.modes button[aria-pressed=true] { background:var(--surface); color:var(--ink);
+  font-weight:600; box-shadow:0 1px 3px rgba(17,17,20,.12); }
+.status { font-family:var(--mono); font-size:11px; color:var(--ink2);
+  font-variant-numeric:tabular-nums; display:flex; align-items:center; gap:7px; }
+.status::before { content:""; width:7px; height:7px; border-radius:50%;
+  background:var(--green); flex:0 0 auto; }
 nav { margin-left:auto; display:flex; gap:16px; font-size:12.5px; }
-.lede { color:var(--ink2); max-width:74ch; margin:12px 0 4px; }
-.lede strong { color:var(--ink); font-weight:var(--font-weight-semibold); }
-#society { display:flex; gap:14px; flex-wrap:wrap; margin:10px 0 4px;
-  font-size:11.5px; color:var(--muted); }
-.agent { display:flex; gap:6px; align-items:center; opacity:.65;
-  transition:opacity .25s; }
+.lede { color:var(--ink2); max-width:80ch; margin:10px 0 2px; font-size:13px; }
+.lede strong { color:var(--ink); font-weight:600; }
+#society { display:flex; gap:14px; flex-wrap:wrap; margin:8px 0 2px;
+  font-size:11.5px; color:var(--ink2); }
+.agent { display:flex; gap:6px; align-items:center; opacity:.75; transition:opacity .25s; }
 .agent .dot { width:7px; height:7px; border-radius:50%; flex:0 0 auto; }
-.agent .nm { font-weight:var(--font-weight-semibold); color:var(--ink2); }
+.agent .nm { font-weight:600; color:var(--ink2); }
 .agent .md { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
 .agent.on { opacity:1; } .agent.on .nm { color:var(--ink); }
-.controls { display:flex; gap:14px; align-items:center; flex-wrap:wrap;
-  padding:10px 0; margin:6px 0 10px; border-bottom:1px solid var(--hairline); }
+.controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  padding:10px 0 12px; }
 button, select { font:inherit; font-size:12.5px; color:var(--ink);
-  background:transparent; border:1px solid var(--color-border-emphasized);
-  border-radius:6px; padding:4px 12px; cursor:pointer; }
-button:hover { background:var(--color-background-muted); }
-#play { background:var(--ink); color:var(--plane); border-color:var(--ink);
-  font-weight:var(--font-weight-semibold); padding:5px 18px; min-width:88px; }
-#play:hover { opacity:.85; background:var(--ink); }
-input[type=range] { flex:1; min-width:160px; accent-color:var(--gate-rail); }
-.readout { font-family:var(--mono); font-size:11.5px; color:var(--muted);
-  min-width:110px; font-variant-numeric:tabular-nums; }
-.stats { display:flex; gap:16px; font-family:var(--mono); font-variant-numeric:tabular-nums;
-  font-size:11.5px; color:var(--muted); flex-wrap:wrap; }
-.stats b { color:var(--ink); font-weight:var(--font-weight-semibold); }
-main { display:grid; grid-template-columns:minmax(330px,5fr) minmax(380px,7fr); gap:22px; }
-@media (max-width:900px) { main { grid-template-columns:1fr; } }
-section.panel { min-height:200px; }
-.panel h2 { font-size:12px; font-weight:var(--font-weight-semibold); margin:0 0 2px;
-  color:var(--ink); }
-.panel h2 .n { color:var(--faint); font-weight:var(--font-weight-normal); }
-/* belief ledger: hairline rows, risk bar, no boxes */
-#board { display:flex; flex-direction:column; max-height:66vh; overflow-y:auto; }
-.belief { padding:9px 2px 10px 12px; border-bottom:1px solid var(--hairline);
+  background:var(--surface); border:1px solid var(--hairline2); border-radius:8px;
+  padding:4px 12px; cursor:pointer; }
+button:hover { border-color:var(--ink2); }
+#play { background:var(--ink); color:#fff; border-color:var(--ink);
+  font-weight:600; padding:5px 18px; min-width:88px; }
+#play:hover { opacity:.85; }
+input[type=range] { flex:1; min-width:140px; accent-color:var(--ink); }
+.readout { font-family:var(--mono); font-size:11.5px; color:var(--ink2);
+  min-width:104px; font-variant-numeric:tabular-nums; }
+/* stat tiles, MiroFish-style big numbers */
+.stats { display:flex; gap:10px; flex-wrap:wrap; }
+.stats span { background:var(--surface); border:1px solid var(--hairline);
+  border-radius:10px; padding:7px 16px 8px; display:grid; justify-items:center;
+  gap:1px; font-size:10.5px; color:var(--ink2); min-width:86px; }
+.stats b { font:600 17px/1.2 var(--mono); color:var(--ink);
+  font-variant-numeric:tabular-nums; }
+main { display:grid; grid-template-columns:minmax(400px,11fr) minmax(360px,9fr);
+  gap:14px; }
+@media (max-width:960px) { main { grid-template-columns:1fr; } }
+section.panel { background:var(--surface); border:1px solid var(--hairline);
+  border-radius:12px; padding:14px 16px; min-height:200px; }
+.panel h2 { font-size:12.5px; font-weight:600; margin:0 0 8px; color:var(--ink); }
+.panel h2 .n { color:var(--faint); font-weight:400; }
+/* the graph: dot-grid canvas, floating legend + node card */
+.graphwrap { position:relative; height:46vh; min-height:330px; margin:0 -16px;
+  border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline);
+  background-image:radial-gradient(circle, #dededf 1px, transparent 1.2px);
+  background-size:18px 18px; overflow:hidden; }
+#graph { position:absolute; inset:0; width:100%; height:100%; cursor:default; }
+.legend { position:absolute; left:12px; bottom:12px; background:var(--surface);
+  border:1px solid var(--hairline); border-radius:10px; padding:9px 12px;
+  box-shadow:0 6px 20px rgba(17,17,20,.08); font-size:11px; color:var(--ink2); }
+.legend .lt { font:600 10px/1 var(--mono); letter-spacing:.1em; color:var(--faint);
+  text-transform:uppercase; margin-bottom:7px; }
+.legend div.li { display:flex; align-items:center; gap:7px; margin:3px 0; }
+.legend i { width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+#nodecard { position:absolute; right:12px; top:12px; width:250px;
+  background:var(--surface); border:1px solid var(--hairline); border-radius:12px;
+  padding:12px 14px; box-shadow:0 10px 30px rgba(17,17,20,.14); z-index:4; }
+#nodecard .nchead { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+#nodecard .nctitle { font-weight:600; font-size:12.5px; }
+#nodecard .ncchip { font-size:10px; font-weight:600; border-radius:999px;
+  padding:2px 9px; color:#fff; }
+#ncclose { margin-left:auto; border:0; background:transparent; color:var(--faint);
+  font-size:15px; padding:0 2px; line-height:1; }
+#ncclose:hover { color:var(--ink); }
+#nodecard .ncrow { display:flex; justify-content:space-between; gap:10px;
+  font-size:11.5px; color:var(--ink2); padding:3px 0;
+  border-top:1px solid var(--hairline); }
+#nodecard .ncrow b { color:var(--ink); font-weight:600; text-align:right;
+  font-variant-numeric:tabular-nums; }
+#nodecard .ncrow .mono { font-family:var(--mono); font-size:10.5px; }
+/* belief ledger under the graph */
+#board { display:flex; flex-direction:column; max-height:24vh; overflow-y:auto;
+  margin-top:4px; }
+.belief { padding:8px 2px 9px 12px; border-bottom:1px solid var(--hairline);
   position:relative; }
-.belief.hot::before { content:""; position:absolute; left:0; top:10px;
-  bottom:12px; width:2px; background:var(--gate-rail); border-radius:1px; }
+.belief.hot::before { content:""; position:absolute; left:0; top:9px; bottom:11px;
+  width:2px; background:var(--orange); border-radius:1px; }
 .belief .k { font-family:var(--mono); font-size:11px; color:var(--faint); }
-.belief .v { font-weight:var(--font-weight-semibold); font-size:13.5px; margin:2px 0 6px; }
-.meter { height:2px; border-radius:1px; background:var(--color-background-muted);
-  overflow:hidden; }
+.belief .v { font-weight:600; font-size:13px; margin:2px 0 5px; }
+.meter { height:2px; border-radius:1px; background:#ececef; overflow:hidden; }
 .meter i { display:block; height:100%; }
 .belief .m { display:flex; gap:12px; align-items:center; font-size:10.5px;
   color:var(--faint); font-family:var(--mono); font-variant-numeric:tabular-nums;
   margin-top:5px; }
-.chip { font-size:10px; font-weight:var(--font-weight-semibold); border-radius:4px;
-  padding:1px 6px; white-space:nowrap; margin-left:auto;
-  background:var(--color-background-muted); color:var(--ink2); }
-.chip.auth { color:var(--ink); }
-.chip.weakish { background:var(--gate-bg); color:var(--gate); margin-left:0; }
-.chip.deb { background:var(--color-background-muted); color:var(--judge); margin-left:0; }
+.chip { font-size:10px; font-weight:600; border-radius:999px; padding:1px 8px;
+  white-space:nowrap; margin-left:auto; background:#ececef; color:var(--ink2); }
+.chip.auth { background:rgba(37,99,201,.12); color:var(--blue); }
+.chip.weakish { background:rgba(232,89,12,.12); color:var(--orange); margin-left:0; }
+.chip.deb { background:rgba(111,66,193,.12); color:var(--purple); margin-left:0; }
 .belief .v .chip { margin-left:8px; }
-/* feed: threaded turns; the rail is the cause (gray commit, amber debate) */
-#feed { display:flex; flex-direction:column; gap:14px; max-height:66vh;
+/* feed: activation-sequence cards */
+#feed { display:flex; flex-direction:column; gap:10px; max-height:74vh;
   overflow-y:auto; padding-right:4px; }
-.turn { border-left:2px solid var(--color-border-emphasized); padding:2px 0 2px 14px; }
-.turn.debated { border-left-color:var(--gate-rail); }
-.evblock { padding:2px 0 2px 14px; border-left:2px solid transparent; }
-.act { padding:6px 0; }
+.turn { border:1px solid var(--hairline); border-radius:10px; padding:2px 12px; }
+.turn.debated { border-color:rgba(214,51,108,.45);
+  box-shadow:0 0 0 1px rgba(214,51,108,.14); }
+.evblock { border:1px dashed var(--hairline2); border-radius:10px; padding:2px 12px; }
+.act { padding:8px 0; }
 .act + .act { border-top:1px solid var(--hairline); }
-.act.thread {}
-.act.gatecard { background:transparent; }
-.turn.debated .act.gatecard .gatechip.debate { background:var(--gate-bg);
-  color:var(--gate); }
-.act .body .ev { display:block; font-family:var(--mono); font-size:11.5px;
+.act .body .ev { display:block; font-family:var(--mono); font-size:11px;
   color:var(--ink2); line-height:1.7; }
 .act .who { display:flex; gap:8px; align-items:baseline; margin-bottom:2px; }
-.role { font-size:11px; font-weight:var(--font-weight-semibold); }
+.role { font:600 10px/1.5 var(--mono); letter-spacing:.1em; text-transform:uppercase; }
 .model { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-left:auto; }
-.act .body { font-size:13px; color:var(--ink2); } .act .body em { color:var(--ink2); }
-.gatechip { font-weight:var(--font-weight-semibold); font-size:11px; padding:1px 7px;
-  border-radius:4px; font-family:var(--mono);
-  background:var(--color-background-muted); color:var(--ink2); }
-.gatechip.commit { background:var(--color-success-muted); color:var(--good); }
-.gatechip.debate { background:var(--gate-bg); color:var(--gate); }
-.act.gatecard .body { font-family:var(--mono); font-size:11.5px; }
-.okmark { color:var(--good); font-weight:var(--font-weight-semibold); }
-.badmark { color:var(--crit); font-weight:var(--font-weight-semibold); }
-#term { background:var(--surface); color:var(--muted);
-  border:1px solid var(--hairline); border-radius:8px;
-  font-family:var(--mono); font-size:11.5px; line-height:1.7; padding:10px 14px;
-  margin-top:18px; max-height:160px; overflow-y:auto; }
-#term .t { color:var(--faint); margin-right:8px; }
-footer { color:var(--faint); font-size:11.5px; margin-top:12px; }
-.modes { display:flex; border:1px solid var(--color-border-emphasized);
-  border-radius:6px; overflow:hidden; }
-.modes button { border:0; border-radius:0; padding:4px 13px; color:var(--ink2); }
-.modes button[aria-pressed=true] { background:var(--ink); color:var(--plane);
-  font-weight:var(--font-weight-semibold); }
-#livebar { display:none; flex-direction:column; gap:8px;
-  padding:12px 0; margin:6px 0 10px; border-bottom:1px solid var(--hairline); }
+.act .body { font-size:12.5px; color:var(--ink); } .act .body em { color:var(--ink2); }
+.gatechip { font-weight:600; font-size:10.5px; padding:2px 9px; border-radius:999px;
+  font-family:var(--mono); background:#ececef; color:var(--ink2); }
+.gatechip.commit { background:rgba(47,158,68,.13); color:var(--green); }
+.gatechip.debate { background:rgba(214,51,108,.13); color:var(--crimson); }
+.act.gatecard .body { font-family:var(--mono); font-size:11px; }
+.okmark { color:var(--green); font-weight:600; } .badmark { color:var(--risk); font-weight:600; }
+/* black system-dashboard strip */
+#termwrap { background:#101013; border-radius:12px; margin-top:14px; overflow:hidden; }
+.termhead { display:flex; justify-content:space-between; align-items:center;
+  padding:8px 16px 0; font:600 10px/1 var(--mono); letter-spacing:.12em;
+  color:#8f8f96; }
+#term { color:#c9c9cf; font-family:var(--mono); font-size:11.5px; line-height:1.8;
+  padding:8px 16px 12px; max-height:150px; overflow-y:auto; }
+#term .t { color:#5f5f66; margin-right:8px; }
+footer { color:var(--faint); font-size:11.5px; margin-top:10px; }
+#livebar { display:none; flex-direction:column; gap:8px; padding:12px 0; }
 #livebar textarea { font:12px/1.7 var(--mono); color:var(--ink);
-  background:var(--surface); border:1px solid var(--hairline); border-radius:6px;
+  background:var(--surface); border:1px solid var(--hairline2); border-radius:8px;
   padding:8px 10px; width:100%; min-height:74px; resize:vertical; }
 #livebar .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 #livebar input[type=text], #livebar input[type=password] { font:inherit;
   font-size:12.5px; color:var(--ink); background:var(--surface);
-  border:1px solid var(--hairline); border-radius:6px; padding:6px 10px; }
+  border:1px solid var(--hairline2); border-radius:8px; padding:6px 10px; }
 #question { flex:1; min-width:240px; }
 #token { width:150px; font-family:var(--mono); font-size:11.5px; }
-#ingest-btn, #ask-btn { background:var(--ink); color:var(--plane);
-  border-color:var(--ink); font-weight:var(--font-weight-semibold); }
+#ingest-btn, #ask-btn { background:var(--ink); color:#fff; border-color:var(--ink);
+  font-weight:600; }
 #ingest-btn:disabled, #ask-btn:disabled { opacity:.5; cursor:wait; }
 #livemsg { font-family:var(--mono); font-size:11.5px; color:var(--faint); }
 @keyframes hotflash { from { opacity:.35; } to { opacity:1; } }
@@ -290,6 +320,7 @@ function apply(n, rebuild) {
   const hot = new Set(e.type === 'evidence' ? e.asserts.map(a => a.key)
     : (e.events || []).filter(t => t.key).map(t => t.key));
   renderBoard(e.board, hot);
+  updateGraph(e);
   feed.scrollTop = feed.scrollHeight;
   $('scrub').value = n;
   $('readout').textContent = `event ${n + 1}/${evs.length}`;
@@ -324,6 +355,170 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'ArrowLeft') { stop(); apply(i - 1, true); }
 });
 
+
+// ---- society graph: beliefs + agents on a force-laid canvas ----
+const gc = $('graph'), gctx = gc.getContext('2d');
+const G = { nodes: new Map(), fx: [], alpha: 0, w: 0, h: 0, sel: null };
+const AGENTS = [
+  { id: 'EXTRACTOR', color: '#0ca678' }, { id: 'PROPOSER', color: '#2563c9' },
+  { id: 'GATE', color: '#e8a33d' }, { id: 'SKEPTIC', color: '#d6336c' },
+  { id: 'JUDGE', color: '#6f42c1' }];
+function srcColor(src, weak) {
+  if (/debate/i.test(src || '')) return '#6f42c1';
+  if (weak || /rumor|blog|forum/i.test(src || '')) return '#e8590c';
+  if (/filing/i.test(src || '')) return '#2563c9';
+  return '#8a8a92';
+}
+function sizeGraph() {
+  const r = gc.parentElement.getBoundingClientRect();
+  G.w = r.width; G.h = r.height;
+  const dpr = devicePixelRatio || 1;
+  gc.width = G.w * dpr; gc.height = G.h * dpr;
+  gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  AGENTS.forEach((a, k) => {   // pinned pentagon, slightly high
+    const th = -Math.PI / 2 + k * 2 * Math.PI / AGENTS.length;
+    a.x = G.w / 2 + Math.cos(th) * Math.min(G.w, G.h) * 0.40;
+    a.y = G.h / 2 + Math.sin(th) * Math.min(G.h, G.w) * 0.38; });
+  G.alpha = 1;
+}
+new ResizeObserver(sizeGraph).observe(gc.parentElement);
+function updateGraph(e) {
+  const seen = new Set();
+  let k = 0;
+  for (const b of e.board) {
+    seen.add(b.key);
+    let n = G.nodes.get(b.key);
+    if (!n) {                                  // enter near the extractor
+      n = { x: AGENTS[0].x + (Math.random() - 0.5) * 60,
+            y: AGENTS[0].y + (Math.random() - 0.5) * 60, vx: 0, vy: 0, flash: 0 };
+      G.nodes.set(b.key, n);
+    }
+    n.b = b; n.ent = b.key.split('::')[0]; n.ord = k++;
+  }
+  for (const key of [...G.nodes.keys()]) if (!seen.has(key)) G.nodes.delete(key);
+  const hit = key => { const n = G.nodes.get(key); if (n) n.flash = 90; return n; };
+  if (e.type === 'evidence') {
+    for (const a of e.asserts) { hit(a.key);
+      G.fx.push({ from: AGENTS[0], key: a.key, color: '#0ca678', ttl: 110 }); }
+  } else {
+    for (const t of e.events || []) {
+      if (t.kind === 'proposal') for (const sk of (t.support || []))
+        G.fx.push({ from: AGENTS[1], key: sk, color: '#2563c9', ttl: 110 });
+      if (t.kind === 'challenge' && t.key)
+        G.fx.push({ from: AGENTS[3], key: t.key, color: '#d6336c', ttl: 150 }), hit(t.key);
+      if (t.kind === 'verdict' && t.key)
+        G.fx.push({ from: AGENTS[4], key: t.key, color: '#6f42c1', ttl: 150 }), hit(t.key);
+    }
+    if (e.gate && e.gate.fired) G.fx.push({ from: AGENTS[2], key: null,
+      color: '#e8a33d', ttl: 130 });
+  }
+  if (G.fx.length > 40) G.fx.splice(0, G.fx.length - 40);
+  G.alpha = 1;
+}
+function stepPhysics() {
+  const ns = [...G.nodes.values()];
+  const cents = {};                             // entity centroids
+  for (const n of ns) { (cents[n.ent] ||= { x: 0, y: 0, c: 0 });
+    cents[n.ent].x += n.x; cents[n.ent].y += n.y; cents[n.ent].c++; }
+  for (const c of Object.values(cents)) { c.x /= c.c; c.y /= c.c; }
+  for (const n of ns) {
+    let fx = (G.w / 2 - n.x) * 0.0060, fy = (G.h / 2 - n.y) * 0.0060;
+    for (const m of ns) { if (m === n) continue;
+      const dx = n.x - m.x, dy = n.y - m.y, d2 = dx * dx + dy * dy + 40;
+      const f = (n.ent === m.ent ? 900 : 1700) / d2;
+      fx += dx * f / Math.sqrt(d2); fy += dy * f / Math.sqrt(d2); }
+    const c = cents[n.ent];
+    fx += (c.x - n.x) * 0.012; fy += (c.y - n.y) * 0.012;
+    for (const a of AGENTS) {                   // keep clear of the agent ring
+      const dx = n.x - a.x, dy = n.y - a.y, d2 = dx * dx + dy * dy + 40;
+      const af = 5200 / d2;
+      fx += dx * af / Math.sqrt(d2); fy += dy * af / Math.sqrt(d2); }
+    n.vx = (n.vx + fx) * 0.82; n.vy = (n.vy + fy) * 0.82;
+    n.x += n.vx * G.alpha * 2.2; n.y += n.vy * G.alpha * 2.2;
+    n.x = Math.max(46, Math.min(G.w - 46, n.x));
+    n.y = Math.max(40, Math.min(G.h - 34, n.y));
+  }
+  G.alpha = Math.max(0, G.alpha - 0.004);
+}
+function drawGraph() {
+  gctx.clearRect(0, 0, G.w, G.h);
+  const ns = [...G.nodes.values()];
+  gctx.lineWidth = 1; gctx.strokeStyle = 'rgba(17,17,20,.10)';
+  const byEnt = {};
+  for (const n of ns) (byEnt[n.ent] ||= []).push(n);
+  for (const g of Object.values(byEnt))         // same-entity hairlines
+    for (let a = 0; a < g.length; a++) for (let b = a + 1; b < g.length; b++) {
+      gctx.beginPath(); gctx.moveTo(g[a].x, g[a].y); gctx.lineTo(g[b].x, g[b].y);
+      gctx.stroke(); }
+  for (const f of G.fx) {                       // agent -> belief action edges
+    const to = f.key ? G.nodes.get(f.key) : { x: G.w / 2, y: G.h / 2 };
+    if (!to) continue;
+    const a = Math.min(1, f.ttl / 90);
+    gctx.strokeStyle = f.color + Math.round(a * 200).toString(16).padStart(2, '0');
+    gctx.lineWidth = 1.6;
+    const mx = (f.from.x + to.x) / 2, my = (f.from.y + to.y) / 2 - 26;
+    gctx.beginPath(); gctx.moveTo(f.from.x, f.from.y);
+    gctx.quadraticCurveTo(mx, my, to.x, to.y); gctx.stroke();
+    f.ttl -= 1;
+  }
+  G.fx = G.fx.filter(f => f.ttl > 0);
+  gctx.font = '9.5px ui-monospace,Menlo,monospace'; gctx.textAlign = 'center';
+  for (const [ent, g] of Object.entries(byEnt)) {  // entity label
+    const cx = Math.max(50, Math.min(G.w - 50,
+      g.reduce((s, n) => s + n.x, 0) / g.length));
+    const cy = Math.max(12, Math.min(...g.map(n => n.y)) - 16);
+    gctx.fillStyle = 'rgba(17,17,20,.42)';
+    gctx.fillText(ent, cx, cy);
+  }
+  for (const n of ns) {
+    const b = n.b, r = 6 + Math.min(b.churn || 0, 4) * 1.6;
+    if (n.flash > 0) { gctx.beginPath();       // amber halo on touch
+      gctx.arc(n.x, n.y, r + 7 + (n.flash % 30) / 6, 0, 7);
+      gctx.strokeStyle = 'rgba(232,163,61,' + (n.flash / 160) + ')';
+      gctx.lineWidth = 2; gctx.stroke(); n.flash -= 1; }
+    if (b.wrong_now > 0.05) { gctx.beginPath(); // the risk ring
+      gctx.arc(n.x, n.y, r + 3.5, 0, 7);
+      gctx.strokeStyle = 'rgba(209,52,56,' + (0.25 + b.wrong_now * 0.75) + ')';
+      gctx.lineWidth = 1.5 + b.wrong_now * 2.5; gctx.stroke(); }
+    gctx.beginPath(); gctx.arc(n.x, n.y, r, 0, 7);
+    gctx.fillStyle = srcColor(b.source, b.weak); gctx.fill();
+    if (G.sel === b.key) { gctx.beginPath(); gctx.arc(n.x, n.y, r + 6, 0, 7);
+      gctx.strokeStyle = '#17171a'; gctx.lineWidth = 1.2; gctx.stroke(); }
+    gctx.fillStyle = 'rgba(17,17,20,.55)';
+    gctx.fillText(b.key.split('::')[1] || '',
+      Math.max(44, Math.min(G.w - 44, n.x)), n.y + r + 11);
+  }
+  gctx.font = '600 9px ui-monospace,Menlo,monospace';
+  for (const a of AGENTS) {                     // pinned agents
+    gctx.beginPath(); gctx.arc(a.x, a.y, 9, 0, 7);
+    gctx.fillStyle = '#ffffff'; gctx.fill();
+    gctx.strokeStyle = a.color; gctx.lineWidth = 2; gctx.stroke();
+    gctx.fillStyle = a.color; gctx.fillText(a.id, a.x, a.y - 15);
+  }
+}
+(function loop() { stepPhysics(); drawGraph(); requestAnimationFrame(loop); })();
+gc.addEventListener('click', ev => {
+  const r = gc.getBoundingClientRect();
+  const x = ev.clientX - r.left, y = ev.clientY - r.top;
+  let best = null, bd = 18 * 18;
+  for (const [key, n] of G.nodes) { const d = (n.x - x) ** 2 + (n.y - y) ** 2;
+    if (d < bd) { bd = d; best = key; } }
+  G.sel = best;
+  const card = $('nodecard');
+  if (!best) { card.hidden = true; return; }
+  const b = G.nodes.get(best).b;
+  $('nckey').textContent = b.key;
+  $('ncsrc').textContent = b.source || 'unsourced';
+  $('ncsrc').style.background = srcColor(b.source, b.weak);
+  $('ncval').textContent = b.value;
+  $('ncw').textContent = b.wrong_now.toFixed(2);
+  $('ncs').textContent = b.superseded_next.toFixed(2);
+  $('ncc').textContent = String(b.churn || 0);
+  card.hidden = false;
+});
+$('ncclose').addEventListener('click', () => { G.sel = null; $('nodecard').hidden = true; });
+sizeGraph();
+
 // ---- live mode: your own evidence through the real society ----
 const liveSid = 'live-' + Math.random().toString(36).slice(2, 10);
 let mode = 'replay', liveN = 0, liveCost = 0, liveQ = 0, liveFired = 0, busy = false;
@@ -341,6 +536,7 @@ function setMode(m) {
   document.querySelector('.controls').style.display = m === 'replay' ? 'flex' : 'none';
   $('livebar').style.display = m === 'live' ? 'flex' : 'none';
   feed.replaceChildren(); term.replaceChildren(); board.replaceChildren();
+  G.nodes.clear(); G.fx = []; G.sel = null; $('nodecard').hidden = true;
   if (m === 'replay') { i = -1; apply(0, true); }
   else { i = liveN;
     liveMsg('your own evidence, the real society, the real learned gate — every call spends real tokens');
@@ -371,6 +567,7 @@ function liveRender(e) {
     const hot = new Set(e.type === 'evidence' ? e.asserts.map(a => a.key)
       : (e.events || []).filter(t => t.key).map(t => t.key));
     renderBoard(e.board, hot);
+    updateGraph(e);
     liveMsg(`${e.board.length} beliefs · ${liveQ} asked · ${liveFired} debates · $${liveCost.toFixed(4)} this session`);
   }, cards.length * step);
 }
@@ -428,8 +625,9 @@ def main() -> None:
 <title>Agora — society view (live replay)</title>
 <style>{TOKENS}{FONT}{CSS}</style></head><body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="page">
 <header>
-{mark}<span class="word">agora</span><span class="view">/ society view</span>
+{mark}<span class="word">AGORA</span><span class="view">/ society view</span>
 <div class="modes" role="group" aria-label="Viewer mode">
 <button id="mode-replay" type="button" aria-pressed="true">recorded run</button>
 <button id="mode-live" type="button" aria-pressed="false">live — try it</button>
@@ -478,15 +676,35 @@ the society your own evidence.</p>
 <main id="main">
 <section class="panel" aria-label="Belief board">
 <h2>Belief board <span class="n">— learned P(wrong) per belief</span></h2>
+<div class="graphwrap">
+<canvas id="graph" aria-label="Belief graph"></canvas>
+<div class="legend"><div class="lt">Belief graph</div>
+<div class="li"><i style="background:var(--blue)"></i>filing</div>
+<div class="li"><i style="background:var(--orange)"></i>rumor / weak</div>
+<div class="li"><i style="background:var(--purple)"></i>adjudicated</div>
+<div class="li"><i style="background:var(--risk)"></i>ring = P(wrong)</div>
+<div class="li"><i style="background:var(--crimson)"></i>debate edge</div></div>
+<div id="nodecard" hidden>
+<div class="nchead"><span class="nctitle" id="nckey">—</span>
+<span class="ncchip" id="ncsrc"></span>
+<button id="ncclose" type="button" aria-label="Close">×</button></div>
+<div class="ncrow"><span>value</span><b id="ncval"></b></div>
+<div class="ncrow"><span>P(wrong)</span><b id="ncw"></b></div>
+<div class="ncrow"><span>P(overturned)</span><b id="ncs"></b></div>
+<div class="ncrow"><span>churn</span><b id="ncc"></b></div>
+</div>
+</div>
 <div id="board"></div></section>
 <section class="panel" aria-label="Society activity feed">
 <h2>Society feed <span class="n">— extract · propose · gate · skeptic · judge</span></h2>
 <div id="feed" role="log" aria-label="Agent activity"></div></section>
 </main>
-<div id="term" role="log" aria-label="System log"></div>
+<div id="termwrap"><div class="termhead"><span>SYSTEM DASHBOARD</span><span>agora society runtime</span></div>
+<div id="term" role="log" aria-label="System log"></div></div>
 <footer>Backbones: proposer/judge {MODEL_STRONG} · skeptic {MODEL_MID} · extractor
 {MODEL_FAST}. Gate: learned world model + conformal threshold, 0 LLM calls per
 decision. Generated by scripts/build_live.py from results/replay_s0.json.</footer>
+</div>
 <script>{js}</script>
 </body></html>"""
     OUT.write_text(page)
