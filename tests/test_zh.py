@@ -21,7 +21,7 @@ def test_translate_zh_generates_pages():
     for needle in ("社会实况", "质疑者", "裁决者", "'辩论'"):
         assert needle in zh_live, needle
     # Code identifiers survive untranslated (the chart keys series by them).
-    assert "agora-wm" in zh_index and "wrong_now" in zh_index
+    assert "majalis-wm" in zh_index and "wrong_now" in zh_index
     # Each page links back to its English twin.
     assert 'href="/"' in zh_index and 'href="/live"' in zh_live
 

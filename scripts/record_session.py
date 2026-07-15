@@ -20,13 +20,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from agora.bench.stream import make_session  # noqa: E402
-from agora.bench.tasks import grade  # noqa: E402
-from agora.society import AgoraSession  # noqa: E402
-from agora.wmnet import load_wm  # noqa: E402
+from majalis.bench.stream import make_session  # noqa: E402
+from majalis.bench.tasks import grade  # noqa: E402
+from majalis.society import MajalisSession  # noqa: E402
+from majalis.wmnet import load_wm  # noqa: E402
 
 
-def board_snapshot(session: AgoraSession, wm) -> list[dict]:
+def board_snapshot(session: MajalisSession, wm) -> list[dict]:
     board = session.board
     snap = []
     for key in sorted(board._current):
@@ -55,7 +55,7 @@ def main() -> None:
 
     wm = load_wm()
     assert wm is not None, "learned weights required (data/wm_weights.json)"
-    session = AgoraSession(seed=args.seed)
+    session = MajalisSession(seed=args.seed)
     events: list[dict] = []
     correct = questions = fired = 0
 

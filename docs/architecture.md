@@ -1,8 +1,8 @@
-# Agora — Architecture
+# Majalis — Architecture
 
 ## One paragraph
 
-Agora is a multi-agent debate society in which a **shared, learned world model** —
+Majalis is a multi-agent debate society in which a **shared, learned world model** —
 a keyed belief board plus two trained predictive heads (`wrong_now`: is the
 board's current value incorrect; `superseded_next`: will an authoritative
 filing overturn it soon), a stacker fit on real logged episodes, and a
@@ -20,12 +20,12 @@ Controlled 2025-26 evals show homogeneous multi-agent debate mostly re-buys
 self-consistency at higher cost (arXiv:2502.08788), and a single agent at equal
 token budget is a brutal baseline (arXiv:2604.02460). The levers that survive:
 
-1. **Model heterogeneity** — the "universal antidote" (2502.08788). Agora's
+1. **Model heterogeneity** — the "universal antidote" (2502.08788). Majalis's
    debaters run on different Qwen backbones (qwen3.7-max / qwen3.7-plus /
    qwen3.6-flash).
 2. **Verification-shaped tasks** — where cross-checking demonstrably helps.
 3. **Sparsity** — iMAD (2511.11306) showed gating debate per-query cuts up to 92%
-   of tokens while *raising* accuracy. Agora generalizes the gate from a
+   of tokens while *raising* accuracy. Majalis generalizes the gate from a
    stateless per-query classifier to a persistent, calibrated world model that
    modulates the entire debate lifecycle and compounds across tasks.
 
@@ -39,7 +39,7 @@ the closest neighbors are: **trigger** — iMAD (2511.11306) and SELENE (EACL
 equivariant sparse routing); **termination** — a Wald-SPRT compute governor
 for debates (2605.19193: 3.7× call cut on GSM8K but 2.1× cost blowup on MMLU
 where judge scores don't discriminate — stopping rules inherit their judge's
-calibration, which is why Agora's stop signal reads the belief state rather
+calibration, which is why Majalis's stop signal reads the belief state rather
 than a consensus judge); **acceptance** — Budgeted
 Act-or-Defer deliberation (2606.29654, calibrated act/defer with a conditional
 reliability bound, deferring to humans); **substrate** — Mesh Memory Protocol
@@ -47,10 +47,10 @@ reliability bound, deferring to humans); **substrate** — Mesh Memory Protocol
 **belief-store-with-supersession itself is established art** — Tenure (2605.11325, typed
 belief store with epistemic status + supersession), TOKI (2606.06240,
 write-time contradiction control with audit-row provenance), and WorldDB
-(2604.18478; 96.4% LongMemEval-s, author-reported) all ship one in 2026, so Agora claims no novelty for the
+(2604.18478; 96.4% LongMemEval-s, author-reported) all ship one in 2026, so Majalis claims no novelty for the
 substrate — only for what it is wired to.
 
-What none of them do, and Agora does: close the loop through ONE persistent,
+What none of them do, and Majalis does: close the loop through ONE persistent,
 inspectable belief state — the same board that amortizes perception also
 carries doubt, provenance, and supersession outcomes; the gate reads it, the
 debate writes back into it, and the next question starts smarter. Two
@@ -62,7 +62,7 @@ axis). Each mechanism alone: incremental. The closed loop and the cost
 regime: the contribution.
 
 MAST (2503.13657) attributes multi-agent failures to structural causes —
-inter-agent misalignment and weak verification/termination. Agora's answers are
+inter-agent misalignment and weak verification/termination. Majalis's answers are
 structural too: star topology (no agent-to-agent chat), typed artifact handoffs,
 author≠validator separation, and termination owned by the world model.
 
@@ -123,7 +123,7 @@ author≠validator separation, and termination owned by the world model.
   the ACCEPT threshold is conformally calibrated on the learned score
   (preact-wm CalibratedGate, split CRC) so E[error | accepted-without-
   debate] ≤ α on exchangeable data; fail-safe when uncalibrated; the
-  hand-set blend survives as fallback + ablation (`AGORA_WM=heuristic`).
+  hand-set blend survives as fallback + ablation (`MAJALIS_WM=heuristic`).
   Targeting is expected-information-gain over the learned P(wrong):
   challenge the highest-entropy supporting belief.
 - **`society.py` — the society.** extract → assert into board → propose →
@@ -141,17 +141,18 @@ author≠validator separation, and termination owned by the world model.
   1. **Session eval (headline)** — `bench/session.py`: dated evidence streams
      with questions interleaved, plus unreliable sources (rumors postdating
      filings, wrong by construction). Baselines re-read the stream-so-far per
-     question — O(stream) input tokens each time; Agora ingests each batch
+     question — O(stream) input tokens each time; Majalis ingests each batch
      once and answers from the board — O(board) per question, debating only
-     doubted keys via per-key dockets. Measured (seed 0): accuracy parity at
-     every length with **cost/question flat for Agora ($0.0053) and linear
-     for single-agent ($0.0135 at 32 steps, 2.5× and growing)**. Every Qwen
+     doubted keys via per-key dockets. Measured (2–3 seeds, learned gate):
+     accuracy parity at every length with **cost/question flat for Majalis
+     ($0.0049–0.0054) and linear for single-agent ($0.0137 at 32 steps, 2.5×
+     and growing)**. Every Qwen
      backbone ceilings on per-task synthetic families, so the honest gain is
      this structural one — the regime where multi-agent genuinely wins
      (context/amortization), not re-bought self-consistency.
   2. **Per-task eval (secondary + ablations)** — `bench/run.py`: `single`,
-     `sc5` (the honest null), `mad` (vanilla 3×3), `agora`, and ablations
-     (`agora-nogate` / `agora-nodebate` / `agora-noeig`) over `churn`,
+     `sc5` (the honest null), `mad` (vanilla 3×3), `majalis`, and ablations
+     (`majalis-nogate` / `majalis-nodebate` / `majalis-noeig`) over `churn`,
      `compare`, `multihop` families.
 
 ## Guarantee fine print (honest limits)

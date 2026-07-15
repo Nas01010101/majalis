@@ -1,5 +1,5 @@
 """Benchmark arms. Every arm gets the same task text and the same ledger
-accounting; the Agora arm is wired in once the society core lands.
+accounting; the Majalis arm is wired in once the society core lands.
 """
 from __future__ import annotations
 
@@ -86,5 +86,5 @@ ARMS = {
     "single": single_cot,
     "sc5": self_consistency,
     "mad": vanilla_mad,
-    # "agora" registered by agora.society once it exists
+    # "majalis" registered by majalis.society once it exists
 }

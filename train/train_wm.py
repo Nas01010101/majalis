@@ -1,4 +1,4 @@
-"""Train Agora's learned world model on logged episodes (GPU box).
+"""Train Majalis's learned world model on logged episodes (GPU box).
 
     python train/train_wm.py --data-dir data --out data/wm_weights.json
 
@@ -12,7 +12,7 @@ episodes (LLM-built boards) so the sim-to-real gap is measured, not assumed.
 Baselines reported honestly: the old hand-set heuristics (doubt blend /
 Lomax survival) as single-feature rankers, and HistGradientBoosting on the
 same features. Everything exports to one JSON (weights + standardization +
-metrics) for dependency-free numpy inference in agora.
+metrics) for dependency-free numpy inference in majalis.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
-FEATURES = [  # must mirror agora.wmfeat.FEATURES
+FEATURES = [  # must mirror majalis.wmfeat.FEATURES
     "age_days", "exposure_days", "n_assertions", "n_supersessions",
     "n_conflicts", "churn_per_month", "n_distinct_values", "tier_cur",
     "weak_current", "frac_weak_hist", "lomax_p_valid", "doubt_heuristic",

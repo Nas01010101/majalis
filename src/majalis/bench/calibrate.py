@@ -1,6 +1,6 @@
 """Fit the ACCEPT gate on a calibration split.
 
-    python -m agora.bench.calibrate --n 40 --seed 100
+    python -m majalis.bench.calibrate --n 40 --seed 100
 
 Runs the debate-free pipeline (extract -> propose -> risk features) on
 calibration tasks disjoint from the eval seeds, labels harm = "the committed
@@ -75,12 +75,12 @@ def collect_session(seed: int, n_steps: int = 8) -> None:
     label harm = 'the answer committed straight from the board was wrong'.
     This matches the deployed decision exactly (same board state, same
     features, same models)."""
-    from ..society import AgoraSession
+    from ..society import MajalisSession
     from .stream import make_session
 
     done = _done_ids()
     _PAIRS.parent.mkdir(parents=True, exist_ok=True)
-    session = AgoraSession(seed=seed, gate_mode="never")
+    session = MajalisSession(seed=seed, gate_mode="never")
     for ev in make_session(seed, n_steps=n_steps):
         if ev.kind == "evidence":
             session.ingest(ev.lines)

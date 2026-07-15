@@ -1,6 +1,6 @@
 """Thin Qwen client with a per-run token ledger.
 
-Every arm (single-agent, self-consistency, vanilla MAD, Agora) calls through
+Every arm (single-agent, self-consistency, vanilla MAD, Majalis) calls through
 here so token/latency accounting is identical and un-gameable by construction.
 """
 from __future__ import annotations

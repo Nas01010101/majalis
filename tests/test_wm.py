@@ -1,11 +1,11 @@
 import json
 
-from agora.beliefs import BeliefBoard, parse_date_ord
-from agora.wm import AcceptGate, rank_targets, risk_score
+from majalis.beliefs import BeliefBoard, parse_date_ord
+from majalis.wm import AcceptGate, rank_targets, risk_score
 
 
 def test_weak_current_dominates_risk():
-    from agora.beliefs import parse_date_ord
+    from majalis.beliefs import parse_date_ord
     b = BeliefBoard()
     k = "e::ceo"
     b.assert_fact(k, "Chen", parse_date_ord("Jan 2025"), source="Filing")
@@ -39,7 +39,7 @@ def test_rank_targets_prefers_uncertain_over_settled():
 
 
 def test_accept_gate_calibration_roundtrip(tmp_path, monkeypatch):
-    import agora.wm as wm
+    import majalis.wm as wm
     monkeypatch.setattr(wm, "_GATE_STATE", tmp_path / "gate.json")
     monkeypatch.setattr(wm, "load_wm", lambda: None)  # isolate heuristic path
     # Separable data: low scores harmless, high scores harmful.
@@ -54,7 +54,7 @@ def test_accept_gate_calibration_roundtrip(tmp_path, monkeypatch):
 
 
 def test_accept_gate_fail_safe_uncalibrated(monkeypatch, tmp_path):
-    import agora.wm as wm
+    import majalis.wm as wm
     monkeypatch.setattr(wm, "_GATE_STATE", tmp_path / "missing.json")
     monkeypatch.setattr(wm, "_GATE_STATE_LEARNED", tmp_path / "missing2.json")
     monkeypatch.setattr(wm, "load_wm", lambda: None)
@@ -65,13 +65,13 @@ def test_accept_gate_fail_safe_uncalibrated(monkeypatch, tmp_path):
 def test_learned_gate_loads_and_calibrates():
     """With trained weights + learned calibration present (repo state),
     the gate runs the learned path end to end."""
-    import agora.wm as wm
+    import majalis.wm as wm
     gate = wm.AcceptGate()
     assert gate.wm is not None and gate.calibrated
 
 
 def test_learned_wm_orders_risk_sensibly():
-    from agora.wmnet import LearnedWM
+    from majalis.wmnet import LearnedWM
     m = LearnedWM()
     poisoned, clean = BeliefBoard(), BeliefBoard()
     poisoned.assert_fact("e::ceo", "chen", parse_date_ord("Jan 2025"), source="Filing")
@@ -92,8 +92,8 @@ def test_learned_wm_orders_risk_sensibly():
 
 
 def test_wmfeat_parse_and_replay_consistency():
-    from agora.bench.stream import make_session
-    from agora.wmfeat import FEATURES, key_features, parse_line, replay_stream
+    from majalis.bench.stream import make_session
+    from majalis.wmfeat import FEATURES, key_features, parse_line, replay_stream
     f = parse_line("[Mar 2025] Filing: Acme Corp's ceo is Jane Doe.")
     assert f == {"entity": "Acme Corp", "attr": "ceo", "value": "Jane Doe",
                  "date": "Mar 2025", "source": "Filing"}

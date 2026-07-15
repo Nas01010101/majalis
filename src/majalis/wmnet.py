@@ -70,10 +70,10 @@ _cached: LearnedWM | None = None
 
 
 def load_wm() -> LearnedWM | None:
-    """The learned WM when trained weights exist (and AGORA_WM != 'heuristic');
+    """The learned WM when trained weights exist (and MAJALIS_WM != 'heuristic');
     None otherwise — callers fall back to the hand-set blend."""
     global _cached
-    if os.environ.get("AGORA_WM", "learned") == "heuristic":
+    if os.environ.get("MAJALIS_WM", "learned") == "heuristic":
         return None
     if _cached is None and _WEIGHTS.exists():
         _cached = LearnedWM()

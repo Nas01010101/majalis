@@ -38,8 +38,8 @@ QWEN_BASE_URL = os.environ.get(
 
 # Heterogeneous backbones — the one debate lever with robust evidence
 # (arXiv:2502.08788 "universal antidote"). Overridable per-role via env.
-MODEL_STRONG = os.environ.get("AGORA_MODEL_STRONG", "qwen3.7-max")
-MODEL_MID = os.environ.get("AGORA_MODEL_MID", os.environ.get("QWEN_MODEL", "qwen3.7-plus"))
-MODEL_FAST = os.environ.get("AGORA_MODEL_FAST", "qwen3.6-flash")
+MODEL_STRONG = os.environ.get("MAJALIS_MODEL_STRONG", "qwen3.7-max")
+MODEL_MID = os.environ.get("MAJALIS_MODEL_MID", os.environ.get("QWEN_MODEL", "qwen3.7-plus"))
+MODEL_FAST = os.environ.get("MAJALIS_MODEL_FAST", "qwen3.6-flash")
 
-DB_PATH = str(_REPO_ROOT / "data" / "agora_beliefs.db")
+DB_PATH = str(_REPO_ROOT / "data" / "majalis_beliefs.db")

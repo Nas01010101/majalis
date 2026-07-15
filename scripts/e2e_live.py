@@ -1,10 +1,10 @@
-"""Real end-to-end smoke test against the DEPLOYED Agora service.
+"""Real end-to-end smoke test against the DEPLOYED Majalis service.
 
     python scripts/e2e_live.py [--base http://47.237.187.157:8080]
 
 Spends ~$0.05 of real Qwen calls (2 ingests + 3 asks) through the live
 box — the whole pipeline: extractor -> board -> learned WM -> gate ->
-debate -> write-back. Token read from <repo>/.env (AGORA_LIVE_TOKEN).
+debate -> write-back. Token read from <repo>/.env (MAJALIS_LIVE_TOKEN).
 Exit 0 only if every invariant holds.
 """
 from __future__ import annotations
@@ -21,15 +21,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _token() -> str:
     for line in (ROOT / ".env").read_text().splitlines():
-        if line.startswith("AGORA_LIVE_TOKEN="):
+        if line.startswith("MAJALIS_LIVE_TOKEN="):
             return line.split("=", 1)[1].strip()
-    sys.exit("AGORA_LIVE_TOKEN not found in .env")
+    sys.exit("MAJALIS_LIVE_TOKEN not found in .env")
 
 
 def _call(base: str, path: str, payload: dict, token: str) -> dict:
     req = urllib.request.Request(
         base + path, data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json", "X-Agora-Token": token})
+        headers={"Content-Type": "application/json", "X-Majalis-Token": token})
     with urllib.request.urlopen(req, timeout=120) as r:
         return json.load(r)
 

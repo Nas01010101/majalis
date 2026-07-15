@@ -5,8 +5,8 @@
 Replays held-out streams (never used in eval 0-99, calibration 100-999, or
 world-model training 1000-3199), builds the board with the deterministic
 extractor, reconstructs ground truth by the arrived-filings rule, and runs
-the REAL AcceptGate.decide() for both modes — learned (AGORA_WM default) and
-heuristic (AGORA_WM=heuristic) — on identical inputs. The disagreement
+the REAL AcceptGate.decide() for both modes — learned (MAJALIS_WM default) and
+heuristic (MAJALIS_WM=heuristic) — on identical inputs. The disagreement
 sampler is stubbed to 0.0 for both modes (the learned stacker measured its
 weight at zero; the heuristic gets its skip-path value), so the comparison
 is LLM-free and apples-to-apples.
@@ -29,12 +29,12 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-import agora.wm as wmod  # noqa: E402
-from agora.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
-from agora.bench.stream import make_session  # noqa: E402
-from agora.bench.tasks import Task  # noqa: E402
-from agora.handoffs import Proposal  # noqa: E402
-from agora.wmfeat import parse_line, replay_stream  # noqa: E402
+import majalis.wm as wmod  # noqa: E402
+from majalis.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
+from majalis.bench.stream import make_session  # noqa: E402
+from majalis.bench.tasks import Task  # noqa: E402
+from majalis.handoffs import Proposal  # noqa: E402
+from majalis.wmfeat import parse_line, replay_stream  # noqa: E402
 
 # Stub the sampler BEFORE any gate use: offline = no LLM calls, ever.
 wmod.sample_disagreement = lambda *a, **kw: 0.0
@@ -102,7 +102,7 @@ def _bins(scores: list[float], labels: list[int], n: int = 10) -> list[dict]:
 
 
 def eval_mode(mode: str, seeds: range) -> tuple[dict, list[float], list[int]]:
-    os.environ["AGORA_WM"] = mode
+    os.environ["MAJALIS_WM"] = mode
     gate = wmod.AcceptGate()
     assert (gate.wm is not None) == (mode == "learned"), f"mode wiring: {mode}"
     scores, labels = [], []
@@ -148,7 +148,7 @@ def main() -> None:
     heuristic, h_scores, h_labels = eval_mode("heuristic", seeds)
 
     # Reliability of the wrong_now head itself on the same streams' step rows.
-    os.environ["AGORA_WM"] = "learned"
+    os.environ["MAJALIS_WM"] = "learned"
     wm = wmod.load_wm()
     head_scores, head_labels = [], []
     for seed in seeds:

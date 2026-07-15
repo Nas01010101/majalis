@@ -7,8 +7,8 @@ import importlib
 import pytest
 from fastapi.testclient import TestClient
 
-from agora import api
-from agora.beliefs import BeliefBoard, parse_date_ord
+from majalis import api
+from majalis.beliefs import BeliefBoard, parse_date_ord
 
 
 class _Ledger:
@@ -50,8 +50,8 @@ def client(monkeypatch):
     fake = _FakeSession()
     monkeypatch.setattr(api, "_session", lambda sid: fake)
     api._spent.update(day="", calls=0)
-    monkeypatch.delenv("AGORA_LIVE_TOKEN", raising=False)
-    monkeypatch.delenv("AGORA_LIVE_DAILY_CAP", raising=False)
+    monkeypatch.delenv("MAJALIS_LIVE_TOKEN", raising=False)
+    monkeypatch.delenv("MAJALIS_LIVE_DAILY_CAP", raising=False)
     return TestClient(api.app)
 
 
@@ -82,16 +82,16 @@ def test_ask_returns_ungraded_question_event(client):
 
 
 def test_spend_guard_cap_and_token(client, monkeypatch):
-    monkeypatch.setenv("AGORA_LIVE_DAILY_CAP", "0")
+    monkeypatch.setenv("MAJALIS_LIVE_DAILY_CAP", "0")
     r = client.post("/ask", json={"question": "q"})
     assert r.status_code == 429
     assert "paused" in r.json()["detail"]  # cap 0 = paused, not "try tomorrow"
-    monkeypatch.setenv("AGORA_LIVE_TOKEN", "s3cret")
+    monkeypatch.setenv("MAJALIS_LIVE_TOKEN", "s3cret")
     ok = client.post("/ask", json={"question": "q"},
-                     headers={"X-Agora-Token": "s3cret"})
+                     headers={"X-Majalis-Token": "s3cret"})
     assert ok.status_code == 200
     bad = client.post("/ask", json={"question": "q"},
-                      headers={"X-Agora-Token": "wrong"})
+                      headers={"X-Majalis-Token": "wrong"})
     assert bad.status_code == 429
 
 
@@ -104,7 +104,7 @@ def test_input_limits(client):
 
 
 def test_live_page_has_live_mode():
-    importlib.import_module("agora.api")
+    importlib.import_module("majalis.api")
     page = (api.Path(api.__file__).resolve().parents[2] / "dashboard" / "live.html").read_text()
-    for needle in ("mode-live", "ingest-btn", "X-Agora-Token", "livebar"):
+    for needle in ("mode-live", "ingest-btn", "X-Majalis-Token", "livebar"):
         assert needle in page, needle

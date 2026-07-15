@@ -6,7 +6,7 @@ import sys
 from openai import OpenAI
 
 sys.path.insert(0, "src")
-from agora.config import MODEL_FAST, MODEL_MID, MODEL_STRONG, QWEN_BASE_URL, require
+from majalis.config import MODEL_FAST, MODEL_MID, MODEL_STRONG, QWEN_BASE_URL, require
 
 
 def main() -> int:

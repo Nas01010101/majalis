@@ -1,4 +1,4 @@
-"""Agora in 60 seconds — no API key needed for the world-model half.
+"""Majalis in 60 seconds — no API key needed for the world-model half.
 
     python examples/quickstart.py
 
@@ -11,8 +11,8 @@ stream, ask a question, see the gate route debate only where it's needed.
 """
 import os
 
-from agora.beliefs import BeliefBoard, parse_date_ord
-from agora.wmnet import load_wm
+from majalis.beliefs import BeliefBoard, parse_date_ord
+from majalis.wmnet import load_wm
 
 # ---- Part 1: board + learned world model, fully offline -------------------
 board = BeliefBoard()
@@ -31,10 +31,10 @@ for key in ("acme::ceo", "acme::hq"):
 
 # ---- Part 2: the full society (Qwen backbones via DashScope) ---------------
 if os.environ.get("DASHSCOPE_API_KEY"):
-    from agora.bench.tasks import Task
-    from agora.society import AgoraSession
+    from majalis.bench.tasks import Task
+    from majalis.society import MajalisSession
 
-    session = AgoraSession(seed=0)
+    session = MajalisSession(seed=0)
     session.ingest([
         "[Jan 2026] Filing: Acme Corp's ceo is Jane Doe.",
         "[Mar 2026] Rumor: Acme Corp's ceo is now John Roe.",

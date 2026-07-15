@@ -1,4 +1,4 @@
-"""SVG panel builders for the Agora dashboard (imported by build_dashboard.py).
+"""SVG panel builders for the Majalis dashboard (imported by build_dashboard.py).
 
 Mark specs follow the dataviz contract: 2px lines with round caps, >=8px
 markers with a 2px surface ring, bars <=24px with 4px rounded data-ends and a

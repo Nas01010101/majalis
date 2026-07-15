@@ -28,11 +28,11 @@ COMMON = [
 ]
 
 INDEX = [
-    ('<title>Agora — a debate society steered by a learned world model</title>',
-     '<title>Agora — 由学习世界模型调控的辩论社会</title>'),
-    ('content="Agora — a multi-agent debate society whose learned world model '
+    ('<title>Majalis — a debate society steered by a learned world model</title>',
+     '<title>Majalis — 由学习世界模型调控的辩论社会</title>'),
+    ('content="Majalis — a multi-agent debate society whose learned world model '
      'decides when debate is worth the tokens."',
-     'content="Agora — 一个多智能体辩论社会：学习世界模型决定何时值得为辩论花费 token。"'),
+     'content="Majalis — 一个多智能体辩论社会：学习世界模型决定何时值得为辩论花费 token。"'),
     ('Qwen Cloud · Track 3 — agent\nsociety · learned world model',
      '<b>Qwen Cloud · 赛道 3</b> — 智能体社会 · 学习世界模型'),
     ('Your agents debate too much. The world model decides when it\'s worth it.',
@@ -45,19 +45,19 @@ INDEX = [
     ('<a href="/healthz">health</a>', '<a href="/healthz">健康检查</a>'),
     ('<a href="/zh" hreflang="zh-CN" lang="zh-CN">中文</a>', '<a href="/" hreflang="en" lang="en">English</a>'),
     ('# try it — one command, no API key', '# 一条命令即可体验 — 无需 API key'),
-    ('learned-gate accuracy, live session eval (agora-wm)', '学习门控准确率（agora-wm，线上会话评测）'),
+    ('learned-gate accuracy, live session eval (majalis-wm)', '学习门控准确率（majalis-wm，线上会话评测）'),
     ('LLM calls per gate decision', '每次门控决策的 LLM 调用数'),
     ('the stacker learned the sampler adds nothing', '融合器学到采样器毫无贡献'),
-    ('single-agent cost per question at 32-step streams, vs Agora',
-     '32 步流上单智能体每问成本（相对 Agora）'),
+    ('single-agent cost per question at 32-step streams, vs Majalis (learned gate)',
+     '32 步流上单智能体每问成本（相对 Majalis 学习门控）'),
     ('corrupted boards caught, 1600 held-out questions', '被污染信念捕获率（1600 个留出问题）'),
     ('vs the hand-set gate, at 0.9% false-fire', '优于手工门控，误触发仅 0.9%'),
     ('Benchmark — session eval, live Qwen runs', '基准 — 会话评测 · 真实 Qwen 运行'),
     ('Cost per question vs stream length', '每问成本 vs 证据流长度'),
-    ('Perception is amortized into the board, so Agora\'s cost stays\nflat while the single agent re-reads a growing stream. (vanilla 3×3 debate:\n$0.0709/q at 8 steps — off this chart\'s scale; see the table.)',
-     '感知成本摊销进信念板，因此 Agora 的成本保持平坦，而单智能体每问都要重读不断增长的流。（朴素 3×3 辩论：8 步时 $0.0709/问——超出本图量程，见表格。）'),
-    ('agora-wm (learned gate)', 'agora-wm（学习门控）'),
-    ('agora (hand-set gate)', 'agora（手工门控）'),
+    ('Perception is amortized into the board, so Majalis\'s cost stays\nflat while the single agent re-reads a growing stream. (vanilla 3×3 debate:\n$0.0709/q at 8 steps — off this chart\'s scale; see the table.)',
+     '感知成本摊销进信念板，因此 Majalis 的成本保持平坦，而单智能体每问都要重读不断增长的流。（朴素 3×3 辩论：8 步时 $0.0709/问——超出本图量程，见表格。）'),
+    ('majalis-wm (learned gate)', 'majalis-wm（学习门控）'),
+    ('majalis (hand-set gate)', 'majalis（手工门控）'),
     ('single agent</span>', '单智能体</span>'),
     ('table view — all arms, pooled across seeds', '表格视图 — 全部对比臂（跨种子汇总）'),
     ('World model — trained vs hand-set, held out', '世界模型 — 学习 vs 手工 · 留出数据'),
@@ -105,9 +105,9 @@ INDEX = [
 ]
 
 LIVE = [
-    ('<title>Agora — society view (live replay)</title>', '<title>Agora — 社会实况（真实运行回放）</title>'),
-    ('content="Watch Agora\'s agent society process a contradictory evidence stream, with the learned world model\'s risk meters live."',
-     'content="观看 Agora 智能体社会处理相互矛盾的证据流，学习世界模型的风险仪表实时可见。"'),
+    ('<title>Majalis — society view (live replay)</title>', '<title>Majalis — 社会实况（真实运行回放）</title>'),
+    ('content="Watch Majalis\'s agent society process a contradictory evidence stream, with the learned world model\'s risk meters live."',
+     'content="观看 Majalis 智能体社会处理相互矛盾的证据流，学习世界模型的风险仪表实时可见。"'),
     ('/ society view', '/ 社会实况'),
     ('"status">seed', '"status">种子'),
     ('steps ·\n', '步 · '),
@@ -203,7 +203,7 @@ LIVE = [
     ('</i>debate edge</div>', '</i>辩论边</div>'),
     ('<span>value</span>', '<span>取值</span>'),
     ('<span>churn</span>', '<span>更替次数</span>'),
-    ('<span>agora society runtime</span>', '<span>agora 社会运行时</span>'),
+    ('<span>majalis society runtime</span>', '<span>majalis 社会运行时</span>'),
     ('aria-label="Belief graph"', 'aria-label="信念图谱"'),
 ]
 

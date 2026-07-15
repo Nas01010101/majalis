@@ -2,7 +2,7 @@
 
     python scripts/build_live.py [--replay results/replay_s0.json]
 
-A MiroFish-style watch-the-society view at Agora's scale: belief board with
+A MiroFish-style watch-the-society view at Majalis's scale: belief board with
 live learned-world-model meters (left), the agent feed — extract, propose,
 gate, skeptic, judge — (right), terminal log (bottom), with play / pause /
 scrub / speed. Self-contained single file (replay inlined); the FastAPI
@@ -21,13 +21,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from agora.config import MODEL_FAST, MODEL_MID, MODEL_STRONG  # noqa: E402
+from majalis.config import MODEL_FAST, MODEL_MID, MODEL_STRONG  # noqa: E402
 
 OUT = ROOT / "dashboard" / "live.html"
 # Astryx neutral design tokens (vendored, see scripts/extract_astryx_tokens.py)
-# + the Agora skin overrides + Figtree, inlined: one self-contained file.
+# + the Majalis skin overrides + Figtree, inlined: one self-contained file.
 TOKENS = ((ROOT / "web" / "astryx-tokens.css").read_text()
-          + (ROOT / "web" / "agora-skin.css").read_text())
+          + (ROOT / "web" / "majalis-skin.css").read_text())
 FONT = (ROOT / "web" / "figtree.css").read_text()
 
 CSS = """
@@ -523,8 +523,8 @@ sizeGraph();
 const liveSid = 'live-' + Math.random().toString(36).slice(2, 10);
 let mode = 'replay', liveN = 0, liveCost = 0, liveQ = 0, liveFired = 0, busy = false;
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
-$('token').value = localStorage.getItem('agora-token') || '';
-$('token').addEventListener('change', ev => localStorage.setItem('agora-token', ev.target.value));
+$('token').value = localStorage.getItem('majalis-token') || '';
+$('token').addEventListener('change', ev => localStorage.setItem('majalis-token', ev.target.value));
 
 function liveMsg(s) { $('livemsg').textContent = s; }
 function setBusy(b) { busy = b; $('ingest-btn').disabled = b; $('ask-btn').disabled = b; }
@@ -548,7 +548,7 @@ async function liveCall(path, payload) {
   try {
     const headers = { 'Content-Type': 'application/json' };
     const tok = $('token').value.trim();
-    if (tok) headers['X-Agora-Token'] = tok;
+    if (tok) headers['X-Majalis-Token'] = tok;
     const r = await fetch(path, { method: 'POST', headers, body: JSON.stringify(payload) });
     const data = await r.json();
     if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
@@ -620,14 +620,14 @@ def main() -> None:
                'fill=%22%23171717%22/%3E%3C/svg%3E')
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Watch Agora's agent society process a contradictory evidence stream, with the learned world model's risk meters live.">
+<meta name="description" content="Watch Majalis's agent society process a contradictory evidence stream, with the learned world model's risk meters live.">
 <link rel="icon" href="{favicon}">
-<title>Agora — society view (live replay)</title>
+<title>Majalis — society view (live replay)</title>
 <style>{TOKENS}{FONT}{CSS}</style></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="page">
 <header>
-{mark}<span class="word">AGORA</span><span class="view">/ society view</span>
+{mark}<span class="word">MAJALIS</span><span class="view">/ society view</span>
 <div class="modes" role="group" aria-label="Viewer mode">
 <button id="mode-replay" type="button" aria-pressed="true">recorded run</button>
 <button id="mode-live" type="button" aria-pressed="false">live — try it</button>
@@ -699,7 +699,7 @@ the society your own evidence.</p>
 <h2>Society feed <span class="n">— extract · propose · gate · skeptic · judge</span></h2>
 <div id="feed" role="log" aria-label="Agent activity"></div></section>
 </main>
-<div id="termwrap"><div class="termhead"><span>SYSTEM DASHBOARD</span><span>agora society runtime</span></div>
+<div id="termwrap"><div class="termhead"><span>SYSTEM DASHBOARD</span><span>majalis society runtime</span></div>
 <div id="term" role="log" aria-label="System log"></div></div>
 <footer>Backbones: proposer/judge {MODEL_STRONG} · skeptic {MODEL_MID} · extractor
 {MODEL_FAST}. Gate: learned world model + conformal threshold, 0 LLM calls per

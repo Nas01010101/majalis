@@ -1,6 +1,6 @@
 """Benchmark runner.
 
-    python -m agora.bench.run --arms single,sc5,mad --families churn,multihop \
+    python -m majalis.bench.run --arms single,sc5,mad --families churn,multihop \
         --n 50 --seed 0
 
 Writes one JSONL per (arm, family) under results/raw/ and prints a summary
@@ -63,7 +63,7 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
 
-    # Import for side effect: registers the "agora" arm when the society exists.
+    # Import for side effect: registers the "majalis" arm when the society exists.
     try:
         from .. import society  # noqa: F401
     except ImportError:

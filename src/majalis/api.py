@@ -1,8 +1,8 @@
-"""Live Agora service — the demo backend (runs on Alibaba Cloud ECS).
+"""Live Majalis service — the demo backend (runs on Alibaba Cloud ECS).
 
-    uvicorn agora.api:app --host 0.0.0.0 --port 8080
+    uvicorn majalis.api:app --host 0.0.0.0 --port 8080
 
-One AgoraSession per session_id: feed evidence, ask questions, watch the
+One MajalisSession per session_id: feed evidence, ask questions, watch the
 board and the gate decide. The dashboard's live view drives this API.
 """
 from __future__ import annotations
@@ -17,38 +17,38 @@ from pydantic import BaseModel
 
 from .beliefs import BeliefBoard
 from .bench.tasks import Task
-from .society import AgoraSession
+from .society import MajalisSession
 from .wmnet import load_wm
 
-app = FastAPI(title="Agora", version="0.1.0")
-_sessions: dict[str, AgoraSession] = {}
+app = FastAPI(title="Majalis", version="0.1.0")
+_sessions: dict[str, MajalisSession] = {}
 _WM = load_wm()
 
 # Live-demo spend guard: /ingest and /ask cost real Qwen calls. Anonymous
-# callers share a daily budget; AGORA_LIVE_TOKEN in X-Agora-Token bypasses it.
+# callers share a daily budget; MAJALIS_LIVE_TOKEN in X-Majalis-Token bypasses it.
 _spent = {"day": "", "calls": 0}
 
 
 def _spend_guard(token: str | None) -> None:
-    secret = os.environ.get("AGORA_LIVE_TOKEN", "")
+    secret = os.environ.get("MAJALIS_LIVE_TOKEN", "")
     if secret and token == secret:
         return
-    cap = int(os.environ.get("AGORA_LIVE_DAILY_CAP", "25"))
+    cap = int(os.environ.get("MAJALIS_LIVE_DAILY_CAP", "25"))
     today = datetime.now(timezone.utc).date().isoformat()
     if _spent["day"] != today:
         _spent.update(day=today, calls=0)
     if cap <= 0:
         raise HTTPException(429, detail=(
             "the shared live demo is paused — watch the recorded run, "
-            "or send X-Agora-Token to run live"))
+            "or send X-Majalis-Token to run live"))
     if _spent["calls"] >= cap:
         raise HTTPException(429, detail=(
             f"today's shared live-demo budget ({cap} calls) is spent — "
-            "try tomorrow, or send X-Agora-Token"))
+            "try tomorrow, or send X-Majalis-Token"))
     _spent["calls"] += 1
 
 
-def _snapshot(s: AgoraSession) -> list[dict]:
+def _snapshot(s: MajalisSession) -> list[dict]:
     """Full board with world-model scores — offline numpy, 0 LLM calls."""
     b = s.board
     snap = []
@@ -68,11 +68,11 @@ def _snapshot(s: AgoraSession) -> list[dict]:
     return snap
 
 
-def _session(sid: str) -> AgoraSession:
+def _session(sid: str) -> MajalisSession:
     if sid not in _sessions:
         if len(_sessions) >= 64:  # drop the oldest live session, not the box
             _sessions.pop(next(iter(_sessions)))
-        _sessions[sid] = AgoraSession(seed=0)
+        _sessions[sid] = MajalisSession(seed=0)
     return _sessions[sid]
 
 
@@ -88,10 +88,10 @@ class AskBody(BaseModel):
 
 @app.post("/ingest")
 def ingest(body: IngestBody,
-           x_agora_token: str | None = Header(default=None)) -> dict:
+           x_majalis_token: str | None = Header(default=None)) -> dict:
     if not (0 < len(body.lines) <= 12) or any(len(x) > 300 for x in body.lines):
         raise HTTPException(422, detail="1-12 evidence lines, each ≤300 chars")
-    _spend_guard(x_agora_token)
+    _spend_guard(x_majalis_token)
     s = _session(body.session_id)
     before = len(s.board._current)
     cost0 = s.ingest_ledger.cost_usd
@@ -110,10 +110,10 @@ def ingest(body: IngestBody,
 
 @app.post("/ask")
 def ask(body: AskBody,
-        x_agora_token: str | None = Header(default=None)) -> dict:
+        x_majalis_token: str | None = Header(default=None)) -> dict:
     if not (0 < len(body.question) <= 400):
         raise HTTPException(422, detail="question must be 1-400 chars")
-    _spend_guard(x_agora_token)
+    _spend_guard(x_majalis_token)
     s = _session(body.session_id)
     task = Task(task_id="live", family="live", context="",
                 question=body.question, gold="")
@@ -163,7 +163,7 @@ def index() -> str:
     page = Path(__file__).resolve().parents[2] / "dashboard" / "index.html"
     if page.exists():
         return page.read_text()
-    return "<h1>Agora</h1><p>Dashboard not built; see /docs for the API.</p>"
+    return "<h1>Majalis</h1><p>Dashboard not built; see /docs for the API.</p>"
 
 
 @app.get("/zh", response_class=HTMLResponse)
@@ -171,7 +171,7 @@ def index_zh() -> str:
     page = Path(__file__).resolve().parents[2] / "dashboard" / "index.zh.html"
     if page.exists():
         return page.read_text()
-    return "<h1>Agora</h1><p>中文页面未构建；请运行 scripts/translate_zh.py。</p>"
+    return "<h1>Majalis</h1><p>中文页面未构建；请运行 scripts/translate_zh.py。</p>"
 
 
 @app.get("/zh/live", response_class=HTMLResponse)
@@ -179,7 +179,7 @@ def live_zh() -> str:
     page = Path(__file__).resolve().parents[2] / "dashboard" / "live.zh.html"
     if page.exists():
         return page.read_text()
-    return "<h1>Agora</h1><p>中文页面未构建；请运行 scripts/translate_zh.py。</p>"
+    return "<h1>Majalis</h1><p>中文页面未构建；请运行 scripts/translate_zh.py。</p>"
 
 
 @app.get("/live", response_class=HTMLResponse)
@@ -189,4 +189,4 @@ def live() -> str:
     page = Path(__file__).resolve().parents[2] / "dashboard" / "live.html"
     if page.exists():
         return page.read_text()
-    return "<h1>Agora</h1><p>Live view not built; run scripts/build_live.py.</p>"
+    return "<h1>Majalis</h1><p>Live view not built; run scripts/build_live.py.</p>"

@@ -25,15 +25,15 @@ from dashboard_panels import auroc_bars, reliability_panel, scaling_chart  # noq
 RESULTS, DATA = ROOT / "results", ROOT / "data"
 OUT = ROOT / "dashboard" / "index.html"
 # Astryx neutral design tokens (vendored, see scripts/extract_astryx_tokens.py)
-# + the Agora skin overrides + Figtree, inlined: one self-contained file.
+# + the Majalis skin overrides + Figtree, inlined: one self-contained file.
 TOKENS = ((ROOT / "web" / "astryx-tokens.css").read_text()
-          + (ROOT / "web" / "agora-skin.css").read_text())
+          + (ROOT / "web" / "majalis-skin.css").read_text())
 FONT = (ROOT / "web" / "figtree.css").read_text()
 
 # Categorical slots in fixed order (validated); color follows the entity.
-LIGHT = {"agora-wm": "#2a78d6", "agora": "#1baf7a", "single": "#eda100",
+LIGHT = {"majalis-wm": "#2a78d6", "majalis": "#1baf7a", "single": "#eda100",
          "learned": "#2a78d6", "baseline": "#898781"}
-DARK = {"agora-wm": "#3987e5", "agora": "#199e70", "single": "#c98500",
+DARK = {"majalis-wm": "#3987e5", "majalis": "#199e70", "single": "#c98500",
         "learned": "#3987e5", "baseline": "#898781"}
 
 CSS = """
@@ -204,23 +204,23 @@ def pooled(sessions: list[dict]) -> dict[tuple, dict]:
 
 
 def tiles(cells, gate_eval, wm_metrics) -> str:
-    wm_rows = [(k, a) for k, a in cells.items() if k[0] == "agora-wm"]
+    wm_rows = [(k, a) for k, a in cells.items() if k[0] == "majalis-wm"]
     wm_c = sum(a["c"] for _, a in wm_rows); wm_n = sum(a["n"] for _, a in wm_rows)
-    big_si = cells.get(("single", 32)); big_ag = cells.get(("agora", 32))
+    big_si = cells.get(("single", 32)); big_ag = cells.get(("majalis-wm", 32))
     ratio = ((big_si["cost"] / big_si["n"]) / (big_ag["cost"] / big_ag["n"])
              if big_si and big_ag else None)
     gq = gate_eval["gate_quality"]; heur = gate_eval["learned_vs_heuristic"]["heuristic"]
     d_recall = (gq["recall_poisoned"] - heur["recall_poisoned"]) * 100
     t = "<div class='tiles'>"
     t += (f"<div class='tile'><div class='v'>{wm_c}/{wm_n}</div>"
-          f"<div class='k'>learned-gate accuracy, live session eval (agora-wm)</div></div>")
+          f"<div class='k'>learned-gate accuracy, live session eval (majalis-wm)</div></div>")
     t += (f"<div class='tile'><div class='v'>0</div>"
           f"<div class='k'>LLM calls per gate decision</div>"
           f"<div class='d'>the stacker learned the sampler adds nothing</div></div>")
     if ratio:
         t += (f"<div class='tile'><div class='v'>{ratio:.1f}×</div>"
               f"<div class='k'>single-agent cost per question at 32-step "
-              f"streams, vs Agora</div></div>")
+              f"streams, vs Majalis (learned gate)</div></div>")
     t += (f"<div class='tile'><div class='v'>{gq['recall_poisoned']:.0%}</div>"
           f"<div class='k'>corrupted boards caught, {gate_eval['n_questions']} "
           f"held-out questions</div>"
@@ -288,7 +288,7 @@ def main() -> None:
     cells = pooled(sessions)
 
     series: dict[str, list[tuple[int, float]]] = {}
-    for arm in ("agora-wm", "agora", "single"):  # fixed slot order
+    for arm in ("majalis-wm", "majalis", "single"):  # fixed slot order
         pts = sorted((steps, a["cost"] / a["n"]) for (nm, steps), a in cells.items()
                      if nm == arm)
         if len(pts) > 1:
@@ -338,13 +338,13 @@ def main() -> None:
         '<rect x="16" y="40" width="32" height="6" rx="3" fill="%23171717"/></svg>'))
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Agora — a multi-agent debate society whose learned world model decides when debate is worth the tokens.">
+<meta name="description" content="Majalis — a multi-agent debate society whose learned world model decides when debate is worth the tokens.">
 <link rel="icon" href="{favicon}">
-<title>Agora — a debate society steered by a learned world model</title>
+<title>Majalis — a debate society steered by a learned world model</title>
 <style>{TOKENS}{FONT}{CSS}</style></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header>
-<div class="brand">{mark_svg}<span class="word">agora</span></div>
+<div class="brand">{mark_svg}<span class="word">majalis</span></div>
 <p class="eyebrow" style="margin-top:18px">Qwen Cloud · Track 3 — agent
 society · learned world model</p>
 <h1>Your agents debate too much. The world model decides when it's worth it.</h1>
@@ -356,23 +356,23 @@ decision</strong>.</p>
 <nav class="links" aria-label="Product links">
 <a href="/live">Society view — watch a live run</a>
 <a href="/docs">API playground (try /ingest and /ask)</a>
-<a href="https://github.com/Nas01010101/agora">GitHub</a>
+<a href="https://github.com/Nas01010101/majalis">GitHub</a>
 <a href="/healthz">health</a>
 <a href="/zh" hreflang="zh-CN" lang="zh-CN">中文</a>
 </nav>
 <pre class="try"><span class="c"># try it — one command, no API key</span>
-<span class="p">$</span> git clone https://github.com/Nas01010101/agora &amp;&amp; cd agora &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
+<span class="p">$</span> git clone https://github.com/Nas01010101/majalis &amp;&amp; cd majalis &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
 </header>
 <main id="main">
 {tiles(cells, gate_eval, wm["metrics"])}
 
 <div class="card"><p class="eyebrow">Benchmark — session eval, live Qwen runs</p>
 <h2>Cost per question vs stream length</h2>
-<p class="sub">Perception is amortized into the board, so Agora's cost stays
+<p class="sub">Perception is amortized into the board, so Majalis's cost stays
 flat while the single agent re-reads a growing stream. (vanilla 3×3 debate:
 $0.0709/q at 8 steps — off this chart's scale; see the table.)</p>
-{legend_line([("agora-wm (learned gate)", "wm"), ("agora (hand-set gate)", "ag"), ("single agent", "si")])}
-{scaling_chart(series, {"agora-wm": "var(--wm)", "agora": "var(--ag)", "single": "var(--si)"})}
+{legend_line([("majalis-wm (learned gate)", "wm"), ("majalis (hand-set gate)", "ag"), ("single agent", "si")])}
+{scaling_chart(series, {"majalis-wm": "var(--wm)", "majalis": "var(--ag)", "single": "var(--si)"})}
 <details><summary>table view — all arms, pooled across seeds</summary>{arms_table(cells)}</details></div>
 
 <div class="card"><p class="eyebrow">World model — trained vs hand-set, held out</p>
@@ -406,7 +406,7 @@ calibrated.</p>
 decision and reason. It debated exactly the weak-source displacements —
 rumor-poisoned beliefs — and nothing else. <a href="/live">Watch this run
 play out in the society view →</a></p>
-{gate_table(RESULTS / "raw" / "session_agora-wm_s0_t16.jsonl")}</div>
+{gate_table(RESULTS / "raw" / "session_majalis-wm_s0_t16.jsonl")}</div>
 </main>
 
 <footer><p class="eyebrow">Honesty notes</p><ul>
@@ -417,7 +417,7 @@ above.</li>
 <li>The offline benchmark stubs the disagreement sampler to 0 for both modes
 (the learned stacker measured its weight at zero; the heuristic gets its
 skip-path value).</li>
-<li>agora-wm live cells measured at 8- and 16-step streams; 32-step pending.
+<li>majalis-wm live cells measured at 8- and 16-step streams; 32-step pending.
 Hand-set-gate and single-agent numbers are frozen from the pre-learned-WM
 benchmark.</li>
 <li>Generated {today} by scripts/build_dashboard.py from results/ + data/

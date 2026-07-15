@@ -1,5 +1,5 @@
 [project]
-name = "agora"
+name = "majalis"
 version = "0.1.0"
 description = "A world-model-modulated debate society: a shared calibrated belief state decides when debate is worth the tokens, who speaks, when to stop, and what to commit."
 readme = "README.md"
@@ -20,4 +20,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agora"]
+packages = ["src/majalis"]
