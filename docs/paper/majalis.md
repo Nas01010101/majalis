@@ -386,7 +386,7 @@ contribution is the cost regime and the calibrated control.
 # Reproducibility
 
 All numbers reproduce from seeds with five commands against the released
-repository: `make test` (27 tests), `python scripts/gen_wm_dataset.py`
+repository: `make test` (35 tests), `python scripts/gen_wm_dataset.py`
 (dataset, 1.4s, zero API), `python train/train_wm.py` (18s GPU or ~1min
 CPU), `python scripts/offline_bench.py` (Table 3, zero API, <1s), and
 `python -m majalis.bench.session --arms single,majalis,mad,majalis-wm` (paid

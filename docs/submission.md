@@ -40,7 +40,10 @@ with interleaved questions, Majalis matches single-agent and vanilla-MAD
 accuracy exactly (272/272) while its cost per question stays **flat**
 ($0.0056) as the stream grows — the single agent re-reads the stream every
 question and grows linearly ($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD
-costs 12.6×. Gate parameters were tuned by a journaled, fail-closed
+costs 12.6×. The shipped default — a learned world-model gate — is cheaper
+still: 240/240 correct at a flat $0.0049–0.0054/q across 8/16/32-step
+streams (2.5× under the single agent at 32 steps), with zero LLM calls to
+decide the gate. Gate parameters were tuned by a journaled, fail-closed
 keep/revert optimization loop on held-out seeds (−12%, transfers across
 seeds).
 

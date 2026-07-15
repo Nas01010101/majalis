@@ -143,9 +143,10 @@ author≠validator separation, and termination owned by the world model.
      filings, wrong by construction). Baselines re-read the stream-so-far per
      question — O(stream) input tokens each time; Majalis ingests each batch
      once and answers from the board — O(board) per question, debating only
-     doubted keys via per-key dockets. Measured (seed 0): accuracy parity at
-     every length with **cost/question flat for Majalis ($0.0053) and linear
-     for single-agent ($0.0135 at 32 steps, 2.5× and growing)**. Every Qwen
+     doubted keys via per-key dockets. Measured (2–3 seeds, learned gate):
+     accuracy parity at every length with **cost/question flat for Majalis
+     ($0.0049–0.0054) and linear for single-agent ($0.0137 at 32 steps, 2.5×
+     and growing)**. Every Qwen
      backbone ceilings on per-task synthetic families, so the honest gain is
      this structural one — the regime where multi-agent genuinely wins
      (context/amortization), not re-bought self-consistency.

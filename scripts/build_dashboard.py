@@ -206,7 +206,7 @@ def pooled(sessions: list[dict]) -> dict[tuple, dict]:
 def tiles(cells, gate_eval, wm_metrics) -> str:
     wm_rows = [(k, a) for k, a in cells.items() if k[0] == "majalis-wm"]
     wm_c = sum(a["c"] for _, a in wm_rows); wm_n = sum(a["n"] for _, a in wm_rows)
-    big_si = cells.get(("single", 32)); big_ag = cells.get(("majalis", 32))
+    big_si = cells.get(("single", 32)); big_ag = cells.get(("majalis-wm", 32))
     ratio = ((big_si["cost"] / big_si["n"]) / (big_ag["cost"] / big_ag["n"])
              if big_si and big_ag else None)
     gq = gate_eval["gate_quality"]; heur = gate_eval["learned_vs_heuristic"]["heuristic"]
@@ -220,7 +220,7 @@ def tiles(cells, gate_eval, wm_metrics) -> str:
     if ratio:
         t += (f"<div class='tile'><div class='v'>{ratio:.1f}×</div>"
               f"<div class='k'>single-agent cost per question at 32-step "
-              f"streams, vs Majalis</div></div>")
+              f"streams, vs Majalis (learned gate)</div></div>")
     t += (f"<div class='tile'><div class='v'>{gq['recall_poisoned']:.0%}</div>"
           f"<div class='k'>corrupted boards caught, {gate_eval['n_questions']} "
           f"held-out questions</div>"
