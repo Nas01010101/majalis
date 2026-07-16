@@ -96,7 +96,13 @@ def ingest(body: IngestBody,
     before = len(s.board._current)
     cost0 = s.ingest_ledger.cost_usd
     asserts: list[dict] = []
-    s.ingest(body.lines, trace=asserts)
+    try:
+        s.ingest(body.lines, trace=asserts)
+    except RuntimeError as exc:
+        # llm.chat()'s terminal failure mode (retry exhaustion or a fast-fail
+        # quota/auth error, both RuntimeError) — a Qwen-side outage, not a
+        # bug in this request. Surface it as a clean 503, not a bare 500.
+        raise HTTPException(503, detail=f"LLM backend unavailable: {exc}") from exc
     return {
         "beliefs": len(s.board._current),
         "new_beliefs": len(s.board._current) - before,
@@ -117,7 +123,10 @@ def ask(body: AskBody,
     s = _session(body.session_id)
     task = Task(task_id="live", family="live", context="",
                 question=body.question, gold="")
-    result = s.ask(task)
+    try:
+        result = s.ask(task)
+    except RuntimeError as exc:
+        raise HTTPException(503, detail=f"LLM backend unavailable: {exc}") from exc
     trace = result.transcript[0]
     return {
         "answer": result.answer,

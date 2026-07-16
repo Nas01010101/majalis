@@ -95,6 +95,48 @@ def test_spend_guard_cap_and_token(client, monkeypatch):
     assert bad.status_code == 429
 
 
+class _FailingSession(_FakeSession):
+    """Simulates a Qwen outage: llm.chat()'s terminal RuntimeError (retry
+    exhaustion or fast-fail quota/auth) surfacing through society.py."""
+
+    def ingest(self, lines, trace=None):
+        raise RuntimeError("chat failed after 3 retries: 503 Service Unavailable")
+
+    def ask(self, task):
+        raise RuntimeError("chat failed after 3 retries: 503 Service Unavailable")
+
+
+@pytest.fixture()
+def failing_client(monkeypatch):
+    fake = _FailingSession()
+    monkeypatch.setattr(api, "_session", lambda sid: fake)
+    api._spent.update(day="", calls=0)
+    monkeypatch.delenv("MAJALIS_LIVE_TOKEN", raising=False)
+    monkeypatch.delenv("MAJALIS_LIVE_DAILY_CAP", raising=False)
+    return TestClient(api.app)
+
+
+def test_ingest_returns_503_on_llm_failure(failing_client):
+    r = failing_client.post(
+        "/ingest", json={"lines": ["[Feb 2026] Filing: Acme's HQ is Berlin."]})
+    assert r.status_code == 503
+    assert "LLM backend unavailable" in r.json()["detail"]
+
+
+def test_ask_returns_503_on_llm_failure(failing_client):
+    r = failing_client.post("/ask", json={"question": "Who is Acme's CEO?"})
+    assert r.status_code == 503
+    assert "LLM backend unavailable" in r.json()["detail"]
+
+
+def test_ask_input_validation_still_422_not_503(failing_client):
+    """The 503 handler must only catch RuntimeError from the LLM call path —
+    input-validation errors (checked before ask() is ever invoked) must not
+    be swallowed into a misleading 503."""
+    r = failing_client.post("/ask", json={"question": ""})
+    assert r.status_code == 422
+
+
 def test_input_limits(client):
     assert client.post("/ingest", json={"lines": []}).status_code == 422
     assert client.post("/ingest", json={"lines": ["x"] * 13}).status_code == 422

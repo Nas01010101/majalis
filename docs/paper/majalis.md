@@ -25,7 +25,8 @@ abstract: |
   a 0.9% false-fire rate, versus 23.8% / 78.8% / 15.1% for the hand-set
   gate it replaced; the fixed-prior survival model it displaced scores at
   chance (AUROC 0.496 vs 0.657 learned). End-to-end, the society matches a
-  single agent's accuracy (272/272 heuristic; 240/240 learned) while cost per
+  single agent's accuracy (single: 272/272; heuristic gate: 303/304, one
+  miss; learned gate: 240/240) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
   single agent's linear growth ($0.0137/q at 32 steps), and vanilla 3×3
   MAD costs 12.6× more. All experiments run on Qwen Cloud backbones; the
@@ -386,14 +387,22 @@ contribution is the cost regime and the calibrated control.
 # Reproducibility
 
 All numbers reproduce from seeds with five commands against the released
-repository: `make test` (35 tests), `python scripts/gen_wm_dataset.py`
+repository: `make test` (57 tests), `python scripts/gen_wm_dataset.py`
 (dataset, 1.4s, zero API), `python train/train_wm.py` (18s GPU or ~1min
 CPU), `python scripts/offline_bench.py` (Table 3, zero API, <1s), and
 `python -m majalis.bench.session --arms single,majalis,mad,majalis-wm` (paid
 cells; finished cells resume free from raw logs). Calibration:
 `python -m majalis.bench.calibrate --session-seeds 100,101,102` then
-`python scripts/refit_gate_learned.py` (offline). The heuristic arm is
-preserved under `MAJALIS_WM=heuristic`.
+`python scripts/refit_gate_learned.py` (offline). These two reproduction
+paths carry different determinism guarantees: `offline_bench.py` is
+provably deterministic (zero LLM calls, numpy replay over fixed seeds),
+while `bench.session`'s `--seeds` is seeded-but-LLM-dependent — the seed
+is forwarded as DashScope's `seed` parameter, documented best-effort (as
+with OpenAI's own `seed`), so a live re-run can differ from the committed
+numbers by a question or two even at an identical seed. The heuristic and
+learned arms are pinned by arm name (`majalis` vs `majalis-wm`) rather than
+an ambient env var; `MAJALIS_WM=heuristic` remains available as an
+explicit override for ad-hoc re-tuning.
 
 # References
 

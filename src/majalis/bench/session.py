@@ -5,6 +5,13 @@
 Every arm sees the SAME event sequence. Baselines re-read the full stream-
 so-far per question (that is the honest no-memory best practice); the majalis
 arm ingests incrementally and answers from its persistent board.
+
+"majalis" (heuristic gate) and "majalis-wm" (learned gate) are pinned to
+their gate mode by the arm name itself (REPLAYS below), not by an ambient
+MAJALIS_WM env var — a fresh clone reproduces either row exactly with no
+undocumented setup. MAJALIS_WM, if set, still overrides for ad-hoc
+re-tuning (logged loudly by wmnet.load_wm) — leave it unset to reproduce
+results/session_summary.json.
 """
 from __future__ import annotations
 
@@ -59,8 +66,9 @@ def _replay_mad(events, seed: int) -> list[dict]:
     return records
 
 
-def _replay_majalis(events, seed: int, gate_mode: str = "wm") -> list[dict]:
-    session = MajalisSession(seed=seed, gate_mode=gate_mode)
+def _replay_majalis(events, seed: int, gate_mode: str = "wm",
+                    wm_mode: str | None = None) -> list[dict]:
+    session = MajalisSession(seed=seed, gate_mode=gate_mode, wm_mode=wm_mode)
     records = []
     for ev in events:
         if ev.kind == "evidence":
@@ -79,14 +87,20 @@ def _replay_majalis(events, seed: int, gate_mode: str = "wm") -> list[dict]:
 REPLAYS = {
     "single": _replay_single,
     "mad": _replay_mad,
-    "majalis": _replay_majalis,
-    # Ablation: same board, debates never fire — isolates what debate adds.
-    "majalis-nodebate": lambda ev, seed: _replay_majalis(ev, seed, gate_mode="never"),
+    # The arm name IS the gate mode — pinned in code, not by an ambient
+    # MAJALIS_WM env var, so a fresh clone reproduces either row exactly
+    # without knowing which env setting produced the shipped numbers.
+    # MAJALIS_WM, if set, still overrides (logged loudly by wmnet.load_wm)
+    # for ad-hoc re-tuning — leave it unset to reproduce the shipped numbers.
+    "majalis": lambda ev, seed: _replay_majalis(ev, seed, wm_mode="heuristic"),
+    # Ablation: same (heuristic) board scoring, debates never fire —
+    # isolates what debate adds on top of the heuristic-gate row above.
+    "majalis-nodebate": lambda ev, seed: _replay_majalis(
+        ev, seed, gate_mode="never", wm_mode="heuristic"),
     # Learned world model (trained heads + stacker; wm.py auto-loads
     # data/wm_weights.json). A separate arm name means separate raw files —
-    # the frozen heuristic-gate numbers are never clobbered. Reproduce the
-    # heuristic arm exactly with MAJALIS_WM=heuristic.
-    "majalis-wm": _replay_majalis,
+    # the frozen heuristic-gate numbers are never clobbered.
+    "majalis-wm": lambda ev, seed: _replay_majalis(ev, seed, wm_mode="learned"),
 }
 
 

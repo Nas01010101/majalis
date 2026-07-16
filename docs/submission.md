@@ -36,11 +36,12 @@ corrects all 3.
 
 **Measurable efficiency gain** (track requirement c, one command, Wilson 95%
 CIs, identical events + shared token/USD ledger per arm): on evidence streams
-with interleaved questions, Majalis matches single-agent and vanilla-MAD
-accuracy exactly (272/272) while its cost per question stays **flat**
-($0.0056) as the stream grows — the single agent re-reads the stream every
-question and grows linearly ($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD
-costs 12.6×. The shipped default — a learned world-model gate — is cheaper
+with interleaved questions, Majalis (heuristic gate) is within one question
+of single-agent and vanilla-MAD accuracy (303/304, vs 272/272 and 32/32)
+while its cost per question stays **flat** ($0.0056) as the stream grows —
+the single agent re-reads the stream every question and grows linearly
+($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD costs 12.6×. The shipped
+default — a learned world-model gate — is both more accurate and cheaper
 still: 240/240 correct at a flat $0.0049–0.0054/q across 8/16/32-step
 streams (2.5× under the single agent at 32 steps), with zero LLM calls to
 decide the gate. Gate parameters were tuned by a journaled, fail-closed
@@ -64,4 +65,5 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 - Demo video: <3min YouTube (scripts/demo.sh flow + dashboard + bench table)
 - Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
   + /ingest + /ask from public IP; code file: src/majalis/api.py
-- Testing access: instance stays up through judging (Jul 31)
+- Testing access: instance stays up through judging — submission deadline
+  Jul 20, 2026 2:00pm PT; judging period ends Aug 11, 2026 2:00pm PT
