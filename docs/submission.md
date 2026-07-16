@@ -65,4 +65,5 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 - Demo video: <3min YouTube (scripts/demo.sh flow + dashboard + bench table)
 - Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
   + /ingest + /ask from public IP; code file: src/majalis/api.py
-- Testing access: instance stays up through judging (Jul 31)
+- Testing access: instance stays up through judging — submission deadline
+  Jul 20, 2026 2:00pm PT; judging period ends Aug 11, 2026 2:00pm PT
