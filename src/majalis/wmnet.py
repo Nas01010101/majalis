@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -69,11 +70,33 @@ def _sigmoid(z: float) -> float:
 _cached: LearnedWM | None = None
 
 
-def load_wm() -> LearnedWM | None:
-    """The learned WM when trained weights exist (and MAJALIS_WM != 'heuristic');
-    None otherwise — callers fall back to the hand-set blend."""
+def load_wm(mode: str | None = None) -> LearnedWM | None:
+    """The learned WM when trained weights exist and the effective mode is
+    "learned"; None ("heuristic") otherwise — callers fall back to the
+    hand-set blend.
+
+    `mode` is the explicit, code-determined choice (e.g. the session bench
+    harness passes "heuristic" for the majalis arm and "learned" for
+    majalis-wm — see bench/session.py). When `mode` is None, the caller has
+    no arm-level opinion and the legacy MAJALIS_WM env var (default
+    "learned") decides, as before.
+
+    The MAJALIS_WM env var ALWAYS wins when set, even over an explicit
+    `mode` — this is the escape hatch for ad-hoc re-tuning — but overriding
+    an arm's implied mode silently would make shipped numbers
+    unreproducible, so it logs loudly.
+    """
     global _cached
-    if os.environ.get("MAJALIS_WM", "learned") == "heuristic":
+    env = os.environ.get("MAJALIS_WM")
+    effective = mode if mode is not None else "learned"
+    if env is not None:
+        if mode is not None and env != mode:
+            print(f"MAJALIS_WM={env!r} env var OVERRIDES the arm-implied "
+                  f"gate mode {mode!r} — results reproduce the env "
+                  f"override, not the arm default. Unset MAJALIS_WM to "
+                  f"reproduce the shipped numbers.", file=sys.stderr)
+        effective = env
+    if effective == "heuristic":
         return None
     if _cached is None and _WEIGHTS.exists():
         _cached = LearnedWM()

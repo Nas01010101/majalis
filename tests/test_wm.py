@@ -62,6 +62,23 @@ def test_accept_gate_fail_safe_uncalibrated(monkeypatch, tmp_path):
     assert not gate.calibrated
 
 
+def test_majalis_session_wm_mode_controls_gate(monkeypatch):
+    """MajalisSession(wm_mode=...) must deterministically pin heuristic vs
+    learned scoring, independent of MAJALIS_WM — the arm-name-not-env-var
+    fix bench/session.py relies on for reproducibility."""
+    monkeypatch.delenv("MAJALIS_WM", raising=False)
+    from majalis.society import MajalisSession
+    heuristic = MajalisSession(wm_mode="heuristic")
+    learned = MajalisSession(wm_mode="learned")
+    assert heuristic.gate.wm is None
+    assert learned.gate.wm is not None
+    # An ambient MAJALIS_WM must still override (loudly) — the documented
+    # escape hatch — even over an explicit wm_mode.
+    monkeypatch.setenv("MAJALIS_WM", "heuristic")
+    overridden = MajalisSession(wm_mode="learned")
+    assert overridden.gate.wm is None
+
+
 def test_learned_gate_loads_and_calibrates():
     """With trained weights + learned calibration present (repo state),
     the gate runs the learned path end to end."""

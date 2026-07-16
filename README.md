@@ -61,7 +61,7 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 | arm | accuracy | cost/question | note |
 |---|---|---|---|
 | **Majalis** (learned gate, default) | **240/240, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~12% of questions |
-| Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | `MAJALIS_WM=heuristic`; debates 6–16% of questions |
+| Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | arm `majalis`; debates 6–16% of questions |
 | single agent | 272/272 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
 | vanilla MAD (3×3) | 32/32 | $0.0709 | 12.6× Majalis's cost |
 | Majalis, debate ablated | 77/80 (96.2%) | $0.0060 | its 3 errors are exactly the rumor-poisoned beliefs the WM flagged; gated debate fixes all 3 for +$0.0004/q |
@@ -73,6 +73,22 @@ python scripts/offline_bench.py                                    # gate qualit
 python -m majalis.bench.session --arms single,majalis,mad --seeds 0,1,2,3,4
 python scripts/e2e_live.py                                         # 14 invariants vs the deployed box (~$0.05)
 ```
+
+**Reproducing an arm.** `--arms majalis` runs the heuristic gate and
+`--arms majalis-wm` the learned gate — the arm name pins the mode in code
+(`bench/session.py`'s `REPLAYS`), so a fresh clone reproduces either row
+without any hidden setup. The `MAJALIS_WM=learned|heuristic` env var, if
+set, still overrides an arm's mode (for ad-hoc re-tuning); doing so logs a
+loud warning to stderr and the run no longer matches the shipped numbers,
+so leave it unset to reproduce `results/session_summary.json`.
+
+**On "deterministic."** The offline gate-quality numbers above
+(`offline_bench.py`) are provably deterministic — zero LLM calls, pure
+numpy replay against fixed seeds. The session-eval table's `--seeds`
+argument is *seeded, not guaranteed-deterministic*: it's forwarded as
+DashScope's `seed` request parameter, which Qwen Cloud documents as
+best-effort (same as OpenAI's own `seed`), so a live re-run may differ by
+a question or two from the committed numbers even with an identical seed.
 
 ## How it works
 

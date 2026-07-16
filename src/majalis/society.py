@@ -207,12 +207,18 @@ class MajalisSession:
     def __init__(self, *, seed: int = 0,
                  model_strong: str = MODEL_STRONG,
                  model_fast: str = MODEL_FAST,
-                 gate_mode: str = "wm"):  # wm | always | never
+                 gate_mode: str = "wm",  # wm | always | never
+                 wm_mode: str | None = None):  # learned | heuristic | None=env
         self.board = BeliefBoard()
         self.seed = seed
         self.model_strong = model_strong
         self.model_fast = model_fast
         self.gate_mode = gate_mode
+        # An explicit wm_mode (set by an arm-aware caller, e.g. bench/session.py)
+        # gets its OWN gate instance so the mode is pinned by code rather than
+        # by whatever MAJALIS_WM happens to be in the environment; leave it
+        # None to fall back to the shared, env-driven gate (legacy behavior).
+        self.gate = AcceptGate(wm_mode=wm_mode) if wm_mode is not None else _GATE
         self.ingest_ledger = Ledger()  # perception cost, amortized over questions
 
     def ingest(self, lines: list[str], trace: list | None = None) -> None:
@@ -241,15 +247,15 @@ class MajalisSession:
         proposal = propose(task, board, ledger, self.model_strong)
         trace.log("proposal", answer=proposal.answer,
                   support=proposal.support_keys, confidence=proposal.confidence)
-        decision = _GATE.decide(task, board, proposal, ledger, self.model_fast,
-                                seed=self.seed)
+        decision = self.gate.decide(task, board, proposal, ledger, self.model_fast,
+                                    seed=self.seed)
         if self.gate_mode == "always":
             decision.fire, decision.reason = True, "ablation:always-debate"
         elif self.gate_mode == "never":
             decision.fire, decision.reason = False, "ablation:never-debate"
         trace.gate = decision.as_dict()
         targets = rank_targets(board, proposal.support_keys,
-                               max_targets=MAX_DEBATES_PER_TASK, wm=_GATE.wm)
+                               max_targets=MAX_DEBATES_PER_TASK, wm=self.gate.wm)
         if decision.fire and targets:
             adjudications = []
             for key in targets:

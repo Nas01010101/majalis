@@ -106,14 +106,18 @@ class AcceptGate:
     Uncalibrated => fail-safe: everything above a conservative floor debates.
     """
 
-    def __init__(self, alpha: float = 0.05):
+    def __init__(self, alpha: float = 0.05, wm_mode: str | None = None):
+        """wm_mode: explicit "learned" | "heuristic", normally supplied by an
+        arm-aware caller (bench/session.py) so the gate mode a benchmark row
+        used is determined by code, not by an ambient env var. None (the
+        legacy default) defers entirely to MAJALIS_WM (default "learned")."""
         self.alpha = alpha
         self.gate = CalibratedGate()
         self.calibrated = False
         # Learned world model (trained on logged episodes; train/train_wm.py).
-        # None when weights are absent or MAJALIS_WM=heuristic — the hand-set
-        # blend below remains the fallback and the ablation arm.
-        self.wm = load_wm()
+        # None when weights are absent or the effective mode is "heuristic"
+        # — the hand-set blend below remains the fallback and the ablation arm.
+        self.wm = load_wm(wm_mode) if wm_mode is not None else load_wm()
         if self.wm and _GATE_STATE_LEARNED.exists():
             try:
                 rows = json.loads(_GATE_STATE_LEARNED.read_text())

@@ -393,8 +393,16 @@ CPU), `python scripts/offline_bench.py` (Table 3, zero API, <1s), and
 `python -m majalis.bench.session --arms single,majalis,mad,majalis-wm` (paid
 cells; finished cells resume free from raw logs). Calibration:
 `python -m majalis.bench.calibrate --session-seeds 100,101,102` then
-`python scripts/refit_gate_learned.py` (offline). The heuristic arm is
-preserved under `MAJALIS_WM=heuristic`.
+`python scripts/refit_gate_learned.py` (offline). These two reproduction
+paths carry different determinism guarantees: `offline_bench.py` is
+provably deterministic (zero LLM calls, numpy replay over fixed seeds),
+while `bench.session`'s `--seeds` is seeded-but-LLM-dependent — the seed
+is forwarded as DashScope's `seed` parameter, documented best-effort (as
+with OpenAI's own `seed`), so a live re-run can differ from the committed
+numbers by a question or two even at an identical seed. The heuristic and
+learned arms are pinned by arm name (`majalis` vs `majalis-wm`) rather than
+an ambient env var; `MAJALIS_WM=heuristic` remains available as an
+explicit override for ad-hoc re-tuning.
 
 # References
 

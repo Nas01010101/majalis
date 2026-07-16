@@ -13,7 +13,13 @@ data/*.db-journal
 dist/
 build/
 .DS_Store
-results/raw/
+results/raw/*
+# Auditable evidence snapshot for the two headline arms (t8, both gate
+# modes) — small (~80KB), committed so shipped numbers are checkable from
+# a fresh clone without re-running paid Qwen calls. Other/future raw runs
+# stay gitignored by default.
+!results/raw/session_majalis_s*_t8.jsonl
+!results/raw/session_majalis-wm_s*_t8.jsonl
 .cache/
 data/wm_*.npz
 web/vendor/

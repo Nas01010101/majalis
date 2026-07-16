@@ -53,3 +53,38 @@ def test_wilson_bounds():
     lo, hi = wilson_ci(45, 50)
     assert 0.78 < lo < 0.9 < hi <= 1.0
     assert wilson_ci(0, 0) == (0.0, 1.0)
+
+
+def test_session_arm_name_pins_wm_mode(monkeypatch):
+    """Regression test for the gate-mode reproducibility bug: 'majalis' and
+    'majalis-wm' used to map to the identical function with the identical
+    default gate_mode="wm" — the real heuristic-vs-learned lever was an
+    undocumented MAJALIS_WM env var, so a fresh clone couldn't tell which
+    mode produced the shipped results. The arm name must now pin the mode
+    in code, independent of the ambient environment."""
+    import majalis.bench.session as session_mod
+
+    captured: dict = {}
+
+    class _FakeSession:
+        def __init__(self, *, seed=0, gate_mode="wm", wm_mode=None, **kw):
+            captured["wm_mode"] = wm_mode
+            captured["gate_mode"] = gate_mode
+
+        def ingest(self, lines, trace=None):  # pragma: no cover - no events
+            raise AssertionError("no events => ingest should never be called")
+
+        def ask(self, task):  # pragma: no cover - no events
+            raise AssertionError("no events => ask should never be called")
+
+    monkeypatch.setattr(session_mod, "MajalisSession", _FakeSession)
+    monkeypatch.delenv("MAJALIS_WM", raising=False)  # no ambient override
+
+    session_mod.REPLAYS["majalis"]([], 0)
+    assert captured == {"wm_mode": "heuristic", "gate_mode": "wm"}
+
+    session_mod.REPLAYS["majalis-wm"]([], 0)
+    assert captured == {"wm_mode": "learned", "gate_mode": "wm"}
+
+    session_mod.REPLAYS["majalis-nodebate"]([], 0)
+    assert captured == {"wm_mode": "heuristic", "gate_mode": "never"}
