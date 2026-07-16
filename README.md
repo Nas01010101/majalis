@@ -61,7 +61,7 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 | arm | accuracy | cost/question | note |
 |---|---|---|---|
 | **Majalis** (learned gate, default) | **240/240, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~12% of questions |
-| Majalis (heuristic gate, opt-in) | 272/272 | $0.0056, flat | `MAJALIS_WM=heuristic`; debates 6–16% of questions |
+| Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | `MAJALIS_WM=heuristic`; debates 6–16% of questions |
 | single agent | 272/272 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
 | vanilla MAD (3×3) | 32/32 | $0.0709 | 12.6× Majalis's cost |
 | Majalis, debate ablated | 77/80 (96.2%) | $0.0060 | its 3 errors are exactly the rumor-poisoned beliefs the WM flagged; gated debate fixes all 3 for +$0.0004/q |

@@ -25,7 +25,8 @@ abstract: |
   a 0.9% false-fire rate, versus 23.8% / 78.8% / 15.1% for the hand-set
   gate it replaced; the fixed-prior survival model it displaced scores at
   chance (AUROC 0.496 vs 0.657 learned). End-to-end, the society matches a
-  single agent's accuracy (272/272 heuristic; 240/240 learned) while cost per
+  single agent's accuracy (single: 272/272; heuristic gate: 303/304, one
+  miss; learned gate: 240/240) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
   single agent's linear growth ($0.0137/q at 32 steps), and vanilla 3×3
   MAD costs 12.6× more. All experiments run on Qwen Cloud backbones; the
