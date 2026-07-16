@@ -1,6 +1,7 @@
 import json
 
 from majalis.beliefs import BeliefBoard, parse_date_ord
+from majalis.llm import Ledger
 from majalis.wm import AcceptGate, rank_targets, risk_score
 
 
@@ -106,6 +107,44 @@ def test_learned_wm_orders_risk_sensibly():
     # this coefficient meaningful, the gate resumes sampling automatically.
     if abs(m.stk_coef[1]) < 1e-9:
         assert m.commit_risk(0.2, 0.8, False) == m.commit_risk(0.2, 0.0, False)
+
+
+def test_gate_decide_empty_support_keys_and_empty_board():
+    """Edge case: a proposal with no support_keys against a BeliefBoard with
+    no beliefs at all. max_doubt/weak_current must default cleanly (no
+    KeyError/ZeroDivisionError on the empty `support` dict) and the sampler
+    must be skipped (zero doubt is always below the skip-sampler threshold),
+    so this exercises decide() end to end with zero LLM calls."""
+    from majalis.bench.tasks import Task
+    from majalis.handoffs import Proposal
+    gate = AcceptGate()
+    board = BeliefBoard()
+    proposal = Proposal(answer="unknown", rationale="no evidence", support_keys=[],
+                       confidence=0.5, author="proposer")
+    task = Task(task_id="t0", family="test", context="", question="q?", gold="unknown")
+    decision = gate.decide(task, board, proposal, Ledger(), "qwen3.6-flash", seed=0)
+    assert decision.max_doubt == 0.0
+    assert decision.weak_current is False
+    assert decision.disagreement == 0.0  # sampler skipped, no LLM call made
+    assert decision.fire is False  # zero evidence, zero risk -> accept, don't debate
+
+
+def test_gate_decide_support_keys_pointing_at_missing_board_entries():
+    """Edge case: support_keys are non-empty but none resolve on the board
+    (e.g. the proposer hallucinated a key) — same zero-doubt path as an
+    empty board, not a crash."""
+    from majalis.bench.tasks import Task
+    from majalis.handoffs import Proposal
+    gate = AcceptGate()
+    board = BeliefBoard()  # no facts asserted
+    proposal = Proposal(answer="unknown", rationale="no evidence",
+                       support_keys=["nonexistent::key"], confidence=0.5,
+                       author="proposer")
+    task = Task(task_id="t0", family="test", context="", question="q?", gold="unknown")
+    decision = gate.decide(task, board, proposal, Ledger(), "qwen3.6-flash", seed=0)
+    assert decision.max_doubt == 0.0
+    assert decision.weak_current is False
+    assert decision.fire is False
 
 
 def test_wmfeat_parse_and_replay_consistency():
