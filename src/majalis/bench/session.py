@@ -101,6 +101,14 @@ REPLAYS = {
     # data/wm_weights.json). A separate arm name means separate raw files —
     # the frozen heuristic-gate numbers are never clobbered.
     "majalis-wm": lambda ev, seed: _replay_majalis(ev, seed, wm_mode="learned"),
+    # Planned (two-branch argmax-utility) gate — see src/majalis/wm_plan.py.
+    # Same belief board, same debate mechanics; only the decision rule
+    # differs from majalis-wm above (threshold-on-one-branch-risk vs
+    # argmax-over-two-predicted-branch-utilities), per the reactive-vs-
+    # planned ablation design (design_track3_worldmodel.md §2.2). Purely
+    # additive: majalis-wm's code path above is untouched.
+    "majalis-wm-plan": lambda ev, seed: _replay_majalis(ev, seed, gate_mode="plan",
+                                                        wm_mode="learned"),
 }
 
 

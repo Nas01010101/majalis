@@ -207,7 +207,7 @@ class MajalisSession:
     def __init__(self, *, seed: int = 0,
                  model_strong: str = MODEL_STRONG,
                  model_fast: str = MODEL_FAST,
-                 gate_mode: str = "wm",  # wm | always | never
+                 gate_mode: str = "wm",  # wm | always | never | plan
                  wm_mode: str | None = None):  # learned | heuristic | None=env
         self.board = BeliefBoard()
         self.seed = seed
@@ -218,7 +218,16 @@ class MajalisSession:
         # gets its OWN gate instance so the mode is pinned by code rather than
         # by whatever MAJALIS_WM happens to be in the environment; leave it
         # None to fall back to the shared, env-driven gate (legacy behavior).
-        self.gate = AcceptGate(wm_mode=wm_mode) if wm_mode is not None else _GATE
+        # gate_mode="plan" is purely additive: it swaps in PlannedGate (the
+        # two-branch predicted-consequence gate, wm_plan.py) instead of
+        # AcceptGate; every other gate_mode's code path is unchanged.
+        if gate_mode == "plan":
+            from .wm_plan import PlannedGate
+            self.gate = PlannedGate(wm_mode=wm_mode)
+        elif wm_mode is not None:
+            self.gate = AcceptGate(wm_mode=wm_mode)
+        else:
+            self.gate = _GATE
         self.ingest_ledger = Ledger()  # perception cost, amortized over questions
 
     def ingest(self, lines: list[str], trace: list | None = None) -> None:
@@ -249,6 +258,14 @@ class MajalisSession:
                   support=proposal.support_keys, confidence=proposal.confidence)
         decision = self.gate.decide(task, board, proposal, ledger, self.model_fast,
                                     seed=self.seed)
+        if hasattr(self.gate, "record_question"):
+            # PlannedGate-only: advance the running touch_rate stat with the
+            # keys THIS question touched, regardless of the fire/no-fire
+            # ablation override below — "how often has this key been asked
+            # about" does not depend on whether we chose to debate it.
+            # AcceptGate has no such method, so this is a no-op for every
+            # other gate_mode (purely additive).
+            self.gate.record_question(proposal.support_keys)
         if self.gate_mode == "always":
             decision.fire, decision.reason = True, "ablation:always-debate"
         elif self.gate_mode == "never":
