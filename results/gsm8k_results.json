@@ -1,0 +1,32 @@
+{
+  "partial": true,
+  "note": "single: FULL GSM8K test set (n=1319, complete). majalis-gated: a budget-capped subset (n=700 of 1319) — a deliberate stop under a hard, real-money spend cap (see results/gsm8k_spend_state.json), not an interrupted or broken run. Both arms use the same fixed question order (seed=0, first-N of the canonical test.jsonl), so majalis-gated's 700 are a strict prefix of single's 1319 and directly comparable question-for-question. No further live LLM calls are planned for this benchmark.",
+  "arms": {
+    "single": {
+      "n": 1319,
+      "correct": 1289,
+      "accuracy": 0.9773,
+      "wilson_95_ci": [
+        0.9677,
+        0.984
+      ],
+      "mean_calls_per_q": 1.0,
+      "mean_cost_usd_per_q": 0.004372,
+      "total_cost_usd": 5.7662,
+      "gate_fire_rate": null
+    },
+    "majalis-gated": {
+      "n": 700,
+      "correct": 688,
+      "accuracy": 0.9829,
+      "wilson_95_ci": [
+        0.9703,
+        0.9902
+      ],
+      "mean_calls_per_q": 1.051,
+      "mean_cost_usd_per_q": 0.004707,
+      "total_cost_usd": 3.2948,
+      "gate_fire_rate": 0.0071
+    }
+  }
+}
