@@ -293,6 +293,12 @@ stream length ($0.0049–0.0054/q, 2.5× cheaper than the single agent at 32
 steps). (Learned-arm cells now cover 3 seeds at 8 steps and 2 seeds at 16
 and 32 steps — 240/240 correct, all on Qwen Cloud.)
 
+An external, recognized benchmark head-to-head (GSM8K, 1,319-question test
+set, single-agent vs an honest single-turn adaptation of the gate) is in
+the README's "GSM8K: a recognized external benchmark" section, not
+reproduced here since it uses a materially different task family (no
+belief board).
+
 ## The learned heads versus the heuristics they replaced
 
 Identical features, identical held-out data; the only change is trained
