@@ -101,8 +101,22 @@ def main() -> None:
 
     model = _fit(ztr, ytr_t, args.epochs, seed=args.seed)
     with torch.no_grad():
-        p_ho = torch.sigmoid(model(zho)).numpy()
-        p_tr = torch.sigmoid(model(ztr)).numpy()
+        logits_ho = model(zho).numpy()
+        logits_tr = model(ztr).numpy()
+
+    # Platt-recalibrate on the TRAIN band. _fit's pos_weight rebalancing is
+    # right for separability but wrong for probability level: with a ~99.5%
+    # positive base rate it down-weights the majority class, and the exported
+    # head was measured predicting mean ~0.78 where the true rate is ~1.0.
+    # PlannedGate compares p_debate against p_skip in a utility — a level
+    # bias there silently turns the gate into never-fire, so the artifact
+    # must carry calibrated probabilities, not just a good ranking.
+    from sklearn.linear_model import LogisticRegression
+    platt = LogisticRegression(C=1e6)
+    platt.fit(logits_tr.reshape(-1, 1), ytr)
+    pa, pb = float(platt.coef_.ravel()[0]), float(platt.intercept_.ravel()[0])
+    p_ho = 1.0 / (1.0 + np.exp(-(pa * logits_ho + pb)))
+    p_tr = 1.0 / (1.0 + np.exp(-(pa * logits_tr + pb)))
 
     metrics: dict = {
         "train_rows": int(len(Xtr)), "heldout_rows": int(len(Xho)),
@@ -139,6 +153,7 @@ def main() -> None:
         "trunk": [[sd_["trunk.0.weight"].tolist(), sd_["trunk.0.bias"].tolist()],
                   [sd_["trunk.2.weight"].tolist(), sd_["trunk.2.bias"].tolist()]],
         "head_debate": [sd_["head_debate.weight"].tolist(), sd_["head_debate.bias"].tolist()],
+        "platt": [pa, pb],
         "metrics": metrics,
     }
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)

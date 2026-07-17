@@ -86,6 +86,10 @@ class ActionWM:
         self.trunk = [(np.array(W), np.array(b)) for W, b in w["trunk"]]
         self.head_debate = (np.array(w["head_debate"][0]).ravel(),
                             float(np.array(w["head_debate"][1]).ravel()[0]))
+        # Platt recalibration fit on the train band (see train_action_wm.py):
+        # the raw head is trained class-rebalanced, so its probability LEVEL
+        # is biased low; identity fallback keeps old artifacts loadable.
+        self.platt = tuple(w.get("platt", (1.0, 0.0)))
         self.metrics = w.get("metrics", {})
 
     def p_correct_debate(self, x: list[float]) -> float:
@@ -93,7 +97,8 @@ class ActionWM:
         for W, b in self.trunk:
             h = np.maximum(0.0, W @ h + b)
         z = float(self.head_debate[0] @ h + self.head_debate[1])
-        return 1.0 / (1.0 + math.exp(-z))
+        pa, pb = self.platt
+        return 1.0 / (1.0 + math.exp(-(pa * z + pb)))
 
 
 _cached_action_wm: ActionWM | None = None

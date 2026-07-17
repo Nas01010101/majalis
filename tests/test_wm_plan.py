@@ -187,3 +187,35 @@ def test_planned_gate_constructs_and_decides_end_to_end(monkeypatch):
     decision = gate.decide(_task(), _board_with_key(), _proposal(["e::ceo"]), Ledger(), "m")
     d = decision.as_dict()
     assert set(d) == {"fired", "p_wrong", "disagreement", "max_doubt", "weak_current", "reason"}
+
+
+def test_action_wm_applies_platt_calibration(tmp_path):
+    """The exported head is trained class-rebalanced, so its raw probability
+    level is biased low (measured mean ~0.78 on an all-correct held-out band);
+    the artifact carries a Platt (a, b) fit on the train band and ActionWM
+    must apply it — otherwise PlannedGate's utility comparison silently
+    degenerates to never-fire. Artifacts without 'platt' fall back to identity."""
+    import json
+    import math
+
+    from majalis.wm_plan import ActionWM
+    from majalis.wmfeat_action import FEATURES
+
+    d = len(FEATURES)
+    base = {
+        "features": FEATURES, "mu": [0.0] * d, "sd": [1.0] * d,
+        # identity-ish trunk: one unit passes x[0] through, second layer sums.
+        "trunk": [[[[1.0] + [0.0] * (d - 1)], [0.0]], [[[1.0]], [0.0]]],
+        "head_debate": [[1.0], [0.0]],
+    }
+    raw = tmp_path / "raw.json"
+    raw.write_text(json.dumps(base))
+    cal = tmp_path / "cal.json"
+    cal.write_text(json.dumps({**base, "platt": [2.0, 5.0]}))
+
+    x = [1.0] + [0.0] * (d - 1)  # trunk output z = 1.0
+    p_raw = ActionWM(raw).p_correct_debate(x)
+    p_cal = ActionWM(cal).p_correct_debate(x)
+    assert abs(p_raw - 1 / (1 + math.exp(-1.0))) < 1e-9   # identity fallback
+    assert abs(p_cal - 1 / (1 + math.exp(-(2.0 * 1.0 + 5.0)))) < 1e-9
+    assert p_cal > p_raw
