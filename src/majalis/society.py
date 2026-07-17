@@ -208,12 +208,20 @@ class MajalisSession:
                  model_strong: str = MODEL_STRONG,
                  model_fast: str = MODEL_FAST,
                  gate_mode: str = "wm",  # wm | always | never | plan
-                 wm_mode: str | None = None):  # learned | heuristic | None=env
+                 wm_mode: str | None = None,  # learned | heuristic | None=env
+                 max_debates: int | None = None):  # None = module default (2)
         self.board = BeliefBoard()
         self.seed = seed
         self.model_strong = model_strong
         self.model_fast = model_fast
         self.gate_mode = gate_mode
+        # Explicit param (code-determined), not an ambient env var — mirrors
+        # wm_mode's own reproducibility convention. None preserves the exact
+        # legacy default (the module constant) so every existing caller/arm
+        # is unaffected; only a caller that deliberately passes a value
+        # (e.g. bench/session.py's --max-debates for a stress regime) sees
+        # any change.
+        self.max_debates = MAX_DEBATES_PER_TASK if max_debates is None else max_debates
         # An explicit wm_mode (set by an arm-aware caller, e.g. bench/session.py)
         # gets its OWN gate instance so the mode is pinned by code rather than
         # by whatever MAJALIS_WM happens to be in the environment; leave it
@@ -272,7 +280,7 @@ class MajalisSession:
             decision.fire, decision.reason = False, "ablation:never-debate"
         trace.gate = decision.as_dict()
         targets = rank_targets(board, proposal.support_keys,
-                               max_targets=MAX_DEBATES_PER_TASK, wm=self.gate.wm)
+                               max_targets=self.max_debates, wm=self.gate.wm)
         if decision.fire and targets:
             adjudications = []
             for key in targets:
