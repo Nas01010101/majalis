@@ -518,7 +518,14 @@ episodes number only 96; the stacker has three coefficients partly for
 this reason. Learned-arm live cells now cover 3 seeds at 8 steps and 2 seeds at 16/32
 steps (240/240 correct, flat $0.0049–0.0054/q). The conformal guarantee is marginal over
 exchangeable tasks and applies to the ACCEPT decision, not to debated
-answers. Per-task families (churn/compare/multihop) saturate on every Qwen
+answers. A finer point: the threshold scan selects the largest empirically
+passing τ without the conformal-risk-control finite-sample (+1) correction
+or learn-then-test multiplicity control, so at n = 96 calibration episodes
+the α level is approximate (up to ~1pp anti-conservative); the load-bearing
+evidence for the coverage claim is therefore the *empirical* held-out check
+(2.1% ≤ α on 1,600 questions), and the vendored gate ships a Hoeffding-UCB
+mode for deployments that need a high-probability rather than
+in-expectation floor. Per-task families (churn/compare/multihop) saturate on every Qwen
 backbone tested, so no ceiling-accuracy claim is made anywhere — the
 contribution is the cost regime and the calibrated control.
 
@@ -542,7 +549,7 @@ action outcomes, not yet through multi-step foresight.
 # Reproducibility
 
 All numbers reproduce from seeds with five commands against the released
-repository: `make test` (57 tests), `python scripts/gen_wm_dataset.py`
+repository: `make test` (111 tests), `python scripts/gen_wm_dataset.py`
 (dataset, 1.4s, zero API), `python train/train_wm.py` (18s GPU or ~1min
 CPU), `python scripts/offline_bench.py` (Table 3, zero API, <1s), and
 `python -m majalis.bench.session --arms single,majalis,mad,majalis-wm` (paid
