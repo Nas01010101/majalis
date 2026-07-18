@@ -190,7 +190,7 @@ disagreement, `weak_current`) → P(wrong). Leave-one-seed-out AUROC is
 0.9528 (head alone: 0.9372) — the measured transfer from offline replay to
 real LLM perception. The fitted disagreement coefficient is **exactly
 0.0**: on real episodes the trained head subsumes the sampler, licensing a
-gate that makes zero LLM calls (§5.4).
+gate that makes zero LLM calls (§5.5).
 
 ## Conformal accept gate
 
@@ -204,6 +204,40 @@ is fail-safe: uncalibrated means a conservative floor debates everything
 risky. The guarantee never depends on the learned score being a true
 probability. A cost-breakeven clause additionally accepts when the
 expected accuracy gain of a debate is below its token cost equivalent.
+
+## Action-conditioned head and a planned gate
+
+The gates above are *reactive*: they threshold a state-conditioned risk.
+A world model in the operational sense [11] should instead predict the
+**consequence of each action** and select by comparing them. We test that
+distinction directly.
+
+**Counterfactual mining.** For every question in seeds 100–124 (train) and
+130–141 (held out) we run perception and proposal **once** on a shared
+board, then grade both branches of the decision: `skip_correct` (the
+pre-debate proposal, free) and `debate_correct` (a real
+skeptic–adjudicate–repropose run on the same board, targeting the same
+most-doubted key PlannedGate would score at serve time — no train/serve
+skew). 592 paired rows, $10.55 of DashScope spend. The counterfactual
+result is stark: **debate flips a wrong answer to right on 27/592
+questions (4.6%) and never does the reverse (0/592)**;
+P(correct | debate) ≈ 0.995–1.0 regardless of state.
+
+**Head and calibration.** A second trunk+head (same 12 features) fits
+`debate_correct`. The held-out band is degenerate — every debate
+succeeded — so its AUROC is reported as **null**, not as a good number.
+The class-rebalanced head is also *level*-biased (mean prediction 0.78 on
+an all-correct band, ECE 0.219); since the planned gate compares
+P(correct | debate) against P(correct | skip) in a utility, that bias
+alone would silently turn it into never-fire. A Platt map fit on the train
+band ships inside the weights artifact (ECE 0.219 → 0.003, ordering
+preserved) — a reminder that **decision-grade probabilities need
+calibrated levels, not just good rankings**.
+
+**PlannedGate.** U(skip) = p_skip; U(debate) = p_skip + (p_debate −
+p_skip)·(1 + touch_rate·γ) − λ·cost, fire iff U(debate) > U(skip) — a
+genuine two-branch argmax with an explicit, non-oracle estimate of how
+often the key will resurface (its own running touch rate).
 
 ## The society
 
@@ -252,6 +286,9 @@ society with the original hand-set gate (logistic blend with hand-chosen
 weights + fixed-prior Lomax survival), preserved as `MAJALIS_WM=heuristic`.
 **majalis-nodebate** — board and gate, debates disabled (isolates what
 debate adds). **majalis-wm** — the learned world model of §3.
+**majalis-wm-plan** — same board, same debate mechanics, but the
+two-branch argmax PlannedGate replaces the reactive threshold (isolates
+the decision *rule* as the only variable).
 
 ## Metrics
 
@@ -335,6 +372,38 @@ learned gate holds it with a 2.3× margin. This benchmark costs zero LLM
 calls and runs in under one second — it ships as a reproducible regression
 test.
 
+## Does planning beat reacting? A measured null — and where the value really is
+
+We ran the planned gate end-to-end against the reactive one on live
+sessions (steps = 8): 20 seeds for majalis-wm-plan, 16 for majalis-wm,
+plus two stress regimes (rumor rate 0.35 → 0.6; per-question debate budget
+∞ → 1) and longer streams (16, 32 steps). **Accuracy never separates**:
+both gates score 100% in every regime (majalis-wm 256/256 pooled baseline;
+majalis-wm-plan 320/320; all stress cells 48/48). The regimes themselves
+are not vacuous — the ungated board (majalis-nodebate) errs on 3.8% of
+questions (77/80), matching the 4–6% skip-failure rate the counterfactual
+mining measured on its disjoint seed band — and on **every question the
+ungated board gets wrong, both learned gates fire and correct it (3/3)**:
+perfect recall of real board errors, with the arms differing only in
+false-fire economy.
+
+That economy is where they part: the reactive gate fires on 7.8% of
+questions (731 tokens/question); the planned gate fires on 14.1% (1,069
+tokens/question) for identical accuracy. The mechanism is visible in the
+mined counterfactuals: with P(correct | debate) ≈ 1 everywhere, predicted
+uplift is positive almost everywhere, so an argmax with a small λ·cost
+term overfires relative to a threshold tuned on conformal coverage. At
+these task difficulties, **planning over predicted consequences adds cost,
+not accuracy** — an honest null for the LeCun-style claim in this domain,
+reported with the same prominence as our positive results.
+
+The world model's measured value sits elsewhere: against always-debate
+(mad, 100% accuracy at $7.09 per 100 questions), the learned reactive gate
+delivers the **same accuracy at ~1/14 the cost** ($0.50 per 100
+questions), because debate is a free win *only* on the ~5% of questions
+where the board is actually wrong — and the model finds exactly those.
+Full evidence artifact: `results/wm_action_eval.json`.
+
 ## The sampler is dead weight — measured, then removed
 
 The stacker's fitted coefficient on K-sample disagreement is exactly 0.0
@@ -409,6 +478,17 @@ numbers by a question or two even at an identical seed. The heuristic and
 learned arms are pinned by arm name (`majalis` vs `majalis-wm`) rather than
 an ambient env var; `MAJALIS_WM=heuristic` remains available as an
 explicit override for ad-hoc re-tuning.
+
+The action-conditioned extension (§3.4, §5.4) adds three: `python
+scripts/gen_action_wm_dataset.py --seeds 100:125 --out
+data/action_wm_train.jsonl` (paid counterfactual mining, per-seed atomic
+resume, budget-capped), the same for the 130:142 held-out band, and
+`python train/train_action_wm.py` (offline, seconds; exports the
+Platt-calibrated head to `data/wm_action_weights.json`). The planned-arm
+cells are `python -m majalis.bench.session --arms majalis-wm-plan --seeds
+0..19` plus the two stress regimes (`--rumor-rate 0.6`, `--max-debates 1`);
+mined rows, weights, per-question raw logs, and the pooled evidence
+artifact (`results/wm_action_eval.json`) all ship in the repository.
 
 # References
 
