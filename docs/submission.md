@@ -48,6 +48,20 @@ decide the gate. Gate parameters were tuned by a journaled, fail-closed
 keep/revert optimization loop on held-out seeds (−12%, transfers across
 seeds).
 
+**A real world model, measured organ by organ** — not a branding exercise:
+calibrated **state estimation** (`wrong_now`, 0.937 AUROC on real LLM-built
+boards; live, it fires on and corrects every question the ungated board
+misses), a **multi-horizon forward-dynamics hazard curve** you can roll out
+(AUROC 0.63/0.66/0.70 at k=1/2/4, ECE < 0.01, 0% monotonicity violations),
+an **action-conditioned outcome head** trained on 592 real mined
+counterfactual (skip, debate) pairs — debate helps 4.6%, hurts 0/592 — and
+**planning in imagination**: under a zero-latency serving constraint,
+maintenance policies are auditioned entirely inside the model at $0
+(no-maintenance 92.2% → learned-risk 99.5% vs oracle 99.9%, n=1,600),
+so only the winning policy needs live spend. Two pre-registered-style
+nulls (planned gate ⊁ reactive; hazard-planning ⊁ myopic) are reported at
+the same prominence as the wins.
+
 **Qwen Cloud usage**: three Qwen backbones via the OpenAI-compatible API
 (model heterogeneity is the one debate lever with robust evidence —
 2502.08788's "universal antidote"); backend deployed on Alibaba Cloud ECS
