@@ -104,5 +104,14 @@
   "summary": "results/session_summary.json",
   "raw": "results/raw/session_*",
   "mining": "data/action_wm_train.jsonl, data/action_wm_heldout.jsonl"
+ },
+ "live_maintain": {
+  "arm": "majalis-maintain",
+  "seeds": 7,
+  "correct": 112,
+  "n": 112,
+  "ask_time_debates": 0,
+  "cost_usd_per_q": 0.0092,
+  "note": "Live implementation of the imagination-audited winning policy: one real skeptic->judge debate per evidence batch on the learned-risk top key; questions serve instantly from the board (gate_mode=never). Trade: ~2x reactive-gate cost for zero serving-path debate latency."
  }
 }

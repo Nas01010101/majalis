@@ -32,8 +32,9 @@ abstract: |
   hazard curve gives the model a rollout, and maintenance policies audited
   **entirely in imagination** (zero API) close 96% of the
   no-maintenance→oracle gap under zero-latency serving. End-to-end, the society matches a
-  single agent's accuracy (single: 272/272; heuristic gate: 303/304, one
-  miss; learned gate: 240/240) while cost per
+  single agent's accuracy (single: 288/288; heuristic gate: 303/304, one
+  miss; learned gate: 256/256; planned gate: 320/320; zero-latency
+  maintenance mode: 112/112 live with no ask-time debate) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
   single agent's linear growth ($0.0137/q at 32 steps), and vanilla 3×3
   MAD costs 12.6× more. All experiments run on Qwen Cloud backbones; the
@@ -49,7 +50,7 @@ abstract: |
   **零 LLM 调用**。在留出流上，学习门控以 12.4% 的触发率捕获 86.2% 的
   被污染信念（误触发 0.9%），全面优于其替代的手工门控（23.8% / 78.8% /
   15.1%）；被替换的固定参数生存先验仅达随机水平（AUROC 0.496 对 0.657）。
-  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 96% 的无维护→神谕差距。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
+  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 96% 的无维护→神谕差距；获胜策略已真实落地（majalis-maintain 模式）：7 个种子 112/112 全对，问答路径零辩论延迟。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
   0.0054/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
   成本高出 12.6 倍。全部实验基于 Qwen Cloud，代码与种子可完整复现。
 ---
@@ -469,6 +470,15 @@ comparison cost nothing, which is precisely the world-model dividend:
 candidate policies are auditioned in imagination, and only the winner needs
 live verification (§5.4's live sessions confirm the transfer: the same
 `wrong_now` head achieves perfect board-error recall in real LLM streams).
+
+**Live transfer.** The winning policy is implemented for real
+(`MajalisSession.maintain()`, arm `majalis-maintain`): between evidence
+batches it runs one genuine skeptic→judge debate on the learned-risk top
+key; at ask time the gate never fires — questions serve straight from the
+board. Across 7 live seeds: **112/112 correct with zero ask-time debates**
+at $0.0092/question. The trade is explicit: maintenance debates every batch
+cost more than reactive gating (~$0.005/q) but remove debate latency from
+the serving path entirely — the regime interactive deployments live in.
 
 **Honest null #2.** The hazard-discounted ranking — deprioritize keys the
 world is about to overwrite, p_wrong · (1 − h₁) · (0.1 + touch_rate) —

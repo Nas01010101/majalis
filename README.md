@@ -14,7 +14,7 @@
   <p>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
     <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
-    <img src="https://img.shields.io/badge/tests-72%20passing-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-111%20passing-brightgreen" alt="Tests">
     <img src="https://img.shields.io/badge/gate%20decision-0%20LLM%20calls-blue" alt="Zero-call gate">
     <img src="https://img.shields.io/badge/Qwen%20Cloud-Track%203%3A%20Agent%20Society-8A2BE2" alt="Qwen Cloud Hackathon">
   </p>
@@ -60,9 +60,11 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 
 | arm | accuracy | cost/question | note |
 |---|---|---|---|
-| **Majalis** (learned gate, default) | **240/240, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~12% of questions |
+| **Majalis** (learned gate, default) | **256/256, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~8% of questions |
+| Majalis (planned gate) | 320/320 (20 seeds) | $0.0059/q | two-branch argmax; honest null — matches, never beats, the reactive gate |
+| **Majalis (zero-latency maintain)** | **112/112 live (7 seeds)** | $0.0092/q | **0 ask-time debates ever** — repairs run between batches on WM-flagged keys |
 | Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | arm `majalis`; debates 6–16% of questions |
-| single agent | 272/272 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
+| single agent | 288/288 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
 | vanilla MAD (3×3) | 32/32 | $0.0709 | 12.6× Majalis's cost |
 | Majalis, debate ablated | 77/80 (96.2%) | $0.0060 | its 3 errors are exactly the rumor-poisoned beliefs the WM flagged; gated debate fixes all 3 for +$0.0004/q |
 
@@ -82,7 +84,9 @@ full (if deliberately small) world model, each organ carrying its own number:
   serving (questions answered instantly, repairs only between batches),
   maintenance policies are auditioned **entirely inside the model at $0**:
   no-maintenance 92.2% → learned-risk repair **99.5%** vs oracle 99.9%
-  (n=1,600 held-out) — 96% of the gap closed before spending a live token.
+  (n=1,600 held-out) — 96% of the gap closed before spending a live token,
+  and the winning policy **transfers live**: 112/112 across 7 seeds with
+  zero ask-time debates (`majalis-maintain`).
 - **Two honest nulls, reported at full prominence**: the two-branch planned
   gate matches but never beats the reactive threshold (2× less frugal), and
   hazard-discounted maintenance never beats myopic risk repair — in this
