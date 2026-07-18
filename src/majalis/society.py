@@ -257,6 +257,44 @@ class MajalisSession:
             except (KeyError, TypeError):
                 continue
 
+    def maintain(self, budget: int = 1) -> list[dict]:
+        """Zero-latency-serving maintenance window: run up to `budget` REAL
+        key-scoped debates on the riskiest beliefs, between evidence batches,
+        so questions can be answered instantly (gate_mode="never") without
+        paying debate latency at ask time. The live implementation of the
+        policy auditioned in imagination by scripts/imagine_plan.py (its
+        winning ranking — learned wrong_now risk — is used verbatim). Spend
+        lands on ingest_ledger: maintenance is a between-batch cost,
+        amortized exactly like perception. Returns one record per repair.
+        """
+        wm = getattr(self.gate, "wm", None)
+        board = self.board
+        keys = list(board._current)
+        if not keys:
+            return []
+        risk = (lambda k: wm.wrong_now(board, k)) if wm else board.doubt
+        repairs = []
+        for key in sorted(keys, key=risk, reverse=True)[:budget]:
+            cur = board.current(key)
+            # Synthetic key-scoped task/proposal: the skeptic and judge work
+            # from the key's docket; there is no user question yet.
+            task = Task(task_id=f"maintain-{key}", family="maintenance",
+                        context="", question=f"What is the current value of {key}?",
+                        gold="")
+            proposal = Proposal(answer=cur.value, rationale="board current value",
+                                support_keys=[key], confidence=1.0)
+            challenge = skeptic_challenge(task, board, key, proposal,
+                                          self.ingest_ledger, MODEL_MID)
+            verdict = adjudicate(task, board, proposal, challenge,
+                                 self.ingest_ledger, self.model_strong)
+            if not verdict.upheld and verdict.corrected_value:
+                board.assert_fact(key, verdict.corrected_value,
+                                  board._now_ord + 1, source="debate")
+            repairs.append({"key": key, "risk": round(float(risk(key)), 4),
+                            "upheld": verdict.upheld,
+                            "corrected": verdict.corrected_value})
+        return repairs
+
     def ask(self, task: Task) -> ArmResult:
         ledger = Ledger()
         trace = DebateTrace(task_id=task.task_id)

@@ -77,3 +77,42 @@ def test_imagine_plan_repair_writes_truth():
     k = wrong[0]
     board.assert_fact(k, truth[k][0], board._now_ord + 1, source="debate")
     assert board.current(k).value.strip().lower() == truth[k][0]
+
+
+def test_imagine_plan_deterministic():
+    """Same seeds + same rng seed → bit-identical results (resume/repro
+    contract; Date/random are all seeded)."""
+    import imagine_plan as ip
+    wm, hz = ip.LearnedWM(), ip.HazardWM()
+    runs = []
+    for _ in range(2):
+        rng = np.random.default_rng(0)
+        runs.append([ip.run_policy(p, s, 1, wm, hz, rng)
+                     for p in ip.POLICIES for s in (5000, 5003)])
+    assert runs[0] == runs[1]
+
+
+def test_imagine_plan_policy_ordering_statistical():
+    """Regression bounds on the published frontier, 30 held-out seeds
+    (n=480): learned-risk repair must stay >= 98%, dominate random by >= 2pp,
+    and random must dominate no-maintenance. Catches any silent regression
+    in the wrong_now head, the repair semantics, or the serve rule."""
+    import imagine_plan as ip
+    wm, hz = ip.LearnedWM(), ip.HazardWM()
+    acc = {}
+    for pol in ("none", "random", "myopic"):
+        rng = np.random.default_rng(0)
+        c = n = 0
+        for seed in range(5000, 5030):
+            r = ip.run_policy(pol, seed, 1, wm, hz, rng)
+            c += r["correct"]; n += r["n"]
+        acc[pol] = c / n
+    assert acc["myopic"] >= 0.98, acc
+    assert acc["myopic"] >= acc["random"] + 0.02, acc
+    assert acc["random"] >= acc["none"], acc
+
+
+def test_hazard_wm_unknown_key_is_max_hazard():
+    from majalis.wmnet import HazardWM
+    hz = HazardWM()
+    assert hz.hazard(BeliefBoard(), "never::seen", 1) == 1.0
