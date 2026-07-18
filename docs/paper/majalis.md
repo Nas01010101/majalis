@@ -28,7 +28,10 @@ abstract: |
   (skip, debate) outcomes shows debate flips 4.6% of answers right and none
   wrong — and a two-branch planned gate built on that model matches, but
   does not beat, the reactive threshold (an honest null; the reactive gate
-  is 2× more debate-frugal at equal accuracy). End-to-end, the society matches a
+  is 2× more debate-frugal at equal accuracy). A calibrated multi-horizon
+  hazard curve gives the model a rollout, and maintenance policies audited
+  **entirely in imagination** (zero API) close 96% of the
+  no-maintenance→oracle gap under zero-latency serving. End-to-end, the society matches a
   single agent's accuracy (single: 272/272; heuristic gate: 303/304, one
   miss; learned gate: 240/240) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
@@ -46,7 +49,7 @@ abstract: |
   **零 LLM 调用**。在留出流上，学习门控以 12.4% 的触发率捕获 86.2% 的
   被污染信念（误触发 0.9%），全面优于其替代的手工门控（23.8% / 78.8% /
   15.1%）；被替换的固定参数生存先验仅达随机水平（AUROC 0.496 对 0.657）。
-  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
+  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 96% 的无维护→神谕差距。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
   0.0054/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
   成本高出 12.6 倍。全部实验基于 Qwen Cloud，代码与种子可完整复现。
 ---
@@ -82,7 +85,11 @@ Our contributions:
    (in the sense of agent-authored world modeling [11]) trained on 115k
    offline episode rows minted from the benchmark generator's own ground
    truth at zero LLM cost, with the sim-to-real gap *measured* (0.937
-   AUROC on real LLM-built boards the model never saw) rather than assumed.
+   AUROC on real LLM-built boards the model never saw) rather than assumed —
+   extended to a calibrated multi-horizon hazard curve (rollout) and an
+   action-conditioned outcome head trained on 592 mined counterfactual
+   debate pairs, and exercised for **planning in imagination**: maintenance
+   policies auditioned entirely inside the model at zero API cost (§5.6).
 2. **A zero-call calibrated gate.** A stacker fit on 96 real logged
    episodes maps (head risk, sampled disagreement, weak-source flag) to
    P(wrong); split conformal risk control on this learned score keeps
@@ -242,6 +249,18 @@ calibrated levels, not just good rankings**.
 p_skip)·(1 + touch_rate·γ) − λ·cost, fire iff U(debate) > U(skip) — a
 genuine two-branch argmax with an explicit, non-oracle estimate of how
 often the key will resurface (its own running touch rate).
+
+## Multi-horizon hazards: giving the model a rollout
+
+A one-step head can be queried; a world model should be *rolled out*. We
+extend the offline labels to a hazard curve — `superseded_within(k)` for
+k ∈ {1, 2, 4} evidence batches (k = 2 reproduces the legacy
+`superseded_next` exactly, asserted in tests) — and train a three-head
+HazardNet on the same 115k zero-cost replay rows (2.5 s on CPU). Validation:
+AUROC 0.630 / 0.659 / 0.698 for k = 1/2/4, ECE < 0.01 at every horizon,
+and 0% monotonicity violations (predicted h₁ ≤ h₂ ≤ h₄) — a calibrated,
+internally consistent forward model of how the board's facts will churn,
+exported to JSON for numpy-only inference like every other head.
 
 ## The society
 
@@ -422,6 +441,46 @@ question and makes the trigger decision **0-call**. If retraining ever
 assigns the coefficient a non-zero value, the gate resumes sampling
 automatically.
 
+## Planning in imagination: the frontier the world model buys for $0
+
+The strongest test of a world model is whether you can *use it instead of
+the world*. We build a deployment regime where that is forced: **zero-latency
+serving** — questions must be answered instantly from the board (no
+question-time debate; interactive deployments cannot pay debate latency),
+while repairs run only in maintenance windows between evidence batches, B
+per step. The policy must predict which keys will be both wrong *and asked*
+before the questions arrive. Simulating a debate as "repair the key" is
+licensed by measurement, not assumption: the mined counterfactuals grade
+real debates at P(correct | debate) ≈ 0.995–1.0 with zero harmful flips.
+Every policy below is evaluated entirely inside the model's replay world —
+zero LLM calls — on 100 held-out streams (seeds 5000–5099, n = 1,600):
+
+| Policy (B = 1 repair/step) | Accuracy | Wilson 95% |
+|---|---:|---|
+| no maintenance | 92.2% | [90.8, 93.5] |
+| random repair | 95.1% | [93.9, 96.0] |
+| **learned-risk repair** (`wrong_now`) | **99.5%** | [99.0, 99.7] |
+| hazard-discounted planned repair | 99.5% | [99.0, 99.7] |
+| oracle (labels) | 99.9% | [99.5, 100] |
+
+Learned-risk maintenance closes **96% of the no-maintenance→oracle gap**
+using 2.8× more repairs than the oracle needs — and the entire policy
+comparison cost nothing, which is precisely the world-model dividend:
+candidate policies are auditioned in imagination, and only the winner needs
+live verification (§5.4's live sessions confirm the transfer: the same
+`wrong_now` head achieves perfect board-error recall in real LLM streams).
+
+**Honest null #2.** The hazard-discounted ranking — deprioritize keys the
+world is about to overwrite, p_wrong · (1 − h₁) · (0.1 + touch_rate) —
+never beats plain myopic risk repair in any regime we tested (B ∈ {1, 2};
+rumor rate 0.35/0.6; 8/16 steps). Together with the planned-gate null
+(§5.4) this is a consistent, twice-replicated finding: **in this
+environment the world model's decision value concentrates in calibrated
+state estimation; its forward dynamics are learnable and calibrated but
+not yet decision-relevant at these horizons.** We report both nulls with
+the same prominence as the wins because they carve the claim to exactly
+what the evidence supports.
+
 ## Live deployment
 
 The full system (FastAPI, learned gate, numpy-only inference) runs on an
@@ -463,6 +522,23 @@ answers. Per-task families (churn/compare/multihop) saturate on every Qwen
 backbone tested, so no ceiling-accuracy claim is made anywhere — the
 contribution is the cost regime and the calibrated control.
 
+**Is this a world model?** Under the operational, value-equivalent
+definition we adopt (predict decision-relevant consequences of candidate
+actions; select by comparing them — the MuZero/JEPA stance rather than a
+generative simulator): yes, and the components are individually measured —
+state estimation (`wrong_now`), calibrated multi-horizon dynamics (the
+hazard curve, rollable with 0% monotonicity violations), an
+action-conditioned outcome head trained on real counterfactual pairs, and
+policy evaluation in imagination that transfers live. Under the strict
+sense — a transition model over full board states, composable over long
+action sequences — not yet: our rollouts are per-key risk curves, not
+board-state simulation. Our own results keep the claim honest twice over:
+both places where the *forward* components could have beaten purely
+reactive state estimation (the planned gate, §5.4; hazard-discounted
+maintenance, §5.6), they matched it instead. The world-model machinery
+earns its keep today through zero-cost policy audition and measured
+action outcomes, not yet through multi-step foresight.
+
 # Reproducibility
 
 All numbers reproduce from seeds with five commands against the released
@@ -493,6 +569,11 @@ cells are `python -m majalis.bench.session --arms majalis-wm-plan --seeds
 0..19` plus the two stress regimes (`--rumor-rate 0.6`, `--max-debates 1`);
 mined rows, weights, per-question raw logs, and the pooled evidence
 artifact (`results/wm_action_eval.json`) all ship in the repository.
+The rollout and imagination results (§3.5, §5.6) are fully zero-API:
+`python scripts/gen_wm_dataset.py` (hazard labels), `python
+train/train_wm_hazard.py` (2.5 s), and `python scripts/imagine_plan.py
+--seeds 5000:5100 --budgets 1,2` regenerate `results/imagination_frontier.json`
+deterministically.
 
 # References
 

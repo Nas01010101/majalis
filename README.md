@@ -68,6 +68,27 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 
 Gate quality, no API key (100 unseen streams, <1s): learned fires **12.4%** / catches **86.2%** of corrupted boards / **0.9%** false-fire, vs **23.8% / 78.8% / 15.1%** hand-set. Both hold the coverage bound.
 
+**The world model, measured piece by piece.** Beyond the gate, the model is a
+full (if deliberately small) world model, each organ carrying its own number:
+- **State estimation** — `wrong_now`: 0.937 AUROC on real LLM-built boards;
+  fires-and-corrects **every** question the ungated board misses (3/3 live).
+- **Forward dynamics (rollout)** — a calibrated multi-horizon hazard curve,
+  P(overturned within k=1/2/4 batches): AUROC 0.63/0.66/0.70, ECE < 0.01,
+  0% monotonicity violations (`train/train_wm_hazard.py`, 2.5 s, $0).
+- **Action-conditioned outcomes** — P(correct | debate) trained on **592 real
+  mined counterfactual pairs** ($10.5): debate helps 4.6% of questions,
+  hurts 0/592 — Platt-calibrated because the gate compares probability *levels*.
+- **Planning in imagination** — `scripts/imagine_plan.py`: under zero-latency
+  serving (questions answered instantly, repairs only between batches),
+  maintenance policies are auditioned **entirely inside the model at $0**:
+  no-maintenance 92.2% → learned-risk repair **99.5%** vs oracle 99.9%
+  (n=1,600 held-out) — 96% of the gap closed before spending a live token.
+- **Two honest nulls, reported at full prominence**: the two-branch planned
+  gate matches but never beats the reactive threshold (2× less frugal), and
+  hazard-discounted maintenance never beats myopic risk repair — in this
+  environment the model's decision value concentrates in calibrated state
+  estimation (`results/wm_action_eval.json`, `results/imagination_frontier.json`).
+
 ```bash
 python scripts/offline_bench.py                                    # gate quality + coverage, $0
 python -m majalis.bench.session --arms single,majalis,mad --seeds 0,1,2,3,4

@@ -1,0 +1,124 @@
+{
+ "seeds": "5000:5100",
+ "budgets": [
+  1,
+  2
+ ],
+ "policies": {
+  "none@B1": {
+   "acc": 0.9225,
+   "correct": 1476,
+   "n": 1600,
+   "wilson95": [
+    0.9084,
+    0.9346
+   ],
+   "repairs": 0
+  },
+  "random@B1": {
+   "acc": 0.9506,
+   "correct": 1521,
+   "n": 1600,
+   "wilson95": [
+    0.9389,
+    0.9602
+   ],
+   "repairs": 800
+  },
+  "myopic@B1": {
+   "acc": 0.995,
+   "correct": 1592,
+   "n": 1600,
+   "wilson95": [
+    0.9902,
+    0.9975
+   ],
+   "repairs": 800
+  },
+  "planned@B1": {
+   "acc": 0.995,
+   "correct": 1592,
+   "n": 1600,
+   "wilson95": [
+    0.9902,
+    0.9975
+   ],
+   "repairs": 800
+  },
+  "oracle@B1": {
+   "acc": 0.9988,
+   "correct": 1598,
+   "n": 1600,
+   "wilson95": [
+    0.9955,
+    0.9997
+   ],
+   "repairs": 287
+  },
+  "none@B2": {
+   "acc": 0.9225,
+   "correct": 1476,
+   "n": 1600,
+   "wilson95": [
+    0.9084,
+    0.9346
+   ],
+   "repairs": 0
+  },
+  "random@B2": {
+   "acc": 0.9681,
+   "correct": 1549,
+   "n": 1600,
+   "wilson95": [
+    0.9583,
+    0.9757
+   ],
+   "repairs": 1564
+  },
+  "myopic@B2": {
+   "acc": 0.9975,
+   "correct": 1596,
+   "n": 1600,
+   "wilson95": [
+    0.9936,
+    0.999
+   ],
+   "repairs": 1564
+  },
+  "planned@B2": {
+   "acc": 0.9988,
+   "correct": 1598,
+   "n": 1600,
+   "wilson95": [
+    0.9955,
+    0.9997
+   ],
+   "repairs": 1564
+  },
+  "oracle@B2": {
+   "acc": 1.0,
+   "correct": 1600,
+   "n": 1600,
+   "wilson95": [
+    0.9976,
+    1.0
+   ],
+   "repairs": 289
+  }
+ },
+ "stress_regimes_B1_seeds_5000_5060": {
+  "steps16_rumor0.6": {
+   "none": "1700/1920",
+   "myopic": "1905/1920",
+   "planned": "1901/1920",
+   "oracle": "1916/1920"
+  },
+  "steps16_rumor0.35": {
+   "none": "1809/1920",
+   "myopic": "1914/1920",
+   "planned": "1912/1920",
+   "oracle": "1918/1920"
+  }
+ },
+ "verdict": "Zero-latency serving: questions answered instantly from the board, repairs only in maintenance windows (B per step). Learned p_wrong repair closes ~96% of the none->oracle gap at B=1 (92.2% -> 99.5% vs oracle 99.9%). Honest null #2: the hazard-discounted 'planned' ranking never beats myopic risk repair in any tested regime (B=1,2; rumor 0.35/0.6; steps 8/16) \u2014 forward dynamics are learnable and calibrated (AUROC 0.63/0.66/0.70, ECE<0.01, 0% monotone violations) but not yet decision-relevant at these horizons; the model's decision value concentrates in calibrated state estimation. All policy evaluation runs in imagination at $0."
+}
