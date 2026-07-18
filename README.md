@@ -60,11 +60,11 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 
 | arm | accuracy | cost/question | note |
 |---|---|---|---|
-| **Majalis** (learned gate, default) | **256/256, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~8% of questions |
+| **Majalis** (learned gate, default) | **448/448, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~8% of questions |
 | Majalis (planned gate) | 320/320 (20 seeds) | $0.0059/q | two-branch argmax; honest null — matches, never beats, the reactive gate |
 | **Majalis (zero-latency maintain)** | **112/112 live (7 seeds)** | $0.0092/q | **0 ask-time debates ever** — repairs run between batches on WM-flagged keys |
 | Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | arm `majalis`; debates 6–16% of questions |
-| single agent | 288/288 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
+| single agent | 480/480 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
 | vanilla MAD (3×3) | 32/32 | $0.0709 | 12.6× Majalis's cost |
 | Majalis, debate ablated | 107/112 (95.5%) | $0.0060 | its 5 errors are exactly the rumor-poisoned beliefs the WM flags; every gated/maintained arm gets all 5 right |
 

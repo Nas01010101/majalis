@@ -32,8 +32,8 @@ abstract: |
   hazard curve gives the model a rollout, and maintenance policies audited
   **entirely in imagination** (zero API) close 96% of the
   no-maintenance→oracle gap under zero-latency serving. End-to-end, the society matches a
-  single agent's accuracy (single: 288/288; heuristic gate: 303/304, one
-  miss; learned gate: 256/256; planned gate: 320/320; zero-latency
+  single agent's accuracy (single: 480/480; heuristic gate: 303/304, one
+  miss; learned gate: 448/448; planned gate: 320/320; zero-latency
   maintenance mode: 112/112 live with no ask-time debate) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
   single agent's linear growth ($0.0137/q at 32 steps), and vanilla 3×3
