@@ -1,0 +1,108 @@
+{
+ "date": "2026-07-17",
+ "counterfactual_mining": {
+  "design": "shared-board paired (skip, debate) outcomes per question; scripts/gen_action_wm_dataset.py",
+  "train_band": {
+   "seeds": "100:125",
+   "rows": 400,
+   "skip_correct": 377,
+   "debate_correct": 398,
+   "debate_helps": 21,
+   "debate_hurts": 0
+  },
+  "heldout_band": {
+   "seeds": "130:142",
+   "rows": 192,
+   "skip_correct": 186,
+   "debate_correct": 192,
+   "debate_helps": 6,
+   "debate_hurts": 0
+  },
+  "spend_usd": 10.55,
+  "headline": "debate helps 27/592 (4.6%), hurts 0/592; p(correct|debate) ~= 0.995-1.0"
+ },
+ "action_wm_training": {
+  "artifact": "data/wm_action_weights.json",
+  "auroc_heldout": null,
+  "auroc_heldout_note": "honestly null \u2014 heldout debate_correct is degenerate all-ones",
+  "ece_heldout_raw_head": 0.2186,
+  "ece_heldout_platt": 0.0028,
+  "platt_note": "class-rebalanced head is level-biased (mean 0.78 on all-correct band); Platt (a=2.04,b=5.43) fit on train band ships in the artifact \u2014 without it PlannedGate degenerates to never-fire"
+ },
+ "end_to_end_eval": {
+  "regime": "bench.session steps=8, default rumor 0.35, unlimited debates unless noted",
+  "arms_pooled_baseline": {
+   "single": {
+    "correct": 288,
+    "n": 288,
+    "seeds": 18
+   },
+   "majalis-nodebate": {
+    "correct": 77,
+    "n": 80,
+    "seeds": 5
+   },
+   "majalis": {
+    "correct": 111,
+    "n": 112,
+    "seeds": 7
+   },
+   "majalis-wm": {
+    "correct": 256,
+    "n": 256,
+    "seeds": 16,
+    "fire_rate": 0.078,
+    "tokens_per_q": 731
+   },
+   "majalis-wm-plan": {
+    "correct": 320,
+    "n": 320,
+    "seeds": 20,
+    "fire_rate": 0.141,
+    "tokens_per_q": 1069
+   },
+   "mad_always_debate": {
+    "correct": 32,
+    "n": 32,
+    "seeds": 2,
+    "cost_usd_per_100q": 7.09
+   }
+  },
+  "board_error_repair": {
+   "nodebate_misses": [
+    [
+     "s0",
+     "q6"
+    ],
+    [
+     "s0",
+     "q15"
+    ],
+    [
+     "s1",
+     "q8"
+    ]
+   ],
+   "wm_fired_and_corrected": 3,
+   "plan_fired_and_corrected": 3,
+   "note": "both learned gates fire on and correct every question the ungated board misses (3/3)"
+  },
+  "stress_regimes": {
+   "rumor_0.6": {
+    "majalis-wm": "48/48",
+    "majalis-wm-plan": "48/48"
+   },
+   "max_debates_1": {
+    "majalis-wm": "48/48",
+    "majalis-wm-plan": "48/48"
+   },
+   "steps_16_32": "all arms 100% (seeds 0-1)"
+  },
+  "planned_vs_reactive_verdict": "No accuracy separation in any tested regime (both 100%); the reactive threshold gate is ~2x more debate-frugal (7.8% vs 14.1% fire rate, 731 vs 1069 tokens/q). Planning's argmax overfires because calibrated p(correct|debate)~=1 makes predicted uplift positive almost everywhere while lambda*cost is small. The WM's measured value is economy vs always-debate: same 100% accuracy at ~1/14 the cost ($0.50 vs $7.09 per 100 questions)."
+ },
+ "provenance": {
+  "summary": "results/session_summary.json",
+  "raw": "results/raw/session_*",
+  "mining": "data/action_wm_train.jsonl, data/action_wm_heldout.jsonl"
+ }
+}

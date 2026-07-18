@@ -20,6 +20,8 @@ results/raw/*
 # stay gitignored by default.
 !results/raw/session_majalis_s*_t8.jsonl
 !results/raw/session_majalis-wm_s*_t8.jsonl
+!results/raw/session_majalis-wm-plan_s*_t8.jsonl
+!results/raw/session_majalis-nodebate_s*_t8.jsonl
 # GSM8K head-to-head: full per-question evidence (~450KB) — same
 # reproducibility rationale as the session snapshot above.
 !results/raw/gsm8k_single_s0.jsonl

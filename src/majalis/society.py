@@ -207,18 +207,35 @@ class MajalisSession:
     def __init__(self, *, seed: int = 0,
                  model_strong: str = MODEL_STRONG,
                  model_fast: str = MODEL_FAST,
-                 gate_mode: str = "wm",  # wm | always | never
-                 wm_mode: str | None = None):  # learned | heuristic | None=env
+                 gate_mode: str = "wm",  # wm | always | never | plan
+                 wm_mode: str | None = None,  # learned | heuristic | None=env
+                 max_debates: int | None = None):  # None = module default (2)
         self.board = BeliefBoard()
         self.seed = seed
         self.model_strong = model_strong
         self.model_fast = model_fast
         self.gate_mode = gate_mode
+        # Explicit param (code-determined), not an ambient env var — mirrors
+        # wm_mode's own reproducibility convention. None preserves the exact
+        # legacy default (the module constant) so every existing caller/arm
+        # is unaffected; only a caller that deliberately passes a value
+        # (e.g. bench/session.py's --max-debates for a stress regime) sees
+        # any change.
+        self.max_debates = MAX_DEBATES_PER_TASK if max_debates is None else max_debates
         # An explicit wm_mode (set by an arm-aware caller, e.g. bench/session.py)
         # gets its OWN gate instance so the mode is pinned by code rather than
         # by whatever MAJALIS_WM happens to be in the environment; leave it
         # None to fall back to the shared, env-driven gate (legacy behavior).
-        self.gate = AcceptGate(wm_mode=wm_mode) if wm_mode is not None else _GATE
+        # gate_mode="plan" is purely additive: it swaps in PlannedGate (the
+        # two-branch predicted-consequence gate, wm_plan.py) instead of
+        # AcceptGate; every other gate_mode's code path is unchanged.
+        if gate_mode == "plan":
+            from .wm_plan import PlannedGate
+            self.gate = PlannedGate(wm_mode=wm_mode)
+        elif wm_mode is not None:
+            self.gate = AcceptGate(wm_mode=wm_mode)
+        else:
+            self.gate = _GATE
         self.ingest_ledger = Ledger()  # perception cost, amortized over questions
 
     def ingest(self, lines: list[str], trace: list | None = None) -> None:
@@ -249,13 +266,21 @@ class MajalisSession:
                   support=proposal.support_keys, confidence=proposal.confidence)
         decision = self.gate.decide(task, board, proposal, ledger, self.model_fast,
                                     seed=self.seed)
+        if hasattr(self.gate, "record_question"):
+            # PlannedGate-only: advance the running touch_rate stat with the
+            # keys THIS question touched, regardless of the fire/no-fire
+            # ablation override below — "how often has this key been asked
+            # about" does not depend on whether we chose to debate it.
+            # AcceptGate has no such method, so this is a no-op for every
+            # other gate_mode (purely additive).
+            self.gate.record_question(proposal.support_keys)
         if self.gate_mode == "always":
             decision.fire, decision.reason = True, "ablation:always-debate"
         elif self.gate_mode == "never":
             decision.fire, decision.reason = False, "ablation:never-debate"
         trace.gate = decision.as_dict()
         targets = rank_targets(board, proposal.support_keys,
-                               max_targets=MAX_DEBATES_PER_TASK, wm=self.gate.wm)
+                               max_targets=self.max_debates, wm=self.gate.wm)
         if decision.fire and targets:
             adjudications = []
             for key in targets:
