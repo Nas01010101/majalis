@@ -14,7 +14,7 @@
   <p>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
     <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
-    <img src="https://img.shields.io/badge/tests-72%20passing-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-111%20passing-brightgreen" alt="Tests">
     <img src="https://img.shields.io/badge/gate%20decision-0%20LLM%20calls-blue" alt="Zero-call gate">
     <img src="https://img.shields.io/badge/Qwen%20Cloud-Track%203%3A%20Agent%20Society-8A2BE2" alt="Qwen Cloud Hackathon">
   </p>
@@ -60,18 +60,20 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 
 | arm | accuracy | cost/question | note |
 |---|---|---|---|
-| **Majalis** (learned gate, default) | **240/240, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~12% of questions |
+| **Majalis** (learned gate, default) | **448/448, all stream lengths** | **$0.0049–0.0054/q, flat** | 0 LLM calls to decide the gate; debates ~8% of questions |
+| Majalis (planned gate) | 320/320 (20 seeds) | $0.0059/q | two-branch argmax; honest null — matches, never beats, the reactive gate |
+| **Majalis (zero-latency maintain)** | **112/112 live (7 seeds)** | $0.0092/q | **0 ask-time debates ever** — repairs run between batches on WM-flagged keys |
 | Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | arm `majalis`; debates 6–16% of questions |
-| single agent | 272/272 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
+| single agent | 480/480 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
 | vanilla MAD (3×3) | 32/32 | $0.0709 | 12.6× Majalis's cost |
-| Majalis, debate ablated | 77/80 (96.2%) | $0.0060 | its 3 errors are exactly the rumor-poisoned beliefs the WM flagged; gated debate fixes all 3 for +$0.0004/q |
+| Majalis, debate ablated | 107/112 (95.5%) | $0.0060 | its 5 errors are exactly the rumor-poisoned beliefs the WM flags; every gated/maintained arm gets all 5 right |
 
 Gate quality, no API key (100 unseen streams, <1s): learned fires **12.4%** / catches **86.2%** of corrupted boards / **0.9%** false-fire, vs **23.8% / 78.8% / 15.1%** hand-set. Both hold the coverage bound.
 
 **The world model, measured piece by piece.** Beyond the gate, the model is a
 full (if deliberately small) world model, each organ carrying its own number:
 - **State estimation** — `wrong_now`: 0.937 AUROC on real LLM-built boards;
-  fires-and-corrects **every** question the ungated board misses (3/3 live).
+  fires-and-corrects **every** question the ungated board misses (5/5 live).
 - **Forward dynamics (rollout)** — a calibrated multi-horizon hazard curve,
   P(overturned within k=1/2/4 batches): AUROC 0.63/0.66/0.70, ECE < 0.01,
   0% monotonicity violations (`train/train_wm_hazard.py`, 2.5 s, $0).
@@ -82,7 +84,9 @@ full (if deliberately small) world model, each organ carrying its own number:
   serving (questions answered instantly, repairs only between batches),
   maintenance policies are auditioned **entirely inside the model at $0**:
   no-maintenance 92.2% → learned-risk repair **99.5%** vs oracle 99.9%
-  (n=1,600 held-out) — 96% of the gap closed before spending a live token.
+  (n=1,600 held-out) — 96% of the gap closed before spending a live token,
+  and the winning policy **transfers live**: 112/112 across 7 seeds with
+  zero ask-time debates (`majalis-maintain`).
 - **Two honest nulls, reported at full prominence**: the two-branch planned
   gate matches but never beats the reactive threshold (2× less frugal), and
   hazard-discounted maintenance never beats myopic risk repair — in this

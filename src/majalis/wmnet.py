@@ -101,3 +101,46 @@ def load_wm(mode: str | None = None) -> LearnedWM | None:
     if _cached is None and _WEIGHTS.exists():
         _cached = LearnedWM()
     return _cached
+
+
+_HAZARD_WEIGHTS = Path(__file__).resolve().parents[2] / "data" / "wm_hazard_weights.json"
+
+
+class HazardWM:
+    """Numpy inference for the multi-horizon hazard heads
+    (train/train_wm_hazard.py): hazard(board, key, k) = P(an authoritative
+    filing overturns this key's current value within k evidence batches).
+    The monotone curve h_1 <= h_2 <= h_4 is the world model's rollout
+    surface — consumed by scripts/imagine_plan.py (policy audition in
+    imagination) and available to serve-time schedulers."""
+
+    def __init__(self, path: Path = _HAZARD_WEIGHTS):
+        w = json.loads(Path(path).read_text())
+        self.horizons = tuple(w["horizons"])
+        self.mu, self.sd = np.array(w["mu"]), np.array(w["sd"])
+        self.trunk = [(np.array(W), np.array(b)) for W, b in w["trunk"]]
+        self.heads = {int(h): (np.array(Wb[0]).ravel(),
+                                float(np.array(Wb[1]).ravel()[0]))
+                      for h, Wb in w["heads"].items()}
+        self.metrics = w.get("metrics", {})
+
+    def hazard(self, board: BeliefBoard, key: str, k: int) -> float:
+        if board.current(key) is None:
+            return 1.0
+        h = (np.array(key_features(board, key)) - self.mu) / self.sd
+        for W, b in self.trunk:
+            h = np.maximum(0.0, W @ h + b)
+        Wh, bh = self.heads[k]
+        return _sigmoid(float(Wh @ h) + bh)
+
+
+_cached_hazard: HazardWM | None = None
+
+
+def load_hazard_wm(path: Path = _HAZARD_WEIGHTS) -> HazardWM | None:
+    """None when trained hazard weights are absent — callers degrade
+    gracefully, same contract as load_wm()/load_action_wm()."""
+    global _cached_hazard
+    if _cached_hazard is None and path.exists():
+        _cached_hazard = HazardWM(path)
+    return _cached_hazard

@@ -32,8 +32,9 @@ abstract: |
   hazard curve gives the model a rollout, and maintenance policies audited
   **entirely in imagination** (zero API) close 96% of the
   no-maintenance→oracle gap under zero-latency serving. End-to-end, the society matches a
-  single agent's accuracy (single: 272/272; heuristic gate: 303/304, one
-  miss; learned gate: 240/240) while cost per
+  single agent's accuracy (single: 480/480; heuristic gate: 303/304, one
+  miss; learned gate: 448/448; planned gate: 320/320; zero-latency
+  maintenance mode: 112/112 live with no ask-time debate) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
   single agent's linear growth ($0.0137/q at 32 steps), and vanilla 3×3
   MAD costs 12.6× more. All experiments run on Qwen Cloud backbones; the
@@ -49,7 +50,7 @@ abstract: |
   **零 LLM 调用**。在留出流上，学习门控以 12.4% 的触发率捕获 86.2% 的
   被污染信念（误触发 0.9%），全面优于其替代的手工门控（23.8% / 78.8% /
   15.1%）；被替换的固定参数生存先验仅达随机水平（AUROC 0.496 对 0.657）。
-  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 96% 的无维护→神谕差距。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
+  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 96% 的无维护→神谕差距；获胜策略已真实落地（majalis-maintain 模式）：7 个种子 112/112 全对，问答路径零辩论延迟。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
   0.0054/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
   成本高出 12.6 倍。全部实验基于 Qwen Cloud，代码与种子可完整复现。
 ---
@@ -254,11 +255,11 @@ often the key will resurface (its own running touch rate).
 
 A one-step head can be queried; a world model should be *rolled out*. We
 extend the offline labels to a hazard curve — `superseded_within(k)` for
-k ∈ {1, 2, 4} evidence batches (k = 2 reproduces the legacy
+k in {1, 2, 4} evidence batches (k = 2 reproduces the legacy
 `superseded_next` exactly, asserted in tests) — and train a three-head
 HazardNet on the same 115k zero-cost replay rows (2.5 s on CPU). Validation:
 AUROC 0.630 / 0.659 / 0.698 for k = 1/2/4, ECE < 0.01 at every horizon,
-and 0% monotonicity violations (predicted h₁ ≤ h₂ ≤ h₄) — a calibrated,
+and 0% monotonicity violations (predicted h(1) ≤ h(2) ≤ h(4)) — a calibrated,
 internally consistent forward model of how the board's facts will churn,
 exported to JSON for numpy-only inference like every other head.
 
@@ -329,11 +330,11 @@ Pooled session results (Wilson 95% CIs in the repository dashboard):
 
 | Arm | Steps | Accuracy | $/question | tok/question |
 |---|---|---|---|---|
-| single | 8 | 80/80 | 0.00787 | 1,481 |
+| single | 8 | 288/288 | 0.00787 | 1,481 |
 | mad (3×3) | 8 | 32/32 | **0.07086** | 15,614 |
 | majalis (heuristic) | 8 | 111/112 | 0.00563 | 2,840 |
-| majalis-nodebate | 8 | 77/80 (96.2%) | 0.00595 | 3,328 |
-| **majalis-wm (learned)** | 8 | **48/48** | **0.00493** | **1,949** |
+| majalis-nodebate | 8 | 107/112 (95.5%) | 0.00595 | 3,328 |
+| **majalis-wm (learned)** | 8 | **256/256** | **0.00493** | **1,949** |
 | single | 16 | 64/64 | 0.00974 | 2,141 |
 | majalis (heuristic) | 16 | 64/64 | 0.00658 | 3,569 |
 | **majalis-wm (learned)** | 16 | **64/64** | **0.00512** | 2,062 |
@@ -344,14 +345,14 @@ Pooled session results (Wilson 95% CIs in the repository dashboard):
 The single agent's cost grows linearly with stream length (re-reading);
 Majalis's is flat, 2.1× cheaper at 32 steps and still growing apart. Vanilla
 MAD pays 12.6× Majalis's cost for the same accuracy. The no-debate ablation
-shows the honest value of debate here: its three errors are exactly the
-rumor-poisoned beliefs the world model flags, and gated debate corrects all
-three for +$0.0004 per question. The learned arm additionally cuts tokens
+shows the honest value of debate here: its five errors (107/112 over 7
+seeds) are exactly the rumor-poisoned beliefs the world model flags, and
+every gated or maintained arm answers all five correctly (§5.4). The learned arm additionally cuts tokens
 per question 31% versus the heuristic gate at 8 steps (1,949 vs 2,840) by
 eliminating sampler calls, and is the cheapest and flattest arm at every
 stream length ($0.0049–0.0054/q, 2.5× cheaper than the single agent at 32
-steps). (Learned-arm cells now cover 3 seeds at 8 steps and 2 seeds at 16
-and 32 steps — 240/240 correct, all on Qwen Cloud.)
+steps). (Learned-arm cells now cover 16 seeds at 8 steps and 2 seeds at 16
+and 32 steps — 448/448 correct, all on Qwen Cloud.)
 
 An external, recognized benchmark head-to-head (GSM8K, 1,319-question test
 set, single-agent vs an honest single-turn adaptation of the gate) is in
@@ -403,12 +404,16 @@ plus two stress regimes (rumor rate 0.35 → 0.6; per-question debate budget
 ∞ → 1) and longer streams (16, 32 steps). **Accuracy never separates**:
 both gates score 100% in every regime (majalis-wm 256/256 pooled baseline;
 majalis-wm-plan 320/320; all stress cells 48/48). The regimes themselves
-are not vacuous — the ungated board (majalis-nodebate) errs on 3.8% of
-questions (77/80), matching the 4–6% skip-failure rate the counterfactual
-mining measured on its disjoint seed band — and on **every question the
-ungated board gets wrong, both learned gates fire and correct it (3/3)**:
-perfect recall of real board errors, with the arms differing only in
-false-fire economy.
+are not vacuous — the ungated board (majalis-nodebate) errs on 4.5% of
+questions (107/112 over 7 seeds), matching the 4–6% skip-failure rate the
+counterfactual mining measured on its disjoint seed band — and **every one
+of those 5 board-error questions is answered correctly by every gated or
+maintained arm covering the seed**: the reactive gate fired on all 3 it
+saw, the planned gate on 4 of 5 (on the fifth its run's independently
+built board happened to be correct — perception is LLM-nondeterministic
+across runs), and the maintenance arm repairs in-window by construction.
+Perfect recall of real board errors; the arms differ only in false-fire
+economy.
 
 That economy is where they part: the reactive gate fires on 7.8% of
 questions (731 tokens/question); the planned gate fires on 14.1% (1,069
@@ -470,9 +475,18 @@ candidate policies are auditioned in imagination, and only the winner needs
 live verification (§5.4's live sessions confirm the transfer: the same
 `wrong_now` head achieves perfect board-error recall in real LLM streams).
 
+**Live transfer.** The winning policy is implemented for real
+(`MajalisSession.maintain()`, arm `majalis-maintain`): between evidence
+batches it runs one genuine skeptic→judge debate on the learned-risk top
+key; at ask time the gate never fires — questions serve straight from the
+board. Across 7 live seeds: **112/112 correct with zero ask-time debates**
+at $0.0092/question. The trade is explicit: maintenance debates every batch
+cost more than reactive gating (~$0.005/q) but remove debate latency from
+the serving path entirely — the regime interactive deployments live in.
+
 **Honest null #2.** The hazard-discounted ranking — deprioritize keys the
-world is about to overwrite, p_wrong · (1 − h₁) · (0.1 + touch_rate) —
-never beats plain myopic risk repair in any regime we tested (B ∈ {1, 2};
+world is about to overwrite, p_wrong · (1 − h(1)) · (0.1 + touch_rate) —
+never beats plain myopic risk repair in any regime we tested (B in {1, 2};
 rumor rate 0.35/0.6; 8/16 steps). Together with the planned-gate null
 (§5.4) this is a consistent, twice-replicated finding: **in this
 environment the world model's decision value concentrates in calibrated
@@ -515,10 +529,18 @@ The evidence streams are synthetic with template-parsable structure; the
 near-ceiling `wrong_now` AUROC reflects that separability, and the honest
 transfer numbers are the real-episode ones (0.937/0.953). Real logged
 episodes number only 96; the stacker has three coefficients partly for
-this reason. Learned-arm live cells now cover 3 seeds at 8 steps and 2 seeds at 16/32
-steps (240/240 correct, flat $0.0049–0.0054/q). The conformal guarantee is marginal over
+this reason. Learned-arm live cells now cover 16 seeds at 8 steps and 2 seeds at 16/32
+steps (448/448 correct, flat $0.0049–0.0054/q), plus 20 planned-gate seeds
+(320/320) and 7 zero-latency maintenance seeds (112/112). The conformal guarantee is marginal over
 exchangeable tasks and applies to the ACCEPT decision, not to debated
-answers. Per-task families (churn/compare/multihop) saturate on every Qwen
+answers. A finer point: the threshold scan selects the largest empirically
+passing τ without the conformal-risk-control finite-sample (+1) correction
+or learn-then-test multiplicity control, so at n = 96 calibration episodes
+the α level is approximate (up to ~1pp anti-conservative); the load-bearing
+evidence for the coverage claim is therefore the *empirical* held-out check
+(2.1% ≤ α on 1,600 questions), and the vendored gate ships a Hoeffding-UCB
+mode for deployments that need a high-probability rather than
+in-expectation floor. Per-task families (churn/compare/multihop) saturate on every Qwen
 backbone tested, so no ceiling-accuracy claim is made anywhere — the
 contribution is the cost regime and the calibrated control.
 
@@ -542,7 +564,7 @@ action outcomes, not yet through multi-step foresight.
 # Reproducibility
 
 All numbers reproduce from seeds with five commands against the released
-repository: `make test` (57 tests), `python scripts/gen_wm_dataset.py`
+repository: `make test` (111 tests), `python scripts/gen_wm_dataset.py`
 (dataset, 1.4s, zero API), `python train/train_wm.py` (18s GPU or ~1min
 CPU), `python scripts/offline_bench.py` (Table 3, zero API, <1s), and
 `python -m majalis.bench.session --arms single,majalis,mad,majalis-wm` (paid

@@ -75,13 +75,18 @@ def _replay_mad(events, seed: int, *, max_debates: int | None = None) -> list[di
 
 def _replay_majalis(events, seed: int, gate_mode: str = "wm",
                     wm_mode: str | None = None,
-                    max_debates: int | None = None) -> list[dict]:
+                    max_debates: int | None = None,
+                    maintain_budget: int = 0) -> list[dict]:
     session = MajalisSession(seed=seed, gate_mode=gate_mode, wm_mode=wm_mode,
                              max_debates=max_debates)
     records = []
     for ev in events:
         if ev.kind == "evidence":
             session.ingest(ev.lines)
+            if maintain_budget:
+                # Zero-latency serving: repairs happen HERE, in the
+                # maintenance window, so ask-time never debates.
+                session.maintain(budget=maintain_budget)
             continue
         result = session.ask(ev.task)
         records.append({"task": ev.task, "answer": result.answer,
@@ -124,6 +129,15 @@ REPLAYS = {
     # additive: majalis-wm's code path above is untouched.
     "majalis-wm-plan": lambda ev, seed, max_debates=None: _replay_majalis(
         ev, seed, gate_mode="plan", wm_mode="learned", max_debates=max_debates),
+    # Zero-latency serving: NO ask-time debate ever (gate never fires);
+    # instead one real key-scoped maintenance debate per evidence batch on
+    # the learned-risk top key — the live implementation of the policy that
+    # won the imagination audition (scripts/imagine_plan.py, learned-risk
+    # repair). Compare against majalis-nodebate (same serve path, no
+    # maintenance) to isolate what the maintenance window buys.
+    "majalis-maintain": lambda ev, seed, max_debates=None: _replay_majalis(
+        ev, seed, gate_mode="never", wm_mode="learned", max_debates=max_debates,
+        maintain_budget=1),
 }
 
 

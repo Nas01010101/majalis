@@ -1036,5 +1036,113 @@
     "latency_s": 443.5,
     "rumor_rate": null,
     "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 0,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 52431,
+    "cost_usd": 0.1402,
+    "latency_s": 569.2,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 1,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 49689,
+    "cost_usd": 0.1357,
+    "latency_s": 544.5,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 2,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 55490,
+    "cost_usd": 0.1495,
+    "latency_s": 644.9,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 3,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 58897,
+    "cost_usd": 0.1543,
+    "latency_s": 642.4,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 4,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 51400,
+    "cost_usd": 0.1455,
+    "latency_s": 552.6,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 5,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 48351,
+    "cost_usd": 0.1338,
+    "latency_s": 477.2,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-maintain",
+    "seed": 6,
+    "steps": 8,
+    "n": 16,
+    "correct": 16,
+    "tokens": 68337,
+    "cost_usd": 0.1752,
+    "latency_s": 853.9,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-nodebate",
+    "seed": 5,
+    "steps": 8,
+    "n": 16,
+    "correct": 15,
+    "tokens": 48358,
+    "cost_usd": 0.0907,
+    "latency_s": 313.6,
+    "rumor_rate": null,
+    "max_debates": null
+  },
+  {
+    "arm": "majalis-nodebate",
+    "seed": 6,
+    "steps": 8,
+    "n": 16,
+    "correct": 15,
+    "tokens": 43653,
+    "cost_usd": 0.0845,
+    "latency_s": 292.4,
+    "rumor_rate": null,
+    "max_debates": null
   }
 ]

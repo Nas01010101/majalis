@@ -48,29 +48,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from majalis.beliefs import BeliefBoard, parse_date_ord  # noqa: E402
 from majalis.bench.stream import make_session  # noqa: E402
-from majalis.wmfeat import key_features, parse_line  # noqa: E402
-from majalis.wmnet import LearnedWM  # noqa: E402
+from majalis.wmfeat import parse_line  # noqa: E402
+from majalis.wmnet import HazardWM, LearnedWM  # noqa: E402
 
 POLICIES = ("none", "random", "myopic", "planned", "oracle")
-
-
-class HazardWM:
-    """Numpy inference for the multi-horizon hazard heads
-    (train/train_wm_hazard.py -> data/wm_hazard_weights.json)."""
-
-    def __init__(self, path: Path = ROOT / "data" / "wm_hazard_weights.json"):
-        w = json.loads(Path(path).read_text())
-        self.mu, self.sd = np.array(w["mu"]), np.array(w["sd"])
-        self.trunk = [(np.array(W), np.array(b)) for W, b in w["trunk"]]
-        self.heads = {int(h): (np.array(Wb[0]).ravel(), float(np.array(Wb[1]).ravel()[0]))
-                      for h, Wb in w["heads"].items()}
-
-    def hazard(self, board: BeliefBoard, key: str, k: int) -> float:
-        h = (np.array(key_features(board, key)) - self.mu) / self.sd
-        for W, b in self.trunk:
-            h = np.maximum(0.0, W @ h + b)
-        Wh, bh = self.heads[k]
-        return 1.0 / (1.0 + math.exp(-(float(Wh @ h) + bh)))
 
 
 def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
