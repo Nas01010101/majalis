@@ -24,7 +24,11 @@ abstract: |
   gate fires on 12.4% of questions and catches 86.2% of corrupted boards at
   a 0.9% false-fire rate, versus 23.8% / 78.8% / 15.1% for the hand-set
   gate it replaced; the fixed-prior survival model it displaced scores at
-  chance (AUROC 0.496 vs 0.657 learned). End-to-end, the society matches a
+  chance (AUROC 0.496 vs 0.657 learned). Counterfactual mining of 592 paired
+  (skip, debate) outcomes shows debate flips 4.6% of answers right and none
+  wrong — and a two-branch planned gate built on that model matches, but
+  does not beat, the reactive threshold (an honest null; the reactive gate
+  is 2× more debate-frugal at equal accuracy). End-to-end, the society matches a
   single agent's accuracy (single: 272/272; heuristic gate: 303/304, one
   miss; learned gate: 240/240) while cost per
   question stays flat in stream length ($0.0049–0.0054/q) against the
@@ -42,7 +46,7 @@ abstract: |
   **零 LLM 调用**。在留出流上，学习门控以 12.4% 的触发率捕获 86.2% 的
   被污染信念（误触发 0.9%），全面优于其替代的手工门控（23.8% / 78.8% /
   15.1%）；被替换的固定参数生存先验仅达随机水平（AUROC 0.496 对 0.657）。
-  端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
+  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
   0.0054/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
   成本高出 12.6 倍。全部实验基于 Qwen Cloud，代码与种子可完整复现。
 ---
