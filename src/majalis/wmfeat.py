@@ -85,13 +85,19 @@ def _src_tier(source: str) -> int:
     return 0 if ("filing" in s or s == "debate") else 1
 
 
+HAZARD_HORIZONS = (1, 2, 4)  # evidence batches; 2 == the legacy superseded_next window
+
+
 def replay_stream(events: list, lookahead_steps: int = 2) -> list[dict]:
     """Replay one generated session offline: deterministic extraction builds
     the board; the arrived-filings rule reconstructs ground truth; emit one
     row per (known key, evidence step) with both labels.
 
     superseded_next looks ahead `lookahead_steps` evidence batches for an
-    authoritative filing that changes the key's value.
+    authoritative filing that changes the key's value. Each row also carries
+    the multi-horizon hazard curve `superseded_within` {k: 0/1} for
+    HAZARD_HORIZONS — the forward-dynamics targets that let the model be
+    ROLLED OUT (board risk k steps ahead), not just queried one step.
     """
     board = BeliefBoard()
     truth: dict[str, tuple[str, int]] = {}  # key -> (value, filing date_ord)
@@ -131,16 +137,16 @@ def replay_stream(events: list, lookahead_steps: int = 2) -> list[dict]:
             cur = board.current(k)
             if cur is None:
                 continue
-            future: list[tuple[str, int]] = [
-                step_filings[s][k]
-                for s in range(step + 1, min(len(step_filings), step + 1 + lookahead_steps))
-                if k in step_filings[s]
-            ]
+            def overturned_within(h: int) -> int:
+                return int(any(
+                    k in step_filings[s] and step_filings[s][k][0] != cur.value
+                    for s in range(step + 1, min(len(step_filings), step + 1 + h))))
             rows.append({
                 "step": step,
                 "key": k,
                 "x": key_features(board, k),
                 "wrong_now": int(cur.value != gold_value),
-                "superseded_next": int(any(v != cur.value for v, _ in future)),
+                "superseded_next": overturned_within(lookahead_steps),
+                "superseded_within": {h: overturned_within(h) for h in HAZARD_HORIZONS},
             })
     return rows

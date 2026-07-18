@@ -29,17 +29,24 @@ OUT = ROOT / "data"
 
 
 def gen_dynamics(seeds: range) -> dict[str, np.ndarray]:
+    from majalis.wmfeat import HAZARD_HORIZONS
     X, y_wrong, y_sup, groups = [], [], [], []
+    y_hz: dict[int, list] = {h: [] for h in HAZARD_HORIZONS}
     for seed in seeds:
         for row in replay_stream(make_session(seed)):
             X.append(row["x"])
             y_wrong.append(row["wrong_now"])
             y_sup.append(row["superseded_next"])
+            for h in HAZARD_HORIZONS:
+                y_hz[h].append(row["superseded_within"][h])
             groups.append(seed)
-    return {"X": np.array(X, dtype=np.float32),
-            "y_wrong": np.array(y_wrong, dtype=np.int8),
-            "y_sup": np.array(y_sup, dtype=np.int8),
-            "seed": np.array(groups, dtype=np.int32)}
+    out = {"X": np.array(X, dtype=np.float32),
+           "y_wrong": np.array(y_wrong, dtype=np.int8),
+           "y_sup": np.array(y_sup, dtype=np.int8),
+           "seed": np.array(groups, dtype=np.int32)}
+    for h in HAZARD_HORIZONS:
+        out[f"y_hz{h}"] = np.array(y_hz[h], dtype=np.int8)
+    return out
 
 
 def gen_stacker() -> dict[str, np.ndarray]:
