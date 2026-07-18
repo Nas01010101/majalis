@@ -255,11 +255,11 @@ often the key will resurface (its own running touch rate).
 
 A one-step head can be queried; a world model should be *rolled out*. We
 extend the offline labels to a hazard curve — `superseded_within(k)` for
-k ∈ {1, 2, 4} evidence batches (k = 2 reproduces the legacy
+k in {1, 2, 4} evidence batches (k = 2 reproduces the legacy
 `superseded_next` exactly, asserted in tests) — and train a three-head
 HazardNet on the same 115k zero-cost replay rows (2.5 s on CPU). Validation:
 AUROC 0.630 / 0.659 / 0.698 for k = 1/2/4, ECE < 0.01 at every horizon,
-and 0% monotonicity violations (predicted h₁ ≤ h₂ ≤ h₄) — a calibrated,
+and 0% monotonicity violations (predicted h(1) ≤ h(2) ≤ h(4)) — a calibrated,
 internally consistent forward model of how the board's facts will churn,
 exported to JSON for numpy-only inference like every other head.
 
@@ -330,11 +330,11 @@ Pooled session results (Wilson 95% CIs in the repository dashboard):
 
 | Arm | Steps | Accuracy | $/question | tok/question |
 |---|---|---|---|---|
-| single | 8 | 80/80 | 0.00787 | 1,481 |
+| single | 8 | 288/288 | 0.00787 | 1,481 |
 | mad (3×3) | 8 | 32/32 | **0.07086** | 15,614 |
 | majalis (heuristic) | 8 | 111/112 | 0.00563 | 2,840 |
-| majalis-nodebate | 8 | 77/80 (96.2%) | 0.00595 | 3,328 |
-| **majalis-wm (learned)** | 8 | **48/48** | **0.00493** | **1,949** |
+| majalis-nodebate | 8 | 107/112 (95.5%) | 0.00595 | 3,328 |
+| **majalis-wm (learned)** | 8 | **256/256** | **0.00493** | **1,949** |
 | single | 16 | 64/64 | 0.00974 | 2,141 |
 | majalis (heuristic) | 16 | 64/64 | 0.00658 | 3,569 |
 | **majalis-wm (learned)** | 16 | **64/64** | **0.00512** | 2,062 |
@@ -345,14 +345,14 @@ Pooled session results (Wilson 95% CIs in the repository dashboard):
 The single agent's cost grows linearly with stream length (re-reading);
 Majalis's is flat, 2.1× cheaper at 32 steps and still growing apart. Vanilla
 MAD pays 12.6× Majalis's cost for the same accuracy. The no-debate ablation
-shows the honest value of debate here: its three errors are exactly the
-rumor-poisoned beliefs the world model flags, and gated debate corrects all
-three for +$0.0004 per question. The learned arm additionally cuts tokens
+shows the honest value of debate here: its five errors (107/112 over 7
+seeds) are exactly the rumor-poisoned beliefs the world model flags, and
+every gated or maintained arm answers all five correctly (§5.4). The learned arm additionally cuts tokens
 per question 31% versus the heuristic gate at 8 steps (1,949 vs 2,840) by
 eliminating sampler calls, and is the cheapest and flattest arm at every
 stream length ($0.0049–0.0054/q, 2.5× cheaper than the single agent at 32
-steps). (Learned-arm cells now cover 3 seeds at 8 steps and 2 seeds at 16
-and 32 steps — 240/240 correct, all on Qwen Cloud.)
+steps). (Learned-arm cells now cover 16 seeds at 8 steps and 2 seeds at 16
+and 32 steps — 448/448 correct, all on Qwen Cloud.)
 
 An external, recognized benchmark head-to-head (GSM8K, 1,319-question test
 set, single-agent vs an honest single-turn adaptation of the gate) is in
@@ -485,8 +485,8 @@ cost more than reactive gating (~$0.005/q) but remove debate latency from
 the serving path entirely — the regime interactive deployments live in.
 
 **Honest null #2.** The hazard-discounted ranking — deprioritize keys the
-world is about to overwrite, p_wrong · (1 − h₁) · (0.1 + touch_rate) —
-never beats plain myopic risk repair in any regime we tested (B ∈ {1, 2};
+world is about to overwrite, p_wrong · (1 − h(1)) · (0.1 + touch_rate) —
+never beats plain myopic risk repair in any regime we tested (B in {1, 2};
 rumor rate 0.35/0.6; 8/16 steps). Together with the planned-gate null
 (§5.4) this is a consistent, twice-replicated finding: **in this
 environment the world model's decision value concentrates in calibrated
@@ -529,8 +529,9 @@ The evidence streams are synthetic with template-parsable structure; the
 near-ceiling `wrong_now` AUROC reflects that separability, and the honest
 transfer numbers are the real-episode ones (0.937/0.953). Real logged
 episodes number only 96; the stacker has three coefficients partly for
-this reason. Learned-arm live cells now cover 3 seeds at 8 steps and 2 seeds at 16/32
-steps (240/240 correct, flat $0.0049–0.0054/q). The conformal guarantee is marginal over
+this reason. Learned-arm live cells now cover 16 seeds at 8 steps and 2 seeds at 16/32
+steps (448/448 correct, flat $0.0049–0.0054/q), plus 20 planned-gate seeds
+(320/320) and 7 zero-latency maintenance seeds (112/112). The conformal guarantee is marginal over
 exchangeable tasks and applies to the ACCEPT decision, not to debated
 answers. A finer point: the threshold scan selects the largest empirically
 passing τ without the conformal-risk-control finite-sample (+1) correction
