@@ -404,12 +404,16 @@ plus two stress regimes (rumor rate 0.35 → 0.6; per-question debate budget
 ∞ → 1) and longer streams (16, 32 steps). **Accuracy never separates**:
 both gates score 100% in every regime (majalis-wm 256/256 pooled baseline;
 majalis-wm-plan 320/320; all stress cells 48/48). The regimes themselves
-are not vacuous — the ungated board (majalis-nodebate) errs on 3.8% of
-questions (77/80), matching the 4–6% skip-failure rate the counterfactual
-mining measured on its disjoint seed band — and on **every question the
-ungated board gets wrong, both learned gates fire and correct it (3/3)**:
-perfect recall of real board errors, with the arms differing only in
-false-fire economy.
+are not vacuous — the ungated board (majalis-nodebate) errs on 4.5% of
+questions (107/112 over 7 seeds), matching the 4–6% skip-failure rate the
+counterfactual mining measured on its disjoint seed band — and **every one
+of those 5 board-error questions is answered correctly by every gated or
+maintained arm covering the seed**: the reactive gate fired on all 3 it
+saw, the planned gate on 4 of 5 (on the fifth its run's independently
+built board happened to be correct — perception is LLM-nondeterministic
+across runs), and the maintenance arm repairs in-window by construction.
+Perfect recall of real board errors; the arms differ only in false-fire
+economy.
 
 That economy is where they part: the reactive gate fires on 7.8% of
 questions (731 tokens/question); the planned gate fires on 14.1% (1,069

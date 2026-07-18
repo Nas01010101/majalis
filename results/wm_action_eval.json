@@ -81,11 +81,21 @@
     [
      "s1",
      "q8"
+    ],
+    [
+     "s5",
+     "q4"
+    ],
+    [
+     "s6",
+     "q1"
     ]
    ],
-   "wm_fired_and_corrected": 3,
-   "plan_fired_and_corrected": 3,
-   "note": "both learned gates fire on and correct every question the ungated board misses (3/3)"
+   "nodebate_pooled": "107/112 over 7 seeds (95.5%)",
+   "wm_fired_and_corrected": "3/3 (covers seeds 0-2)",
+   "plan_fired_and_corrected": "4/5 fired, 5/5 correct (s6-q1 correct without fire \u2014 its run's independently built board was right; perception is LLM-nondeterministic)",
+   "maintain_corrected": "5/5 (in-window repair, 0 ask-time debates)",
+   "note": "every board-error question is answered correctly by every gated/maintained arm covering the seed"
   },
   "stress_regimes": {
    "rumor_0.6": {

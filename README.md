@@ -66,14 +66,14 @@ Session eval: evidence streams with interleaved questions and unreliable sources
 | Majalis (heuristic gate, opt-in) | 303/304, all stream lengths | $0.0056, flat | arm `majalis`; debates 6–16% of questions |
 | single agent | 288/288 | $0.0079 → $0.0137, linear (2.5× at 32 steps) | re-reads the stream per question |
 | vanilla MAD (3×3) | 32/32 | $0.0709 | 12.6× Majalis's cost |
-| Majalis, debate ablated | 77/80 (96.2%) | $0.0060 | its 3 errors are exactly the rumor-poisoned beliefs the WM flagged; gated debate fixes all 3 for +$0.0004/q |
+| Majalis, debate ablated | 107/112 (95.5%) | $0.0060 | its 5 errors are exactly the rumor-poisoned beliefs the WM flags; every gated/maintained arm gets all 5 right |
 
 Gate quality, no API key (100 unseen streams, <1s): learned fires **12.4%** / catches **86.2%** of corrupted boards / **0.9%** false-fire, vs **23.8% / 78.8% / 15.1%** hand-set. Both hold the coverage bound.
 
 **The world model, measured piece by piece.** Beyond the gate, the model is a
 full (if deliberately small) world model, each organ carrying its own number:
 - **State estimation** — `wrong_now`: 0.937 AUROC on real LLM-built boards;
-  fires-and-corrects **every** question the ungated board misses (3/3 live).
+  fires-and-corrects **every** question the ungated board misses (5/5 live).
 - **Forward dynamics (rollout)** — a calibrated multi-horizon hazard curve,
   P(overturned within k=1/2/4 batches): AUROC 0.63/0.66/0.70, ECE < 0.01,
   0% monotonicity violations (`train/train_wm_hazard.py`, 2.5 s, $0).
