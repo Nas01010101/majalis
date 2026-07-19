@@ -1,7 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 68" width="252" height="68" role="img" aria-label="Majalis">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 276 92" width="276" height="92" role="img" aria-label="Majalis">
+  <!-- Self-contained plate: one look on any background (GitHub site theme and
+       OS prefers-color-scheme can disagree, so the mark carries its own surface) -->
+  <rect x="1" y="1" width="274" height="90" rx="18" fill="#0e1116" stroke="#2c313a" stroke-width="1"/>
   <!-- logomark: a majlis circle of agents seated around a shared belief board;
        the learned gate routes one doubted belief to debate (accent) -->
-  <g transform="translate(34,34)">
+  <g transform="translate(46,46)">
     <!-- assembly ring -->
     <circle cx="0" cy="0" r="24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.32"/>
     <!-- shared belief board -->
@@ -23,6 +26,6 @@
     <circle cx="0" cy="-24" r="5.4" fill="#3987e5"/>
   </g>
   <!-- wordmark -->
-  <text x="76" y="45" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+  <text x="88" y="57" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
         font-size="34" font-weight="650" letter-spacing="0.3" fill="#ffffff">majalis</text>
 </svg>
