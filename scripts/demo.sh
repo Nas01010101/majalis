@@ -5,7 +5,18 @@
 # a belief -> the gate fires ONLY there -> the judge corrects it by docket.
 set -euo pipefail
 HOST="${1:-http://localhost:8080}"
-j() { curl -s -X POST "$HOST/$1" -H 'content-type: application/json' -d "$2" | python3 -m json.tool; }
+# The shared box gates writes behind X-Majalis-Token (daily-budget bypass).
+# Export MAJALIS_LIVE_TOKEN to run live; the header is fed to curl via a
+# config on stdin so the token never appears in argv.
+j() {
+  if [ -n "${MAJALIS_LIVE_TOKEN:-}" ]; then
+    printf 'header = "X-Majalis-Token: %s"\n' "$MAJALIS_LIVE_TOKEN" \
+      | curl -s -K - -X POST "$HOST/$1" -H 'content-type: application/json' -d "$2" \
+      | python3 -m json.tool
+  else
+    curl -s -X POST "$HOST/$1" -H 'content-type: application/json' -d "$2" | python3 -m json.tool
+  fi
+}
 
 echo "=== 1. Evidence batch arrives (filings; ingested ONCE into the board)"
 j ingest '{"lines": [

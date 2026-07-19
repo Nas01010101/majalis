@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Majalis — a learned world model for an agent society</title>
+<meta name="description" content="Majalis gives a Qwen agent team a shared belief board and a world model trained on its own episodes — debate only where belief is likely corrupted, at zero LLM calls per gate decision.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Ctext x='16' y='23' font-size='20' font-weight='650' font-family='system-ui' fill='white' text-anchor='middle'%3Em%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light;
+  --bg:#f9f9f7; --surface:#fcfcfb; --fg:#0b0b0b; --muted:#52514e; --faint:#898781;
+  --border:#e1e0d9; --hairline:rgba(11,11,11,0.10); --baseline:#c3c2b7;
+  --accent:#2a78d6; --accent-ink:#1c5cab;
+  --good:#0ca30c; --good-text:#006300; --warn:#fab219; --serious:#ec835a; --bad:#d03b3b;
+  --code-bg:#f0efec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --bg:#0d0d0d; --surface:#1a1a19; --fg:#ffffff; --muted:#c3c2b7; --faint:#898781;
+    --border:#2c2c2a; --hairline:rgba(255,255,255,0.10); --baseline:#383835;
+    --accent:#3987e5; --accent-ink:#6da7ec;
+    --good:#0ca30c; --good-text:#0ca30c; --warn:#fab219; --serious:#ec835a; --bad:#e66767;
+    --code-bg:#232322;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:#0d0d0d; --surface:#1a1a19; --fg:#ffffff; --muted:#c3c2b7; --faint:#898781;
+  --border:#2c2c2a; --hairline:rgba(255,255,255,0.10); --baseline:#383835;
+  --accent:#3987e5; --accent-ink:#6da7ec;
+  --good:#0ca30c; --good-text:#0ca30c; --warn:#fab219; --serious:#ec835a; --bad:#e66767;
+  --code-bg:#232322;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; scroll-padding-top:72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } * { transition:none !important; animation:none !important; } }
+body { background:var(--bg); color:var(--fg); font:400 16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+h1,h2,h3 { font-weight:650; line-height:1.2; letter-spacing:-0.02em; }
+a { color:var(--accent-ink); text-decoration:none; }
+a:hover { text-decoration:underline; }
+code,pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:0.86em; }
+code { background:var(--code-bg); padding:2px 5px; border-radius:4px; }
+pre { background:var(--code-bg); border:1px solid var(--border); border-radius:8px; padding:16px; overflow-x:auto; line-height:1.55; }
+pre code { background:none; padding:0; }
+.wrap { max-width:920px; margin:0 auto; padding:0 24px; }
+section { padding:64px 0; border-top:1px solid var(--border); }
+.kicker { font-size:13px; font-weight:650; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-ink); margin-bottom:12px; }
+h2 { font-size:clamp(24px,4vw,32px); margin-bottom:16px; }
+h3 { font-size:20px; margin:32px 0 12px; }
+p.lede { font-size:18px; color:var(--muted); max-width:65ch; }
+section p { max-width:65ch; color:var(--muted); margin-bottom:12px; }
+section p strong { color:var(--fg); }
+
+nav { position:sticky; top:0; z-index:50; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+nav .wrap { display:flex; align-items:center; gap:24px; height:56px; }
+.wordmark { font-weight:650; font-size:17px; color:var(--fg); }
+.wordmark span { color:var(--accent-ink); }
+nav .links { display:flex; gap:20px; margin-left:auto; font-size:14px; }
+nav .links a { color:var(--muted); }
+nav .links a:hover { color:var(--fg); text-decoration:none; }
+#themeBtn { background:none; border:1px solid var(--border); border-radius:8px; color:var(--muted); width:32px; height:32px; cursor:pointer; font-size:14px; }
+#themeBtn:hover { color:var(--fg); border-color:var(--faint); }
+@media (max-width:720px) { nav .links a.hideS { display:none; } }
+
+header.hero { padding:88px 0 56px; }
+header.hero h1 { font-size:clamp(36px,6vw,56px); max-width:20ch; margin-bottom:20px; }
+.cta { display:flex; gap:12px; flex-wrap:wrap; margin-top:28px; }
+.btn { display:inline-block; padding:10px 20px; border-radius:8px; font-size:15px; font-weight:650; border:1px solid var(--border); color:var(--fg); transition:background 150ms ease-out; }
+.btn:hover { text-decoration:none; background:var(--surface); }
+.btn.primary { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+.btn.primary:hover { opacity:0.85; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-top:48px; }
+.tile { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+.tile .v { font-size:32px; font-weight:650; letter-spacing:-0.02em; }
+.tile .v small { font-size:16px; color:var(--faint); font-weight:400; }
+.tile .k { font-size:13px; color:var(--muted); margin-top:6px; line-height:1.45; }
+
+/* simulator */
+.sim { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin-top:24px; }
+.sim-grid { display:grid; grid-template-columns:minmax(300px,7fr) minmax(240px,5fr); gap:24px; }
+@media (max-width:860px) { .sim-grid { grid-template-columns:1fr; } }
+.sim-h { font-size:13px; font-weight:650; letter-spacing:0.06em; text-transform:uppercase; color:var(--faint); margin-bottom:12px; }
+.skey { border:1px solid var(--border); border-radius:8px; padding:12px 14px; background:var(--bg); margin-bottom:10px; transition:border-color 250ms ease-out; }
+.skey.hot { border-color:var(--bad); }
+.skey .krow { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.skey .key { font:650 13px/1.4 ui-monospace,Menlo,monospace; color:var(--faint); }
+.skey .val { font-size:15.5px; font-weight:650; }
+.skey .src { font-size:12px; color:var(--faint); margin-left:auto; }
+.meter { display:flex; align-items:center; gap:10px; margin-top:8px; }
+.meter .lab { font-size:12px; color:var(--faint); min-width:64px; }
+.meter .bar { flex:1; height:6px; border-radius:3px; background:var(--border); overflow:hidden; }
+.meter .fill { height:100%; border-radius:3px; background:var(--good); transition:width 300ms ease-out, background 300ms ease-out; }
+.meter .pv { font:650 12.5px/1 ui-monospace,Menlo,monospace; min-width:44px; text-align:right; }
+.hz { display:flex; gap:6px; margin-top:8px; }
+.hz span { font:400 11.5px/1.6 ui-monospace,Menlo,monospace; border:1px solid var(--border); border-radius:4px; padding:0 7px; color:var(--muted); }
+.sim-btns { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+button.act { padding:8px 16px; border-radius:8px; border:1px solid var(--border); background:var(--fg); color:var(--bg); font:650 14px/1.4 system-ui,sans-serif; cursor:pointer; }
+button.act:hover:not(:disabled) { opacity:0.85; }
+button.act:disabled { opacity:0.35; cursor:default; }
+button.act.ghost { background:none; color:var(--muted); }
+button.act.ghost:hover:not(:disabled) { opacity:1; color:var(--fg); background:var(--bg); }
+button.act.danger { background:var(--bad); border-color:var(--bad); color:#fff; }
+.ticker { display:flex; gap:16px; align-items:baseline; border:1px solid var(--border); border-radius:8px; background:var(--bg); padding:10px 14px; margin-bottom:12px; font-size:13.5px; }
+.ticker .big { font-size:20px; font-weight:650; }
+.slog { border:1px solid var(--border); border-radius:8px; background:var(--bg); padding:12px 14px; height:320px; overflow-y:auto; font:400 12.5px/1.7 ui-monospace,Menlo,monospace; color:var(--muted); }
+.slog div { margin-bottom:4px; }
+.slog .t-q { color:var(--accent-ink); }
+.slog .t-bad { color:var(--bad); }
+.slog .t-good { color:var(--good-text); }
+.slog .t-warn { color:var(--warn); }
+.slog .t-sys { color:var(--faint); }
+.sim-note { font-size:13px; color:var(--faint); margin-top:16px; max-width:none; }
+
+/* organs */
+.pipe { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:24px; }
+.step { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; }
+.step .n { font-size:12px; font-weight:650; color:var(--accent-ink); letter-spacing:0.06em; }
+.step .t { font-weight:650; margin:4px 0 6px; }
+.step p { font-size:13.5px; margin:0; }
+
+/* charts */
+.chartcard { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-top:24px; }
+.chartcard .cc-head { display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:4px; }
+.chartcard h4 { font-size:16px; font-weight:650; }
+.chartcard .cc-sub { font-size:13px; color:var(--faint); }
+.seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-left:auto; }
+.seg button { background:none; border:none; padding:6px 14px; font:650 13px/1.4 system-ui,sans-serif; color:var(--muted); cursor:pointer; }
+.seg button[aria-pressed="true"] { background:var(--fg); color:var(--bg); }
+.legend { display:flex; gap:16px; font-size:13px; color:var(--muted); margin:8px 0 4px; flex-wrap:wrap; }
+.legend .sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:baseline; }
+table { border-collapse:collapse; width:100%; font-size:14.5px; margin-top:16px; }
+th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); }
+th { font-weight:650; font-size:13px; color:var(--muted); }
+td.num,th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.hl td { background:var(--surface); }
+.tscroll { overflow-x:auto; }
+.chart svg { display:block; width:100%; height:auto; }
+.chart text { font:400 12px/1 system-ui,sans-serif; fill:var(--faint); }
+.chart .dlab { font-weight:650; fill:var(--fg); }
+.chart .grid { stroke:var(--border); stroke-width:1; }
+.chart .axis { stroke:var(--baseline); stroke-width:1; }
+#tt { position:fixed; z-index:99; pointer-events:none; display:none; max-width:300px; background:var(--fg); color:var(--bg); border-radius:8px; padding:8px 12px; font-size:12.5px; line-height:1.5; box-shadow:0 4px 16px rgba(0,0,0,0.25); }
+
+.honest { border-left:3px solid var(--warn); padding:4px 0 4px 20px; margin-top:24px; }
+.honest p { margin-bottom:8px; }
+.livecard { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-top:24px; }
+.livecard a.lc { display:block; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; color:var(--fg); transition:border-color 150ms ease-out; }
+.livecard a.lc:hover { text-decoration:none; border-color:var(--accent); }
+.livecard .t { font-weight:650; }
+.livecard .d { font-size:13.5px; color:var(--muted); margin-top:4px; }
+.livecard .u { font:400 12px/1.4 ui-monospace,Menlo,monospace; color:var(--accent-ink); margin-top:8px; word-break:break-all; }
+footer { border-top:1px solid var(--border); padding:48px 0 64px; font-size:14px; color:var(--faint); }
+footer .wrap { display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="wordmark" href="#top">majalis<span>.</span></a>
+    <div class="links">
+      <a href="#sim">Simulator</a>
+      <a href="#wm" class="hideS">World model</a>
+      <a href="#frontier" class="hideS">Results</a>
+      <a href="#live" class="hideS">Live demo</a>
+      <a href="https://github.com/Nas01010101/majalis">GitHub</a>
+      <button id="themeBtn" aria-label="Toggle color theme">◐</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap" id="top">
+  <div class="kicker">Qwen Cloud Hackathon · Track 3 — Agent Society</div>
+  <h1>Your agents debate too much. A world model decides when it’s worth it.</h1>
+  <p class="lede">Multi-agent debate on one backbone mostly re-buys self-consistency at higher cost.
+  Majalis gives a Qwen agent team a <strong>shared belief board</strong> and a <strong>world model trained on the
+  society’s own logged episodes</strong> — it estimates which beliefs are wrong now, predicts which will be
+  overturned soon, and spends debate only there. The gate decision costs <strong>zero LLM calls</strong>.</p>
+  <div class="cta">
+    <a class="btn primary" href="#sim">Run the society simulator</a>
+    <a class="btn" href="http://47.237.187.157:8080/">Live dashboard</a>
+    <a class="btn" href="https://github.com/Nas01010101/majalis">GitHub</a>
+    <a class="btn" href="https://github.com/Nas01010101/majalis/blob/main/docs/paper/majalis.pdf">Paper (PDF)</a>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><div class="v">0.937 <small>AUROC</small></div><div class="k">P(belief is wrong) on real LLM-built boards the model never saw</div></div>
+    <div class="tile"><div class="v">1/14<small>th the cost</small></div><div class="k">same 100% accuracy as always-debate — $0.50 vs $7.09 per 100 questions</div></div>
+    <div class="tile"><div class="v">0 <small>LLM calls</small></div><div class="k">per gate decision — the world model is a trained head, not another prompt</div></div>
+    <div class="tile"><div class="v">112/112</div><div class="k">live maintenance mode: board errors repaired in-window, zero ask-time debates, $0.009/question</div></div>
+  </div>
+</header>
+
+<section class="wrap" id="idea">
+  <div class="kicker">The idea</div>
+  <h2>Debate is a spend decision — so learn when to spend</h2>
+  <p>Agents in Majalis don’t argue about every answer. Evidence flows onto a shared, versioned
+  <strong>belief board</strong>; questions are answered <em>instantly</em> from the board (zero-latency serving).
+  The world model — trained on the society’s own logged episodes, not hand-set rules — watches the board and
+  routes the expensive machinery (skeptic challenge → adjudication) only to beliefs that are probably corrupted.</p>
+  <p>Everything committed <em>without</em> a debate carries a <strong>conformal guarantee</strong>:
+  E[error | accepted] ≤ α = 5%, holding empirically at 2.1% on 1,600 held-out decisions.</p>
+</section>
+
+<section class="wrap" id="sim">
+  <div class="kicker">Interactive</div>
+  <h2>The society, in your browser</h2>
+  <p>A miniature Majalis run — no API key, no network. Feed the board evidence batches and watch questions
+  get answered instantly from it. Then <strong>inject a rumor</strong>: a low-trust source poisons a belief, answers
+  on that key start failing, and P(wrong) spikes. Open a <strong>maintenance window</strong> and the world model
+  spends its one repair exactly where the risk is.</p>
+
+  <div class="sim">
+    <div class="ticker">
+      <span>Answered instantly from board:</span>
+      <span class="big" id="score">0/0</span>
+      <span id="scoreNote" style="color:var(--faint)">— ingest a batch to start</span>
+    </div>
+    <div class="sim-grid">
+      <div>
+        <div class="sim-h">Belief board · P(wrong) scored by the world model, 0 LLM calls</div>
+        <div id="skeys"></div>
+        <div class="sim-btns">
+          <button class="act" id="batchBtn">Next evidence batch</button>
+          <button class="act danger" id="rumorBtn">Inject rumor</button>
+          <button class="act ghost" id="maintBtn">Maintenance window (B=1)</button>
+          <button class="act ghost" id="simReset">Reset</button>
+        </div>
+      </div>
+      <div>
+        <div class="sim-h">Society log</div>
+        <div class="slog" id="slog" aria-live="polite"></div>
+      </div>
+    </div>
+    <p class="sim-note">The meters mirror the real system’s state-estimation features (source disagreement,
+    trust, staleness); the hazard chips are the forward-dynamics rollout h(1) ≤ h(2) ≤ h(4) — P(overturned
+    within k batches). In the shipped system these are trained MLP heads (<code>wrong_now</code> 0.937 AUROC;
+    hazards 0.63/0.66/0.70, ECE &lt; 0.01) and maintenance is <code>MajalisSession.maintain()</code> running a real
+    skeptic → adjudicator debate on Qwen.</p>
+  </div>
+</section>
+
+<section class="wrap" id="wm">
+  <div class="kicker">The world model</div>
+  <h2>Four organs, trained on the society’s own history</h2>
+  <p>“World model” is a claim we test, not a metaphor: state estimation, forward dynamics,
+  action-conditioned prediction, and planning in imagination — each measured, including where it fails.</p>
+  <div class="pipe">
+    <div class="step"><div class="n">01 · STATE ESTIMATION</div><div class="t">What’s wrong now?</div>
+      <p><code>wrong_now</code>: P(belief is incorrect) — 0.999 AUROC in-distribution, <strong>0.937 on real
+      LLM-built boards it never saw</strong>. Replaced a hand-set gate at 0.79.</p></div>
+    <div class="step"><div class="n">02 · FORWARD DYNAMICS</div><div class="t">What breaks next?</div>
+      <p>Multi-horizon hazard: P(overturned within k=1/2/4 batches) — AUROC 0.63/0.66/0.70,
+      ECE &lt; 0.01, 0% monotonicity violations.</p></div>
+    <div class="step"><div class="n">03 · ACTIONS</div><div class="t">What would debate do?</div>
+      <p>592 counterfactual (skip, debate) pairs mined from shared boards: debate helps 4.6%,
+      hurts <strong>0/592</strong>. Calibrated with Platt scaling (ECE 0.219 → 0.003).</p></div>
+    <div class="step"><div class="n">04 · IMAGINATION</div><div class="t">Plan before you pay</div>
+      <p>Maintenance policies auditioned entirely inside the model — 16,000 rollout decisions at
+      <strong>$0 in API calls</strong> — before anything runs live.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="frontier">
+  <div class="kicker">Evidence</div>
+  <h2>Planning in imagination — and two honest nulls</h2>
+  <p>Zero-latency serving: questions answered instantly from the board; repairs happen only in maintenance
+  windows with budget B. Which repair policy should get the budget? We audition all of them in imagination:</p>
+
+  <div class="chartcard">
+    <div class="cc-head">
+      <div>
+        <h4>Maintenance-policy frontier</h4>
+        <div class="cc-sub">accuracy over 1,600 questions (100 seeds) · whiskers are Wilson 95% CIs · y-axis starts at 90%</div>
+      </div>
+      <div class="seg" role="group" aria-label="Repair budget">
+        <button id="b1Btn" aria-pressed="true">Budget = 1</button>
+        <button id="b2Btn" aria-pressed="false">Budget = 2</button>
+      </div>
+    </div>
+    <div class="chart" id="frontierChart"></div>
+    <p style="font-size:13.5px;margin-top:8px">Learned risk-ranked repair closes <strong>~96% of the
+    none→oracle gap</strong> at B=1. And the honest null: the hazard-discounted “planned” ranking never beats
+    plain myopic risk repair in any tested regime — forward dynamics are learnable and calibrated, but at
+    these horizons the decision value concentrates in <strong>calibrated state estimation</strong>. We report
+    that, because it’s true.</p>
+  </div>
+
+  <div class="chartcard">
+    <div class="cc-head">
+      <div>
+        <h4>Learned gate vs the hand-set gate it replaced</h4>
+        <div class="cc-sub">100 unseen streams · 1,600 questions · zero API keys, &lt;1s · score AUROC 0.996 vs 0.921</div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--accent)"></span>learned world model</span>
+      <span><span class="sw" style="background:var(--faint)"></span>hand-set gate</span>
+    </div>
+    <div class="chart" id="gateChart"></div>
+    <p style="font-size:13.5px;margin-top:8px">The learned gate fires <strong>half as often</strong>, catches
+    <strong>more</strong> of the genuinely corrupted boards, and cuts false fires <strong>17×</strong> — and both
+    configurations still hold the conformal bound (accepted-error 2.1% vs 3.8%, each ≤ α = 5%). Same
+    features, same threshold machinery; the only change is learning P(wrong) from the society’s own
+    episodes instead of hand-setting it.</p>
+  </div>
+
+  <h3>Every arm we evaluated — nothing cherry-picked</h3>
+  <div class="tscroll"><table>
+    <tr><th>arm</th><th class="num">correct</th><th class="num">accuracy</th><th class="num">debate fire rate</th><th>note</th></tr>
+    <tr><td>single agent (re-reads stream)</td><td class="num">288/288</td><td class="num">100%</td><td class="num">—</td><td>cost grows linearly with stream length</td></tr>
+    <tr><td>society, no debate</td><td class="num">107/112</td><td class="num">95.5%</td><td class="num">0%</td><td>every miss is a rumor-poisoned belief</td></tr>
+    <tr><td>always-debate (3×3 MAD)</td><td class="num">32/32</td><td class="num">100%</td><td class="num">100%</td><td>$7.09 / 100 questions</td></tr>
+    <tr class="hl"><td><strong>WM-gated</strong> (shipped default)</td><td class="num">256/256</td><td class="num">100%</td><td class="num">7.8%</td><td>$0.50 / 100 questions, 731 tokens/q</td></tr>
+    <tr><td>WM-planned (two-branch argmax)</td><td class="num">320/320</td><td class="num">100%</td><td class="num">14.1%</td><td>null #1: no accuracy gain, 2× the spend</td></tr>
+    <tr class="hl"><td><strong>maintenance mode</strong> (live)</td><td class="num">112/112</td><td class="num">100%</td><td class="num">0% at ask time</td><td>repairs in-window, $0.92 / 100 questions</td></tr>
+  </table></div>
+  <p style="font-size:13.5px;margin-top:8px;color:var(--faint)">Arms differ in seed count (2–20 seeds — every seed
+  run is reported, none dropped); all share identical evidence streams, question sets, and a per-arm token/USD
+  ledger. Raw per-seed logs: <code>results/raw/session_*</code>.</p>
+
+  <div class="chartcard">
+    <div class="cc-head">
+      <div>
+        <h4>The economy argument</h4>
+        <div class="cc-sub">cost per 100 questions, all three arms at 100% accuracy on the pooled evaluation</div>
+      </div>
+    </div>
+    <div class="chart" id="econChart"></div>
+    <p style="font-size:13.5px;margin-top:8px">Always-debate re-buys self-consistency at 14× the price.
+    The WM-gated society fires debate on 7.8% of questions; maintenance mode moves every repair off the
+    ask path entirely (0 ask-time debates, 112/112 correct, live on the box below).</p>
+  </div>
+
+  <div class="honest">
+    <h3 style="margin-top:0">What we don’t claim</h3>
+    <p><strong>Null #1:</strong> a planned two-branch argmax gate never beats the reactive threshold gate — and is
+    ~2× less frugal (14.1% vs 7.8% fire rate). <strong>Null #2:</strong> hazard-discounted maintenance never beats
+    myopic risk repair. Both replicated, both in the paper. The world model’s proven value is calibrated
+    risk + economy, not (yet) long-horizon planning — that’s the honest frontier.</p>
+  </div>
+</section>
+
+<section class="wrap" id="live">
+  <div class="kicker">Live</div>
+  <h2>It’s running right now</h2>
+  <p>The full society — Qwen agents, belief board, world-model gate, maintenance mode — is deployed on
+  Alibaba Cloud ECS and serving:</p>
+  <div class="livecard">
+    <a class="lc" href="http://47.237.187.157:8080/">
+      <div class="t">Dashboard</div><div class="d">Boards, gates, spend — the society at a glance.</div>
+      <div class="u">47.237.187.157:8080</div></a>
+    <a class="lc" href="http://47.237.187.157:8080/live">
+      <div class="t">Society view</div><div class="d">Watch a replay or a live run: evidence in, beliefs updating, gates firing.</div>
+      <div class="u">47.237.187.157:8080/live</div></a>
+    <a class="lc" href="http://47.237.187.157:8080/docs">
+      <div class="t">API playground</div><div class="d">Drive it yourself — ingest evidence, ask questions, trigger maintenance.</div>
+      <div class="u">47.237.187.157:8080/docs</div></a>
+  </div>
+  <h3>Or run it locally in 30 seconds</h3>
+  <pre><code>git clone https://github.com/Nas01010101/majalis && cd majalis
+pip install -e . && python examples/quickstart.py   # no API key needed</code></pre>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong style="color:var(--fg)">Majalis</strong> · Qwen Cloud Hackathon 2026, Track 3 · MIT license<br>
+      118 tests passing · every number traces to a committed evidence artifact
+    </div>
+    <div style="text-align:right">
+      <a href="https://github.com/Nas01010101/majalis">GitHub</a> ·
+      <a href="https://github.com/Nas01010101/majalis/blob/main/docs/paper/majalis.pdf">Paper</a> ·
+      <a href="https://github.com/Nas01010101/majalis/blob/main/docs/architecture.md">Architecture</a>
+    </div>
+  </div>
+</footer>
+
+<div id="tt" role="tooltip"></div>
+
+<script>
+"use strict";
+/* ---------- theme ---------- */
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const r = document.documentElement;
+  const dark = getComputedStyle(document.body).backgroundColor !== "rgb(249, 249, 247)";
+  r.setAttribute("data-theme", dark ? "light" : "dark");
+});
+
+/* ---------- tooltip ---------- */
+const tt = document.getElementById("tt");
+function showTT(html, x, y) {
+  tt.innerHTML = html; tt.style.display = "block";
+  const w = tt.offsetWidth, pad = 14;
+  let left = x + pad; if (left + w > innerWidth - 8) left = x - w - pad;
+  tt.style.left = left + "px"; tt.style.top = Math.max(8, y - 10) + "px";
+}
+function hideTT() { tt.style.display = "none"; }
+
+/* ---------- simulator ---------- */
+const GOLD = {
+  "acme::ceo": "jane park", "acme::hq": "berlin",
+  "acme::launch": "2026-03-01", "acme::funding": "series C, $80M",
+};
+const EVIDENCE = [
+  ["acme::ceo","acme::hq"], ["acme::launch"], ["acme::funding","acme::ceo"],
+  ["acme::hq"], ["acme::launch","acme::funding"], ["acme::ceo"], ["acme::hq","acme::launch"],
+];
+const RUMORS = {
+  "acme::ceo":"john roe", "acme::hq":"lisbon",
+  "acme::launch":"2026-06-15", "acme::funding":"series C, $8M",
+};
+let S; // sim state
+function initSim(){
+  S = { t:0, asked:0, correct:0, poisoned:{}, keys:{} };
+  for (const k in GOLD) S.keys[k] = { claims:0, lastSupport:0, onBoard:null };
+  document.getElementById("slog").innerHTML = "";
+  log("society initialized — 4 keys, empty board", "t-sys");
+  renderSim();
+}
+function log(msg, cls){
+  const el = document.getElementById("slog");
+  el.insertAdjacentHTML("beforeend", `<div class="${cls||""}">${msg}</div>`);
+  el.scrollTop = el.scrollHeight;
+}
+function pWrong(k){
+  const st = S.keys[k];
+  if (!st.onBoard) return 0;
+  if (S.poisoned[k]) {
+    // disagreement with accumulated trusted support + low source trust
+    return Math.min(1, 0.55 + 0.15*Math.min(3,st.claims));
+  }
+  const stale = S.t - st.lastSupport;
+  return Math.min(0.35, 0.02 + 0.03*stale);
+}
+function hazard(k, h){
+  const p = pWrong(k);
+  const touch = 0.25 + (S.poisoned[k] ? 0.3 : 0);
+  const base = 0.06 + 0.5*p;
+  return 1 - Math.pow(1 - base*touch, h);
+}
+function statusColor(p){ return p >= 0.5 ? "var(--bad)" : p >= 0.2 ? "var(--warn)" : "var(--good)"; }
+function renderSim(){
+  const box = document.getElementById("skeys");
+  box.innerHTML = "";
+  for (const k in S.keys) {
+    const st = S.keys[k], p = pWrong(k);
+    const val = st.onBoard ?? null;
+    box.insertAdjacentHTML("beforeend", `<div class="skey ${p>=0.5?"hot":""}">
+      <div class="krow"><span class="key">${k}</span>
+        <span class="val">${val ? val : '<span style="color:var(--faint);font-weight:400;font-style:italic">no belief yet</span>'}</span>
+        <span class="src">${st.claims} source${st.claims===1?"":"s"}</span></div>
+      ${val?`<div class="meter"><span class="lab">P(wrong)</span>
+        <div class="bar"><div class="fill" style="width:${(p*100).toFixed(0)}%;background:${statusColor(p)}"></div></div>
+        <span class="pv">${p.toFixed(2)}</span></div>
+      <div class="hz"><span>h(1) ${hazard(k,1).toFixed(2)}</span><span>h(2) ${hazard(k,2).toFixed(2)}</span><span>h(4) ${hazard(k,4).toFixed(2)}</span></div>`:""}
+    </div>`);
+  }
+  document.getElementById("score").textContent = `${S.correct}/${S.asked}`;
+  const poisonedNow = Object.keys(S.poisoned).length > 0;
+  document.getElementById("scoreNote").textContent =
+    S.asked === 0 ? "— ingest a batch to start"
+    : poisonedNow ? "· a poisoned belief is costing answers — open a maintenance window"
+    : S.correct === S.asked ? "· 100% — zero ask-time debates spent"
+    : "· board clean again — the misses were pre-repair";
+  const anyBoard = Object.values(S.keys).some(s=>s.onBoard);
+  document.getElementById("maintBtn").disabled = !anyBoard;
+  document.getElementById("rumorBtn").disabled = !anyBoard;
+}
+function askQuestions(){
+  const live = Object.keys(S.keys).filter(k=>S.keys[k].onBoard);
+  // deterministic pick: rotate through keys; always include a poisoned key if present
+  const bad = live.filter(k=>S.poisoned[k]);
+  const picks = [];
+  if (bad.length) picks.push(bad[0]);
+  while (picks.length < Math.min(2, live.length)) {
+    const k = live[(S.t + picks.length) % live.length];
+    if (!picks.includes(k)) picks.push(k); else break;
+  }
+  picks.forEach(k=>{
+    S.asked++;
+    const ans = S.keys[k].onBoard, ok = ans === GOLD[k];
+    if (ok) S.correct++;
+    log(`Q: ${k}? → “${ans}” ${ok?"✓":"✗ (gold: “"+GOLD[k]+"”)"} · answered from board, 0 LLM calls`,
+        ok ? "t-q" : "t-bad");
+  });
+}
+document.getElementById("batchBtn").addEventListener("click", ()=>{
+  S.t++;
+  const batch = EVIDENCE[(S.t-1) % EVIDENCE.length];
+  batch.forEach(k=>{
+    const st = S.keys[k];
+    st.claims++; st.lastSupport = S.t;
+    if (!S.poisoned[k]) st.onBoard = GOLD[k];
+  });
+  log(`batch ${S.t}: evidence for ${batch.join(", ")} — board updated`, "t-sys");
+  askQuestions();
+  renderSim();
+});
+document.getElementById("rumorBtn").addEventListener("click", ()=>{
+  const live = Object.keys(S.keys).filter(k=>S.keys[k].onBoard && !S.poisoned[k]);
+  if (!live.length) { log("every belief is already poisoned — run maintenance!", "t-warn"); return; }
+  const k = live[S.t % live.length];
+  S.poisoned[k] = true;
+  S.keys[k].onBoard = RUMORS[k];
+  S.keys[k].claims++;
+  log(`⚠ rumor from low-trust source: “${k} = ${RUMORS[k]}” — board belief overwritten`, "t-warn");
+  log(`world model: P(wrong | ${k}) → ${pWrong(k).toFixed(2)} — flagged, no debate spent yet`, "t-sys");
+  renderSim();
+});
+document.getElementById("maintBtn").addEventListener("click", ()=>{
+  const live = Object.keys(S.keys).filter(k=>S.keys[k].onBoard);
+  if (!live.length) return;
+  const ranked = live.slice().sort((a,b)=>pWrong(b)-pWrong(a));
+  const k = ranked[0], p = pWrong(k);
+  if (p < 0.2) {
+    log(`maintenance window: max P(wrong) = ${p.toFixed(2)} (${k}) — below threshold, budget saved`, "t-good");
+  } else {
+    log(`maintenance window: top risk ${k} (P(wrong)=${p.toFixed(2)}) → skeptic challenge…`, "t-sys");
+    log(`skeptic: “${S.keys[k].onBoard}” contradicts ${Math.max(1,S.keys[k].claims-1)} trusted source(s)`, "t-sys");
+    delete S.poisoned[k];
+    S.keys[k].onBoard = GOLD[k];
+    S.keys[k].lastSupport = S.t;
+    log(`✓ adjudicated: rumor rejected — ${k} = “${GOLD[k]}” restored (1 debate spent)`, "t-good");
+  }
+  renderSim();
+});
+document.getElementById("simReset").addEventListener("click", initSim);
+initSim();
+
+/* ---------- charts ---------- */
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function frame(mount, W, H){
+  mount.innerHTML = "";
+  return el("svg", { viewBox:`0 0 ${W} ${H}`, role:"img" }, mount);
+}
+
+/* frontier dot plot — ordinal blue ramp, y zoomed 90–100 */
+const RAMP = ["#86b6ef","#5598e7","#3987e5","#256abf","#184f95"];
+const FRONTIER = {
+  1: [ ["none",92.25,[90.84,93.46],0],["random",95.06,[93.89,96.02],800],
+       ["myopic",99.50,[99.02,99.75],800],["planned",99.50,[99.02,99.75],800],
+       ["oracle",99.88,[99.55,99.97],287] ],
+  2: [ ["none",92.25,[90.84,93.46],0],["random",96.81,[95.83,97.57],1564],
+       ["myopic",99.75,[99.36,99.90],1564],["planned",99.88,[99.55,99.97],1564],
+       ["oracle",100.0,[99.76,100.0],289] ],
+};
+let budget = 1;
+function drawFrontier(){
+  const data = FRONTIER[budget];
+  const W=720, H=300, m={t:20,r:16,b:34,l:46};
+  const svg = frame(document.getElementById("frontierChart"), W, H);
+  const iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const X = i => m.l + iw*((i+0.5)/data.length);
+  const Y = v => m.t + ih*(1 - (v-90)/10);
+  for (let g=90; g<=100; g+=2.5){
+    el("line",{x1:m.l,x2:W-m.r,y1:Y(g),y2:Y(g),class:"grid"},svg);
+    el("text",{x:m.l-8,y:Y(g)+4,"text-anchor":"end"},svg).textContent=g+"%";
+  }
+  el("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:"axis"},svg);
+  data.forEach((d,i)=>{
+    const [name,v,ci,repairs] = d, col = RAMP[i];
+    el("line",{x1:X(i),x2:X(i),y1:Y(ci[0]),y2:Y(ci[1]),stroke:col,"stroke-width":2,opacity:0.7},svg);
+    [ci[0],ci[1]].forEach(c=>el("line",{x1:X(i)-5,x2:X(i)+5,y1:Y(c),y2:Y(c),stroke:col,"stroke-width":2,opacity:0.7},svg));
+    const dot = el("circle",{cx:X(i),cy:Y(v),r:7,fill:col,stroke:cssVar("--surface"),"stroke-width":2},svg);
+    el("text",{x:X(i),y:H-10,"text-anchor":"middle"},svg).textContent=name;
+    const lastP = i===data.length-1;
+    el("text",{x:X(i)+(lastP?-12:12),y:Y(v)+4,"text-anchor":lastP?"end":"start",class:"dlab"},svg).textContent=v.toFixed(v===100?0:2)+"%";
+    dot.addEventListener("mousemove",e=>showTT(
+      `<strong>${name}</strong> @ B=${budget}<br>${v.toFixed(2)}% of 1,600 · Wilson 95% [${ci[0]}, ${ci[1]}]<br>${repairs} repairs spent${name==="oracle"?" (knows the future)":""}`,
+      e.clientX,e.clientY));
+    dot.addEventListener("mouseleave",hideTT);
+  });
+}
+document.getElementById("b1Btn").addEventListener("click",()=>{budget=1;syncB();drawFrontier();});
+document.getElementById("b2Btn").addEventListener("click",()=>{budget=2;syncB();drawFrontier();});
+function syncB(){
+  document.getElementById("b1Btn").setAttribute("aria-pressed", budget===1);
+  document.getElementById("b2Btn").setAttribute("aria-pressed", budget===2);
+}
+
+/* gate quality — learned vs hand-set, grouped horizontal bars */
+const GATE = [
+  ["debate fire rate", 12.4, 23.8, "how often the gate spends a debate (lower = frugal)"],
+  ["catch rate on corrupted boards", 86.2, 78.8, "recall on genuinely poisoned beliefs (higher = safer)"],
+  ["false fires", 0.9, 15.1, "debates spent on healthy beliefs (lower = cheaper)"],
+];
+function drawGate(){
+  const W=720, H=250, m={t:8,r:70,b:30,l:230};
+  const svg = frame(document.getElementById("gateChart"), W, H);
+  const iw=W-m.l-m.r, ih=H-m.t-m.b, gh=ih/GATE.length;
+  const X = v => m.l + iw*(v/100);
+  [0,25,50,75,100].forEach(g=>{
+    el("line",{x1:X(g),x2:X(g),y1:m.t,y2:H-m.b,class:"grid"},svg);
+    el("text",{x:X(g),y:H-8,"text-anchor":"middle"},svg).textContent=g+"%";
+  });
+  GATE.forEach((d,i)=>{
+    const [name,learned,hand,note] = d;
+    const y0 = m.t + i*gh;
+    el("text",{x:m.l-10,y:y0+gh/2+4,"text-anchor":"end",class:"dlab"},svg).textContent=name;
+    [[learned,cssVar("--accent"),"learned",y0+gh*0.14],[hand,cssVar("--faint"),"hand-set",y0+gh*0.54]].forEach(([v,col,who,y])=>{
+      const h = gh*0.30;
+      const rect = el("rect",{x:X(0),y,width:Math.max(3,X(v)-X(0)),height:h,rx:3,fill:col},svg);
+      el("text",{x:X(v)+8,y:y+h/2+4,class:"dlab"},svg).textContent=v.toFixed(1)+"%";
+      rect.addEventListener("mousemove",e=>showTT(`<strong>${who}</strong> — ${name}: ${v}%<br>${note}`,e.clientX,e.clientY));
+      rect.addEventListener("mouseleave",hideTT);
+    });
+  });
+  el("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:"axis"},svg);
+}
+
+/* economy bars — single measure, single hue */
+const ECON = [
+  ["always-debate (MAD)", 7.09, "every question debated — re-buys self-consistency at 14× the price"],
+  ["Majalis · maintenance", 0.92, "repairs off the ask path: 0 ask-time debates, 112/112 correct"],
+  ["Majalis · WM-gated", 0.50, "debate fires on 7.8% of questions — same 100% accuracy"],
+];
+function drawEcon(){
+  const W=720, H=210, m={t:12,r:70,b:30,l:190};
+  const svg = frame(document.getElementById("econChart"), W, H);
+  const iw=W-m.l-m.r, ih=H-m.t-m.b, bh=ih/ECON.length;
+  const X = v => m.l + iw*(v/7.5);
+  [0,2,4,6].forEach(g=>{
+    el("line",{x1:X(g),x2:X(g),y1:m.t,y2:H-m.b,class:"grid"},svg);
+    el("text",{x:X(g),y:H-8,"text-anchor":"middle"},svg).textContent="$"+g;
+  });
+  ECON.forEach((d,i)=>{
+    const [name,v,note] = d;
+    const y = m.t + i*bh + bh*0.2, h = bh*0.55;
+    el("text",{x:m.l-10,y:y+h/2+4,"text-anchor":"end",class:"dlab"},svg).textContent=name;
+    const rect = el("rect",{x:X(0),y,width:Math.max(3,X(v)-X(0)),height:h,rx:4,fill:cssVar("--accent")},svg);
+    el("text",{x:X(v)+8,y:y+h/2+4,class:"dlab"},svg).textContent="$"+v.toFixed(2);
+    rect.addEventListener("mousemove",e=>showTT(`<strong>${name}</strong><br>$${v.toFixed(2)} per 100 questions · 100% accuracy<br>${note}`,e.clientX,e.clientY));
+    rect.addEventListener("mouseleave",hideTT);
+  });
+  el("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:"axis"},svg);
+}
+
+function drawAll(){ drawFrontier(); drawGate(); drawEcon(); }
+drawAll();
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if (matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+</script>
+</body>
+</html>

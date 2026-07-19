@@ -1,11 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 236 64" width="236" height="64" role="img" aria-label="Majalis">
-  <!-- mark: a belief board — one doubted row routed to the gate -->
-  <rect x="4" y="4" width="56" height="56" rx="14" fill="none" stroke="#3987e5" stroke-width="4.5"/>
-  <rect x="16" y="18" width="32" height="6" rx="3" fill="#3987e5"/>
-  <rect x="16" y="29" width="16" height="6" rx="3" fill="#fab219"/>
-  <path d="M42 26 l6 6 -6 6 -6 -6 z" fill="#fab219"/>
-  <rect x="16" y="40" width="32" height="6" rx="3" fill="#3987e5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 68" width="252" height="68" role="img" aria-label="Majalis">
+  <!-- logomark: a majlis circle of agents seated around a shared belief board;
+       the learned gate routes one doubted belief to debate (accent) -->
+  <g transform="translate(34,34)">
+    <!-- assembly ring -->
+    <circle cx="0" cy="0" r="24" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.32"/>
+    <!-- shared belief board -->
+    <rect x="-11" y="-10" width="22" height="20" rx="4.5" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <rect x="-7" y="-5.6" width="14" height="2.6" rx="1.3" fill="#3987e5"/>
+    <rect x="-7" y="-1" width="14" height="2.6" rx="1.3" fill="#ffffff" opacity="0.5"/>
+    <rect x="-7" y="3.6" width="9" height="2.6" rx="1.3" fill="#ffffff" opacity="0.5"/>
+    <!-- routing spoke: firing node -> board -->
+    <line x1="0" y1="-24" x2="0" y2="-10" stroke="#3987e5" stroke-width="2.4"/>
+    <!-- council nodes -->
+    <circle cx="16.97" cy="-16.97" r="3.4" fill="#ffffff"/>
+    <circle cx="24" cy="0" r="3.4" fill="#ffffff"/>
+    <circle cx="16.97" cy="16.97" r="3.4" fill="#ffffff"/>
+    <circle cx="0" cy="24" r="3.4" fill="#ffffff"/>
+    <circle cx="-16.97" cy="16.97" r="3.4" fill="#ffffff"/>
+    <circle cx="-24" cy="0" r="3.4" fill="#ffffff"/>
+    <circle cx="-16.97" cy="-16.97" r="3.4" fill="#ffffff"/>
+    <!-- firing node: the gate decides this belief is worth debating -->
+    <circle cx="0" cy="-24" r="5.4" fill="#3987e5"/>
+  </g>
   <!-- wordmark -->
-  <text x="76" y="43" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
-        font-size="34" font-weight="650" letter-spacing="0.5" fill="#ffffff">majalis</text>
+  <text x="76" y="45" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="34" font-weight="650" letter-spacing="0.3" fill="#ffffff">majalis</text>
 </svg>
