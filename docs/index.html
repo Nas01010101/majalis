@@ -128,6 +128,14 @@ button.act.danger { background:var(--bad); border-color:var(--bad); color:#fff; 
 .seg { display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-left:auto; }
 .seg button { background:none; border:none; padding:6px 14px; font:650 13px/1.4 system-ui,sans-serif; color:var(--muted); cursor:pointer; }
 .seg button[aria-pressed="true"] { background:var(--fg); color:var(--bg); }
+.legend { display:flex; gap:16px; font-size:13px; color:var(--muted); margin:8px 0 4px; flex-wrap:wrap; }
+.legend .sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:baseline; }
+table { border-collapse:collapse; width:100%; font-size:14.5px; margin-top:16px; }
+th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); }
+th { font-weight:650; font-size:13px; color:var(--muted); }
+td.num,th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.hl td { background:var(--surface); }
+.tscroll { overflow-x:auto; }
 .chart svg { display:block; width:100%; height:auto; }
 .chart text { font:400 12px/1 system-ui,sans-serif; fill:var(--faint); }
 .chart .dlab { font-weight:650; fill:var(--fg); }
@@ -193,7 +201,7 @@ footer .wrap { display:flex; justify-content:space-between; gap:24px; flex-wrap:
   The world model — trained on the society’s own logged episodes, not hand-set rules — watches the board and
   routes the expensive machinery (skeptic challenge → adjudication) only to beliefs that are probably corrupted.</p>
   <p>Everything committed <em>without</em> a debate carries a <strong>conformal guarantee</strong>:
-  E[error | accepted] ≤ α, holding empirically at 2.1% ≤ α on 1,600 held-out decisions.</p>
+  E[error | accepted] ≤ α = 5%, holding empirically at 2.1% on 1,600 held-out decisions.</p>
 </section>
 
 <section class="wrap" id="sim">
@@ -283,6 +291,39 @@ footer .wrap { display:flex; justify-content:space-between; gap:24px; flex-wrap:
   <div class="chartcard">
     <div class="cc-head">
       <div>
+        <h4>Learned gate vs the hand-set gate it replaced</h4>
+        <div class="cc-sub">100 unseen streams · 1,600 questions · zero API keys, &lt;1s · score AUROC 0.996 vs 0.921</div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--accent)"></span>learned world model</span>
+      <span><span class="sw" style="background:var(--faint)"></span>hand-set gate</span>
+    </div>
+    <div class="chart" id="gateChart"></div>
+    <p style="font-size:13.5px;margin-top:8px">The learned gate fires <strong>half as often</strong>, catches
+    <strong>more</strong> of the genuinely corrupted boards, and cuts false fires <strong>17×</strong> — and both
+    configurations still hold the conformal bound (accepted-error 2.1% vs 3.8%, each ≤ α = 5%). Same
+    features, same threshold machinery; the only change is learning P(wrong) from the society’s own
+    episodes instead of hand-setting it.</p>
+  </div>
+
+  <h3>Every arm we evaluated — nothing cherry-picked</h3>
+  <div class="tscroll"><table>
+    <tr><th>arm</th><th class="num">correct</th><th class="num">accuracy</th><th class="num">debate fire rate</th><th>note</th></tr>
+    <tr><td>single agent (re-reads stream)</td><td class="num">288/288</td><td class="num">100%</td><td class="num">—</td><td>cost grows linearly with stream length</td></tr>
+    <tr><td>society, no debate</td><td class="num">107/112</td><td class="num">95.5%</td><td class="num">0%</td><td>every miss is a rumor-poisoned belief</td></tr>
+    <tr><td>always-debate (3×3 MAD)</td><td class="num">32/32</td><td class="num">100%</td><td class="num">100%</td><td>$7.09 / 100 questions</td></tr>
+    <tr class="hl"><td><strong>WM-gated</strong> (shipped default)</td><td class="num">256/256</td><td class="num">100%</td><td class="num">7.8%</td><td>$0.50 / 100 questions, 731 tokens/q</td></tr>
+    <tr><td>WM-planned (two-branch argmax)</td><td class="num">320/320</td><td class="num">100%</td><td class="num">14.1%</td><td>null #1: no accuracy gain, 2× the spend</td></tr>
+    <tr class="hl"><td><strong>maintenance mode</strong> (live)</td><td class="num">112/112</td><td class="num">100%</td><td class="num">0% at ask time</td><td>repairs in-window, $0.92 / 100 questions</td></tr>
+  </table></div>
+  <p style="font-size:13.5px;margin-top:8px;color:var(--faint)">Arms differ in seed count (2–20 seeds — every seed
+  run is reported, none dropped); all share identical evidence streams, question sets, and a per-arm token/USD
+  ledger. Raw per-seed logs: <code>results/raw/session_*</code>.</p>
+
+  <div class="chartcard">
+    <div class="cc-head">
+      <div>
         <h4>The economy argument</h4>
         <div class="cc-sub">cost per 100 questions, all three arms at 100% accuracy on the pooled evaluation</div>
       </div>
@@ -327,7 +368,7 @@ pip install -e . && python examples/quickstart.py   # no API key needed</code></
   <div class="wrap">
     <div>
       <strong style="color:var(--fg)">Majalis</strong> · Qwen Cloud Hackathon 2026, Track 3 · MIT license<br>
-      111 tests passing · every number traces to a committed evidence artifact
+      118 tests passing · every number traces to a committed evidence artifact
     </div>
     <div style="text-align:right">
       <a href="https://github.com/Nas01010101/majalis">GitHub</a> ·
@@ -547,6 +588,36 @@ function syncB(){
   document.getElementById("b2Btn").setAttribute("aria-pressed", budget===2);
 }
 
+/* gate quality — learned vs hand-set, grouped horizontal bars */
+const GATE = [
+  ["debate fire rate", 12.4, 23.8, "how often the gate spends a debate (lower = frugal)"],
+  ["catch rate on corrupted boards", 86.2, 78.8, "recall on genuinely poisoned beliefs (higher = safer)"],
+  ["false fires", 0.9, 15.1, "debates spent on healthy beliefs (lower = cheaper)"],
+];
+function drawGate(){
+  const W=720, H=250, m={t:8,r:70,b:30,l:230};
+  const svg = frame(document.getElementById("gateChart"), W, H);
+  const iw=W-m.l-m.r, ih=H-m.t-m.b, gh=ih/GATE.length;
+  const X = v => m.l + iw*(v/100);
+  [0,25,50,75,100].forEach(g=>{
+    el("line",{x1:X(g),x2:X(g),y1:m.t,y2:H-m.b,class:"grid"},svg);
+    el("text",{x:X(g),y:H-8,"text-anchor":"middle"},svg).textContent=g+"%";
+  });
+  GATE.forEach((d,i)=>{
+    const [name,learned,hand,note] = d;
+    const y0 = m.t + i*gh;
+    el("text",{x:m.l-10,y:y0+gh/2+4,"text-anchor":"end",class:"dlab"},svg).textContent=name;
+    [[learned,cssVar("--accent"),"learned",y0+gh*0.14],[hand,cssVar("--faint"),"hand-set",y0+gh*0.54]].forEach(([v,col,who,y])=>{
+      const h = gh*0.30;
+      const rect = el("rect",{x:X(0),y,width:Math.max(3,X(v)-X(0)),height:h,rx:3,fill:col},svg);
+      el("text",{x:X(v)+8,y:y+h/2+4,class:"dlab"},svg).textContent=v.toFixed(1)+"%";
+      rect.addEventListener("mousemove",e=>showTT(`<strong>${who}</strong> — ${name}: ${v}%<br>${note}`,e.clientX,e.clientY));
+      rect.addEventListener("mouseleave",hideTT);
+    });
+  });
+  el("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:"axis"},svg);
+}
+
 /* economy bars — single measure, single hue */
 const ECON = [
   ["always-debate (MAD)", 7.09, "every question debated — re-buys self-consistency at 14× the price"],
@@ -574,7 +645,7 @@ function drawEcon(){
   el("line",{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:"axis"},svg);
 }
 
-function drawAll(){ drawFrontier(); drawEcon(); }
+function drawAll(){ drawFrontier(); drawGate(); drawEcon(); }
 drawAll();
 new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 if (matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
