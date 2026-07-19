@@ -42,7 +42,7 @@ while its cost per question stays **flat** ($0.0056) as the stream grows —
 the single agent re-reads the stream every question and grows linearly
 ($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD costs 12.6×. The shipped
 default — a learned world-model gate — is both more accurate and cheaper
-still: 240/240 correct at a flat $0.0049–0.0054/q across 8/16/32-step
+still: 448/448 correct at a flat $0.0049–0.0054/q across 8/16/32-step
 streams (2.5× under the single agent at 32 steps), with zero LLM calls to
 decide the gate. Gate parameters were tuned by a journaled, fail-closed
 keep/revert optimization loop on held-out seeds (−12%, transfers across
@@ -58,7 +58,9 @@ counterfactual (skip, debate) pairs — debate helps 4.6%, hurts 0/592 — and
 **planning in imagination**: under a zero-latency serving constraint,
 maintenance policies are auditioned entirely inside the model at $0
 (no-maintenance 92.2% → learned-risk 99.5% vs oracle 99.9%, n=1,600),
-so only the winning policy needs live spend. Two pre-registered-style
+so only the winning policy needs live spend — and it then ships live:
+`majalis-maintain` repairs boards in maintenance windows at 112/112 across
+7 seeds with **zero ask-time debates** ($0.0092/q). Two pre-registered-style
 nulls (planned gate ⊁ reactive; hazard-planning ⊁ myopic) are reported at
 the same prominence as the wins.
 
