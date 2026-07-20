@@ -68,6 +68,17 @@ so only the winning policy needs live spend — and it then ships live:
 nulls (planned gate ⊁ reactive; hazard-planning ⊁ myopic) are reported at
 the same prominence as the wins.
 
+**Originality vs the 2025–26 gating literature**: selective-debate systems — DOWN
+(arXiv:2504.05047), iMAD (arXiv:2511.11306), SELENE (EACL 2026 industry), ARMOR-MAD
+(arXiv:2606.13197) — gate per query, statelessly, on a fresh answer's confidence.
+Majalis is, to our knowledge, the first agent society whose collaboration policy is
+governed by a **learned world model of its own shared memory**: stateful (persistent
+belief board), predictive (multi-horizon hazard curves), plannable (maintenance
+policies auditioned in imagination at $0), and safe (conformal accept). That is what
+turns debate cost from a per-query discount into a **flat curve over the stream** —
+and it is the classic blackboard-architecture control problem (Hearsay-II) solved with
+a learned model instead of hand-written scheduling heuristics.
+
 **Qwen Cloud usage**: three Qwen backbones via the OpenAI-compatible API
 (model heterogeneity is the one debate lever with robust evidence —
 2502.08788's "universal antidote"); backend deployed on Alibaba Cloud ECS
