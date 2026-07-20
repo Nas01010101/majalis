@@ -35,6 +35,21 @@ sudo systemctl enable --now majalis
 curl -s localhost:8080/healthz   # {"ok": true}
 ```
 
+## Update an existing instance (redeploy current HEAD)
+
+The running instance keeps its own `.env` + `.venv`; sync only the code and
+restart — no secrets touched, no git auth needed on the box:
+
+```bash
+rsync -az --delete --exclude='.env' --exclude='.venv' --exclude='.git' \
+  --exclude='__pycache__' -e "ssh -i ~/.ssh/agora_deploy" \
+  ./ root@<instance>:/root/majalis/
+ssh -i ~/.ssh/agora_deploy root@<instance> \
+  'cd /root/majalis && .venv/bin/pip install -q -e ".[api]" && systemctl restart majalis'
+curl -s http://<instance>:8080/healthz   # {"ok": true}
+curl -s http://<instance>:8080/board -o /dev/null -w "%{http_code}\n"  # 200
+```
+
 ## Proof-of-deploy checklist (submission)
 
 1. Screen recording: ECS console showing the instance + `curl /healthz` +
