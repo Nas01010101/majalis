@@ -5,6 +5,10 @@ All offline — the society is faked; no Qwen calls.
 import importlib
 
 import pytest
+
+# fastapi is the [api] extra, not a base dep — skip this module cleanly on a bare
+# `pip install -e .` instead of failing collection for the whole suite.
+pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 
 from majalis import api

@@ -12,8 +12,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
 api = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = ["pytest>=8", "majalis[api]"]  # dev pulls the API deps so the full suite (incl. tests/test_live_api.py) runs
 
 [project.scripts]
 majalis = "majalis.cli:main"
