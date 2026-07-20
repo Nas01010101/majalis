@@ -14,7 +14,7 @@
   <p>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
     <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
-    <img src="https://img.shields.io/badge/tests-72%20passing-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-128%20passing-brightgreen" alt="Tests">
     <img src="https://img.shields.io/badge/%E9%97%A8%E6%8E%A7%E5%86%B3%E7%AD%96-0%20LLM%20%E8%B0%83%E7%94%A8-blue" alt="零调用门控">
     <img src="https://img.shields.io/badge/Qwen%20Cloud-%E8%B5%9B%E9%81%93%203%EF%BC%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%A4%BE%E4%BC%9A-8A2BE2" alt="Qwen Cloud Hackathon">
   </p>
