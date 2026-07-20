@@ -78,7 +78,11 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 - Track: 3 (Agent Society)
 - Repo: github.com/Nas01010101/majalis (public by submit; MIT LICENSE in About)
 - Architecture diagram: docs/architecture.md (+ dashboard screenshot)
-- Demo video: <3min YouTube (scripts/demo.sh flow + dashboard + bench table)
+- Demo video: <3min YouTube — preferred script: `python scripts/demo_company.py`
+  (investment-committee due-diligence: 2 companies, 8 keys, 2 rumor poisonings,
+  gate fires only on the poisoned decision keys, judge corrects by docket, final
+  GO/NO-GO from the repaired board; 7/7 correct, ~$0.05, ~2.5min wall). Fallback:
+  scripts/demo.sh flow + dashboard + bench table.
 - Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
   + /ingest + /ask from public IP; code file: src/majalis/api.py
 - Testing access: instance stays up through judging — submission deadline
