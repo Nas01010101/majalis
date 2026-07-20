@@ -15,6 +15,9 @@ dependencies = [
 dev = ["pytest>=8"]
 api = ["fastapi>=0.110", "uvicorn>=0.29"]
 
+[project.scripts]
+majalis = "majalis.cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

@@ -21,10 +21,14 @@ back** so the next question starts smarter.
 
 **Task division & roles** (track requirement a): a flash extractor structures
 evidence into the board; a max proposer answers from beliefs; a plus skeptic
-attacks doubted beliefs via binary sub-questions; a max judge adjudicates
-from the key's docket; a deterministic Python orchestrator is the only
-writer — star topology, typed artifact handoffs, no free agent-to-agent chat
-(dodges MAST's inter-agent-misalignment failure cluster, 2503.13657).
+attacks doubted beliefs by **decomposing each challenge into 2–4 binary
+sub-questions** (targets ranked by expected information gain); a max judge
+adjudicates from the key's docket; a flash planner **decomposes composite
+committee resolutions into atomic sub-checks** the orchestrator dispatches and
+aggregates (demo Act 4); a deterministic Python orchestrator is the only
+writer — star topology, typed artifact handoffs, author≠validator across
+backbones, no free agent-to-agent chat (dodges MAST's
+inter-agent-misalignment failure cluster, 2503.13657).
 
 **Disagreement resolution** (track requirement b): unreliable sources
 (rumors postdating filings) poison the board by date-supersession; the board
@@ -64,6 +68,29 @@ so only the winning policy needs live spend — and it then ships live:
 nulls (planned gate ⊁ reactive; hazard-planning ⊁ myopic) are reported at
 the same prominence as the wins.
 
+**Practical scope**: the productizable core is belief-base hygiene for ANY evolving
+corpus (knowledge bases, CRM state, threat intel): maintenance mode repairs boards in
+windows at 112/112 with zero ask-time debates ($0.0092/q), the conformal accept bound
+(E[error | committed] ≤ α) is the SLA-style guarantee platform teams can actually
+deploy against, and the live `/ingest`+`/ask` API takes any evidence stream.
+
+**Generality**: the identical society runs three domains — the synthetic
+evidence-stream benchmark families, an investment-committee due-diligence
+demo (rumor poisonings caught, planner-decomposed GO/NO-GO), and GSM8K with
+a zero-extra-call single-turn gate — re-parameterized per domain, never
+forked.
+
+**Originality vs the 2025–26 gating literature**: selective-debate systems — DOWN
+(arXiv:2504.05047), iMAD (arXiv:2511.11306), SELENE (EACL 2026 industry), ARMOR-MAD
+(arXiv:2606.13197) — gate per query, statelessly, on a fresh answer's confidence.
+Majalis is, to our knowledge, the first agent society whose collaboration policy is
+governed by a **learned world model of its own shared memory**: stateful (persistent
+belief board), predictive (multi-horizon hazard curves), plannable (maintenance
+policies auditioned in imagination at $0), and safe (conformal accept). That is what
+turns debate cost from a per-query discount into a **flat curve over the stream** —
+and it is the classic blackboard-architecture control problem (Hearsay-II) solved with
+a learned model instead of hand-written scheduling heuristics.
+
 **Qwen Cloud usage**: three Qwen backbones via the OpenAI-compatible API
 (model heterogeneity is the one debate lever with robust evidence —
 2502.08788's "universal antidote"); backend deployed on Alibaba Cloud ECS
@@ -80,8 +107,10 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 - Architecture diagram: docs/architecture.md (+ dashboard screenshot)
 - Demo video: <3min YouTube — preferred script: `python scripts/demo_company.py`
   (investment-committee due-diligence: 2 companies, 8 keys, 2 rumor poisonings,
-  gate fires only on the poisoned decision keys, judge corrects by docket, final
-  GO/NO-GO from the repaired board; 7/7 correct, ~$0.05, ~2.5min wall). Fallback:
+  gate fires only on the poisoned decision keys, skeptic decomposes each challenge
+  into binary sub-questions, judge corrects by docket, then the planner decomposes
+  the composite GO/NO-GO into 3 sub-checks the orchestrator aggregates from the
+  repaired board; 10/10 correct, ~$0.054 / 18 calls, ~3min wall). Fallback:
   scripts/demo.sh flow + dashboard + bench table.
 - Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
   + /ingest + /ask from public IP; code file: src/majalis/api.py

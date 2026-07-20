@@ -202,6 +202,21 @@ footer .wrap { display:flex; justify-content:space-between; gap:24px; flex-wrap:
   routes the expensive machinery (skeptic challenge → adjudication) only to beliefs that are probably corrupted.</p>
   <p>Everything committed <em>without</em> a debate carries a <strong>conformal guarantee</strong>:
   E[error | accepted] ≤ α = 5%, holding empirically at 2.1% on 1,600 held-out decisions.</p>
+  <div class="pipe">
+    <div class="step"><div class="n">BRIEF · DECOMPOSITION &amp; ROLES</div><div class="t">Who does what, and why</div>
+      <p>Four typed roles across <strong>three Qwen backbones</strong> — extractor, proposer, skeptic, judge —
+      author ≠ validator by construction. The skeptic decomposes every challenge into <strong>2–4 binary
+      sub-questions</strong>; a flash planner decomposes composite resolutions into sub-checks the
+      orchestrator dispatches and aggregates.</p></div>
+    <div class="step"><div class="n">BRIEF · CONFLICT RESOLUTION</div><div class="t">Disagreement, adjudicated</div>
+      <p>Rumors that displace filings are flagged by supersession; the gate <strong>mandates adjudication</strong>,
+      the judge rules from the provenance docket, and the fix is written back. Measured: the debate-ablated
+      system’s 3 errors are exactly the poisoned beliefs — gated debate corrects all 3.</p></div>
+    <div class="step"><div class="n">BRIEF · EFFICIENCY GAIN</div><div class="t">Measured, not asserted</div>
+      <p>Identical event streams, one shared token+USD ledger per arm: <strong>448/448</strong> at a flat
+      ~$0.005/q — <strong>2.5× cheaper</strong> than the single agent at 32 steps and more accurate;
+      vanilla 3×3 debate costs 12.6×.</p></div>
+  </div>
 </section>
 
 <section class="wrap" id="sim">
