@@ -54,6 +54,16 @@ wm.wrong_now(board, "acme::ceo")   # ~1.0 — a rumor displaced a filing: debate
 - **Retrain it yourself.** `python scripts/gen_wm_dataset.py && python train/train_wm.py` — ~2 min end to end (torch to train, numpy-only to serve). The replaced heuristic survives as an ablation (`MAJALIS_WM=heuristic`).
 - **Feed it your own evidence, live.** In the [society view](http://47.237.187.157:8080/live), switch to *live — try it*: paste dated evidence lines and watch the extractor build beliefs, the world model re-score them, and the gate spend debate only where P(wrong) spikes — through the real deployed society. (Anonymous callers share a small daily budget.)
 
+## Track brief → mechanism → measurement
+
+The Track 3 brief asks for three things. Each maps to a shipped mechanism and a measured number:
+
+| Brief clause | Mechanism | Measured evidence |
+|---|---|---|
+| **Task decomposition & role assignment** | Orchestrator assigns four typed roles across **three Qwen backbones** — flash extractor, max proposer, plus skeptic, max judge — with **author ≠ validator by construction** (skeptic on a different backbone). The skeptic **decomposes every challenge into 2–4 binary sub-questions** (`handoffs.Challenge.sub_questions`), debate targets are ranked by expected information gain, and the flash planner **decomposes composite committee resolutions into atomic sub-checks** ([demo Act 4](scripts/demo_company.py)). | Typed-artifact handoffs, zero free agent chat (dodges MAST's inter-agent-misalignment cluster, arXiv:2503.13657); decomposition visible and priced in the demo transcript ($0.0024/decomposition) |
+| **Disagreement & conflict resolution** | Unreliable later-dated sources displace filings by date-supersession; the board flags it, the **gate mandates adjudication** (`policy:weak-source`), the skeptic attacks and the judge resolves **from the provenance docket** under an explicit source-authority policy, and the resolution is **written back** (supersession, never deletion). A **single-writer orchestrator** makes write conflicts impossible. | The 3 residual errors of the debate-ablated system are *exactly* the rumor-poisoned beliefs; gated debate corrects all 3. Learned gate: 86.2% catch on corrupted boards at 0.9% false-fire (hand-set: 78.8% / 15.1%) |
+| **Measurable efficiency gain vs single-agent** | Every arm replays **identical event streams** under **one shared token+USD ledger** — the gain is measured, not asserted. | **448/448** correct at flat $0.0049–0.0054/q vs the single agent's linearly-growing $0.0137/q at 32 steps (**2.5× cheaper**, more accurate); vanilla 3×3 MAD costs **12.6×**; live maintenance mode: 112/112 with **zero ask-time debates** ($0.0092/q) |
+
 ## Results
 
 Session eval: evidence streams with interleaved questions and unreliable sources; every arm sees identical events, one shared token+USD ledger (5 seeds, Wilson 95% CIs).

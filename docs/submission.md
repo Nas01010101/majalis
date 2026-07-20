@@ -21,10 +21,14 @@ back** so the next question starts smarter.
 
 **Task division & roles** (track requirement a): a flash extractor structures
 evidence into the board; a max proposer answers from beliefs; a plus skeptic
-attacks doubted beliefs via binary sub-questions; a max judge adjudicates
-from the key's docket; a deterministic Python orchestrator is the only
-writer — star topology, typed artifact handoffs, no free agent-to-agent chat
-(dodges MAST's inter-agent-misalignment failure cluster, 2503.13657).
+attacks doubted beliefs by **decomposing each challenge into 2–4 binary
+sub-questions** (targets ranked by expected information gain); a max judge
+adjudicates from the key's docket; a flash planner **decomposes composite
+committee resolutions into atomic sub-checks** the orchestrator dispatches and
+aggregates (demo Act 4); a deterministic Python orchestrator is the only
+writer — star topology, typed artifact handoffs, author≠validator across
+backbones, no free agent-to-agent chat (dodges MAST's
+inter-agent-misalignment failure cluster, 2503.13657).
 
 **Disagreement resolution** (track requirement b): unreliable sources
 (rumors postdating filings) poison the board by date-supersession; the board
@@ -80,8 +84,10 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 - Architecture diagram: docs/architecture.md (+ dashboard screenshot)
 - Demo video: <3min YouTube — preferred script: `python scripts/demo_company.py`
   (investment-committee due-diligence: 2 companies, 8 keys, 2 rumor poisonings,
-  gate fires only on the poisoned decision keys, judge corrects by docket, final
-  GO/NO-GO from the repaired board; 7/7 correct, ~$0.05, ~2.5min wall). Fallback:
+  gate fires only on the poisoned decision keys, skeptic decomposes each challenge
+  into binary sub-questions, judge corrects by docket, then the planner decomposes
+  the composite GO/NO-GO into 3 sub-checks the orchestrator aggregates from the
+  repaired board; 10/10 correct, ~$0.054 / 18 calls, ~3min wall). Fallback:
   scripts/demo.sh flow + dashboard + bench table.
 - Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
   + /ingest + /ask from public IP; code file: src/majalis/api.py
