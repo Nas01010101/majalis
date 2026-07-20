@@ -160,3 +160,16 @@ def test_wmfeat_parse_and_replay_consistency():
     b = BeliefBoard()
     b.assert_fact("x::y", "v", parse_date_ord("Jan 2025"), source="Filing")
     assert len(key_features(b, "x::y")) == len(FEATURES)
+
+
+def test_sigmoid_no_overflow_on_extreme_logits():
+    # Regression: the naive 1/(1+exp(-z)) raised OverflowError for z << 0
+    # (hit in production on a large-magnitude board logit, 500ing /ask). The
+    # stable form must stay in [0,1] across the whole float range.
+    from majalis.wmnet import _sigmoid
+    for z in (-1e6, -800.0, -709.0, -1.0, 0.0, 1.0, 709.0, 800.0, 1e6):
+        p = _sigmoid(z)
+        assert 0.0 <= p <= 1.0, (z, p)
+    assert _sigmoid(-1e6) == 0.0
+    assert _sigmoid(1e6) == 1.0
+    assert abs(_sigmoid(0.0) - 0.5) < 1e-12
