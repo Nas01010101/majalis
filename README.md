@@ -167,7 +167,7 @@ ARMOR-MAD reports 96.5% on GSM8K with training-free heterogeneous-debate routing
 
 ## How it works
 
-A star-topology society on heterogeneous Qwen backbones (qwen3.7-max proposer/judge · qwen3.7-plus skeptic · qwen3.6-flash extractor, author ≠ validator) writes to a bi-temporal belief board ([tenet-memory](https://github.com/Nas01010101/tenet)); the learned world model re-scores every belief as evidence lands, a conformal gate routes commit-vs-debate, and resolved debates are written back to the board. Full details: [paper](docs/paper/majalis.pdf) · [architecture](docs/architecture.md).
+A star-topology society on heterogeneous Qwen backbones (qwen3.7-max proposer/judge · qwen3.7-plus skeptic · qwen3.6-flash extractor, author ≠ validator) writes to a bi-temporal belief board with the same keyed-supersession design as our Track 1 memory engine, [Tenet](https://github.com/Nas01010101/tenet) (an independent in-process implementation — same `entity::attribute` collision semantics, retire-never-delete); the learned world model re-scores every belief as evidence lands, a conformal gate routes commit-vs-debate, and resolved debates are written back to the board. Full details: [paper](docs/paper/majalis.pdf) · [architecture](docs/architecture.md).
 
 ## License
 
