@@ -47,6 +47,21 @@ wm = load_wm()
 wm.wrong_now(board, "acme::ceo")   # ~1.0 —— 谣言顶掉了权威公告：值得辩论
 ```
 
+## 命令行工具
+
+`pip install -e .` 会同时安装 `majalis` 命令。`majalis replay` 把一段记录下来的社会运行轨迹渲染成
+"冲突 → 共识"时间线——证据到达、信念被替换（或被弱来源污染）、门控触发并给出原因、怀疑者把挑战拆解成
+可二元判定的子问题、裁判做出裁决、修正结果写回信念板——**全程无需 API key**，使用一个确定性的示例
+文件（`examples/sample_trace.jsonl`，由 `scripts/gen_sample_trace.py` 基于真实的信念板/门控代码生成，
+不发起任何 LLM 调用）：
+
+```bash
+majalis replay examples/sample_trace.jsonl        # 带样式的终端渲染
+majalis replay examples/sample_trace.jsonl --json # 原始 JSON 记录，逐行输出
+majalis --version
+majalis demo                                      # 执行 scripts/demo_company.py —— 需要 DASHSCOPE_API_KEY
+```
+
 ## 为什么选 Majalis
 
 - **辩论是一笔开销决策。** 两个训练头——`wrong_now`：P(信念当前是错的)（AUROC **0.999 对 0.79**（被替换的手工门控）；在从未见过的**真实 LLM 信念板上 0.937**）与 `superseded_next`：P(即将被推翻)（**0.657 对 0.496 = 随机水平**的固定先验）——以 **0 次 LLM 调用**决定"直接提交还是辩论"。
