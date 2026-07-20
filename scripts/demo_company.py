@@ -118,12 +118,62 @@ MEMO_QUESTIONS = [
     Q("Q6", 'Claim: "Halcyon Systems is clear of material litigation per its '
             f'filings." {POLICY} True or false? Answer \'true\' or \'false\'.',
       "true", True, "POISONED by the SEC rumor — gate must fire, judge reverts to the filing"),
-    Q("Q7", 'GO / NO-GO: "Meridian Labs clears the committee\'s hard revenue '
-            'gate of ARR strictly above $50M, based on its filings." '
-            f"{POLICY} Answer 'true' (GO) or 'false' (NO-GO).",
-      "false", False, "final buy/pass — Q5 already REPAIRED Meridian's ARR on the shared "
-                      "board, so this rides the corrected $47M for free => NO-GO, gate shut"),
 ]
+
+# --- ACT 4: the composite resolution the orchestrator DECOMPOSES -------------
+RESOLUTION = ('Meridian Labs is INVESTABLE only if ALL of the following hold, per '
+              'its filings: (a) ARR is strictly above $50M, (b) litigation status '
+              'is clear, and (c) it has a named flagship product in market.')
+
+# criterion keyword -> (gold, note); the planner's sub-checks are matched onto
+# these so a rephrased decomposition still grades deterministically.
+CRITERIA = {
+    "arr": ("false", "rides the board Q5 already REPAIRED — the corrected $47M "
+                     "commits instantly, no second debate"),
+    "litigation": ("true", "clean filing key — instant"),
+    "product": ("true", "clean filing key (Atlas) — instant"),
+}
+
+FALLBACK_SUBCLAIMS = {
+    "arr": "Meridian Labs's ARR is strictly above $50M per its most recent filing.",
+    "litigation": "Meridian Labs's litigation status is clear per its filings.",
+    "product": "Meridian Labs has a named flagship product in market per its filings.",
+}
+
+
+def decompose_resolution(running):
+    """The orchestrator asks the flash planner to decompose the composite
+    resolution into atomic binary checks (same JSON-artifact discipline as the
+    skeptic). Falls back to the scripted decomposition if the reply doesn't map
+    1:1 onto the three criteria — the demo degrades, never breaks."""
+    from majalis.config import MODEL_FAST
+    from majalis.handoffs import parse_json_block
+    from majalis.llm import Ledger, chat
+
+    ledger = Ledger()
+    prompt = (
+        "You are the orchestrator of an investment committee. Decompose this "
+        "resolution into its atomic binary checks, one per criterion, each "
+        "answerable strictly true/false from a belief board of filed facts.\n"
+        f"Resolution: {RESOLUTION}\n\n"
+        'Return JSON only: {"sub_checks": [{"criterion": str, "claim": str}]}'
+    )
+    out = chat(MODEL_FAST, [{"role": "user", "content": prompt}],
+               ledger=ledger, temperature=0.0, max_tokens=512)
+    running["ask_cost"] += ledger.cost_usd
+    running["ask_calls"] += len(ledger.calls)
+
+    parsed = parse_json_block(out) or {}
+    checks = parsed.get("sub_checks", []) if isinstance(parsed, dict) else []
+    mapped = {}
+    for c in checks:
+        text = (str(c.get("criterion", "")) + " " + str(c.get("claim", ""))).lower()
+        for kw in CRITERIA:
+            if kw in text or (kw == "arr" and "revenue" in text):
+                mapped.setdefault(kw, str(c.get("claim", "")).strip())
+    if set(mapped) == set(CRITERIA) and all(mapped.values()):
+        return mapped, ledger.cost_usd, True
+    return dict(FALLBACK_SUBCLAIMS), ledger.cost_usd, False
 
 
 def _key_source(session, key):
@@ -179,6 +229,8 @@ def ask_and_report(session, q, running):
         if ev["kind"] == "challenge":
             print("     " + magenta("skeptic  ") + gray("attacks ")
                   + magenta(ev["key"]) + gray(": " + ev["attack"][:120]))
+            for sq in ev.get("sub_questions", []):
+                print("     " + gray("         decomposes into binary check: ") + magenta(sq[:100]))
         elif ev["kind"] == "verdict":
             if ev.get("corrected"):
                 print("     " + magenta("judge    ") + gray("rules ")
@@ -267,9 +319,41 @@ def main() -> int:
     # ------------------------------------------------------------------ ACT 3
     act("ACT 3  —  Committee memo: decision questions from the corrected board")
     note("The gate fires ONLY on the poisoned decision-critical keys; clean")
-    note("questions commit instantly. Watch the skeptic/judge repair by docket.")
+    note("questions commit instantly. Watch the skeptic/judge repair by docket —")
+    note("and the skeptic DECOMPOSE each challenge into binary sub-questions.")
     for q in MEMO_QUESTIONS:
         ask_and_report(session, q, running)
+
+    # ------------------------------------------------------------------ ACT 4
+    act("ACT 4  —  GO / NO-GO: the orchestrator decomposes the resolution")
+    print("  " + gray("RESOLUTION: ") + cyan(RESOLUTION))
+    note("The flash planner decomposes the composite resolution into atomic")
+    note("binary checks; each is answered from the SHARED board under the same")
+    note("world-model gate, then the orchestrator aggregates deterministically.")
+    subclaims, plan_cost, planner_ok = decompose_resolution(running)
+    src = "flash planner (LLM decomposition)" if planner_ok else "scripted fallback"
+    print("     " + gray(f"decomposed by {src} — ${plan_cost:.4f}:"))
+    verdicts = {}
+    for i, (kw, claim) in enumerate(sorted(subclaims.items()), start=1):
+        gold, note_ = CRITERIA[kw]
+        q = Q(f"Q7{chr(96+i)}",
+              f'Claim: "{claim}" {POLICY} True or false? '
+              "Answer 'true' or 'false'.",
+              gold, False, f"sub-check ({kw}) — {note_}")
+        r = ask_and_report(session, q, running)
+        ans = r.answer.strip().lower()
+        verdicts[kw] = "true" in ans and "false" not in ans
+    final = "GO" if all(verdicts.values()) else "NO-GO"
+    expected_final = "NO-GO"  # the repaired $47M ARR fails check (a)
+    okf = final == expected_final
+    print()
+    print("     " + gray("orchestrator aggregates (ALL must hold): ")
+          + (red(bold(final)) if final == "NO-GO" else green(bold(final)))
+          + (green("  PASS") if okf else red("  FAIL"))
+          + gray(f"  (expected {expected_final} — the repaired $47M ARR fails check (a))"))
+    running["results"].append({
+        "label": "Q7", "fired": False, "must_fire": False,
+        "pass": okf, "answer": final, "gold": expected_final})
 
     # ------------------------------------------------------------------ MEMO
     act("COMMITTEE MEMO  —  final answers from the adjudicated board")

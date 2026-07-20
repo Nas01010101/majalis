@@ -172,7 +172,8 @@ def run_majalis(task: Task, *, seed: int = 0,
             # model heterogeneity is the one debate lever with robust evidence
             # (arXiv:2502.08788 calls it the "universal antidote").
             challenge = skeptic_challenge(task, board, key, proposal, ledger, MODEL_MID)
-            trace.log("challenge", key=key, attack=challenge.attack[:200])
+            trace.log("challenge", key=key, attack=challenge.attack[:200],
+                      sub_questions=list(challenge.sub_questions))
             verdict = adjudicate(task, board, proposal, challenge, ledger, model_strong)
             trace.log("verdict", key=key, upheld=verdict.upheld,
                       corrected=verdict.corrected_value)
@@ -324,7 +325,8 @@ class MajalisSession:
             for key in targets:
                 challenge = skeptic_challenge(task, board, key, proposal,
                                               ledger, MODEL_MID)
-                trace.log("challenge", key=key, attack=challenge.attack[:200])
+                trace.log("challenge", key=key, attack=challenge.attack[:200],
+                          sub_questions=list(challenge.sub_questions))
                 verdict = adjudicate(task, board, proposal, challenge,
                                      ledger, self.model_strong)
                 trace.log("verdict", key=key, upheld=verdict.upheld,
