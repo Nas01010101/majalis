@@ -6,6 +6,10 @@
 
 ## Description (paste into Devpost)
 
+*Majalis is an original project built new during the Hackathon Submission Period — the society,
+the learned world model, the benchmarks, and the Alibaba Cloud ECS deployment were all created
+for this entry.*
+
 Multi-agent debate has a dirty secret: on a single backbone it mostly re-buys
 self-consistency at 10× the cost (arXiv:2502.08788, 2604.02460). Majalis is a
 society of heterogeneous Qwen agents (qwen3.7-max / plus / 3.6-flash) whose
@@ -113,7 +117,9 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
   the composite GO/NO-GO into 3 sub-checks the orchestrator aggregates from the
   repaired board; 10/10 correct, ~$0.054 / 18 calls, ~3min wall). Fallback:
   scripts/demo.sh flow + dashboard + bench table.
-- Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
-  + /ingest + /ask from public IP; code file: src/majalis/api.py
+- Proof of AliCloud deploy (the rules require ONLY a code-file link): `src/majalis/llm.py`
+  (calls Qwen on `dashscope-intl.aliyuncs.com` via `DASHSCOPE_API_KEY`) + `src/majalis/api.py`
+  (the ECS-hosted backend). Optional extra credibility, not required: a short recording of the
+  ECS console + `curl /healthz` + `/ingest` + `/ask` from the public IP (47.237.187.157:8080).
 - Testing access: instance stays up through judging — submission deadline
   Jul 20, 2026 2:00pm PT; judging period ends Aug 11, 2026 2:00pm PT
