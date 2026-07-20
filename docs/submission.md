@@ -34,9 +34,9 @@ inter-agent-misalignment failure cluster, 2503.13657).
 (rumors postdating filings) poison the board by date-supersession; the board
 flags the displacement, the gate mandates adjudication, and the judge
 resolves the conflict from the docket under an explicit source-authority
-policy — then supersedes the belief. Measured: the 3 residual errors in the
-debate-ablated system are exactly the rumor-poisoned beliefs; gated debate
-corrects all 3.
+policy — then supersedes the belief. Measured: the 5 residual errors in the
+debate-ablated system (107/112 over 7 seeds) are exactly the rumor-poisoned
+beliefs; every gated/maintained arm corrects all 5.
 
 **Measurable efficiency gain** (track requirement c, one command, Wilson 95%
 CIs, identical events + shared token/USD ledger per arm): on evidence streams
@@ -44,7 +44,8 @@ with interleaved questions, Majalis (heuristic gate) is within one question
 of single-agent and vanilla-MAD accuracy (303/304, vs 272/272 and 32/32)
 while its cost per question stays **flat** ($0.0056) as the stream grows —
 the single agent re-reads the stream every question and grows linearly
-($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD costs 12.6×. The shipped
+($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD costs 12.6× the heuristic-gate
+arm (more still vs the learned default it ships). The shipped
 default — a learned world-model gate — is both more accurate and cheaper
 still: 448/448 correct at a flat $0.0049–0.0054/q across 8/16/32-step
 streams (2.5× under the single agent at 32 steps), with zero LLM calls to
