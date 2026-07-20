@@ -2,11 +2,13 @@
 """Generate examples/sample_trace.jsonl — a deterministic, zero-LLM-call
 Majalis run for `majalis replay` to render with no API key required.
 
-Perception (belief-board asserts/supersessions) and risk scoring run through
-the REAL board + gate math (majalis.beliefs, majalis.wm) so the numbers a
-judge sees are genuine, not fabricated. Only the role *dialogue* — proposer/
-skeptic/judge text, which normally comes from a Qwen call — is scripted, the
-same way tests/test_society.py stubs chat() with canned strings. Condenses
+Belief-board asserts/supersessions, the per-key risk score, AND the gate's
+fire/no-fire decision all run through the REAL board + gate math
+(majalis.beliefs.assert_fact/doubt/weak_current, majalis.wm.risk_score + the
+AcceptGate accept floor) so every number a judge sees is genuine, not
+fabricated. Only the role *dialogue* — proposer/skeptic/judge text, which
+normally comes from a Qwen call — is scripted, the same way
+tests/test_society.py stubs chat() with canned strings. Condenses
 the demo_company.py story (rumor-poisoned ARR belief, gate fires, skeptic
 decomposes, judge repairs) into a single committed fixture.
 
@@ -47,6 +49,19 @@ def assert_batch(board: BeliefBoard, lines: list[dict]) -> list[dict]:
     return out
 
 
+def clean_gate(board: BeliefBoard, key: str, confidence: float = 0.9) -> GateDecision:
+    """The gate decision for a non-weak key, computed the way wm.AcceptGate.decide
+    does on its no-sampler path: p_wrong = risk_score(board doubt, no disagreement,
+    proposer confidence), fire iff the uncalibrated accept floor (0.35) is breached.
+    No hardcoded p_wrong, no LLM call — real board doubt through the real risk math."""
+    doubt = board.doubt(key)
+    p_wrong = risk_score(doubt, disagreement=0.0, confidence=confidence,
+                         weak_current=False)
+    return GateDecision(fire=not (p_wrong < 0.35), p_wrong=round(p_wrong, 3),
+                        disagreement=0.0, max_doubt=round(doubt, 3),
+                        reason="uncalibrated-floor(0.35)", weak_current=False)
+
+
 def main() -> None:
     board = BeliefBoard()
     records: list[dict] = [{"type": "act", "title": (
@@ -71,9 +86,10 @@ def main() -> None:
                               f"{ln['attr']} is {ln['value']}." for ln in round1],
                     "asserts": asserts1, "board": board_snapshot(board, keys)})
 
-    # Clean question — board is clean, gate stays shut.
-    q1_gate = GateDecision(fire=False, p_wrong=0.02, disagreement=0.0, max_doubt=0.02,
-                           reason="uncalibrated-floor(0.35)", weak_current=False)
+    # Clean question — board is clean, gate stays shut. The fire/no-fire and
+    # p_wrong are COMPUTED by the real gate math (risk_score + the uncalibrated
+    # accept floor from wm.AcceptGate.decide), not narrated — same as q2 below.
+    q1_gate = clean_gate(board, BeliefBoard.make_key("Halcyon Systems", "arr"))
     records.append({
         "type": "question", "task_id": "Q1",
         "question": "Claim: \"Halcyon Systems's current ARR is above $50M.\" True or false?",
@@ -130,9 +146,8 @@ def main() -> None:
         "board": board_snapshot(board, [arr_key]),
     })
 
-    # Repeat question — the repaired belief now commits for free.
-    q3_gate = GateDecision(fire=False, p_wrong=0.03, disagreement=0.0, max_doubt=0.03,
-                           reason="uncalibrated-floor(0.35)", weak_current=False)
+    # Repeat question — the repaired belief now commits for free (computed).
+    q3_gate = clean_gate(board, arr_key)
     records.append({
         "type": "question", "task_id": "Q3",
         "question": ("Claim: \"Meridian Labs's ARR is above $50M per its most "

@@ -6,6 +6,10 @@
 
 ## Description (paste into Devpost)
 
+*Majalis is an original project built new during the Hackathon Submission Period — the society,
+the learned world model, the benchmarks, and the Alibaba Cloud ECS deployment were all created
+for this entry.*
+
 Multi-agent debate has a dirty secret: on a single backbone it mostly re-buys
 self-consistency at 10× the cost (arXiv:2502.08788, 2604.02460). Majalis is a
 society of heterogeneous Qwen agents (qwen3.7-max / plus / 3.6-flash) whose
@@ -34,9 +38,9 @@ inter-agent-misalignment failure cluster, 2503.13657).
 (rumors postdating filings) poison the board by date-supersession; the board
 flags the displacement, the gate mandates adjudication, and the judge
 resolves the conflict from the docket under an explicit source-authority
-policy — then supersedes the belief. Measured: the 3 residual errors in the
-debate-ablated system are exactly the rumor-poisoned beliefs; gated debate
-corrects all 3.
+policy — then supersedes the belief. Measured: the 5 residual errors in the
+debate-ablated system (107/112 over 7 seeds) are exactly the rumor-poisoned
+beliefs; every gated/maintained arm corrects all 5.
 
 **Measurable efficiency gain** (track requirement c, one command, Wilson 95%
 CIs, identical events + shared token/USD ledger per arm): on evidence streams
@@ -44,7 +48,8 @@ with interleaved questions, Majalis (heuristic gate) is within one question
 of single-agent and vanilla-MAD accuracy (303/304, vs 272/272 and 32/32)
 while its cost per question stays **flat** ($0.0056) as the stream grows —
 the single agent re-reads the stream every question and grows linearly
-($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD costs 12.6×. The shipped
+($0.0137 at 32 steps, 2.4×); vanilla 3×3 MAD costs 12.6× the heuristic-gate
+arm (more still vs the learned default it ships). The shipped
 default — a learned world-model gate — is both more accurate and cheaper
 still: 448/448 correct at a flat $0.0049–0.0054/q across 8/16/32-step
 streams (2.5× under the single agent at 32 steps), with zero LLM calls to
@@ -112,7 +117,9 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
   the composite GO/NO-GO into 3 sub-checks the orchestrator aggregates from the
   repaired board; 10/10 correct, ~$0.054 / 18 calls, ~3min wall). Fallback:
   scripts/demo.sh flow + dashboard + bench table.
-- Proof of AliCloud deploy: separate recording — ECS console + curl /healthz
-  + /ingest + /ask from public IP; code file: src/majalis/api.py
+- Proof of AliCloud deploy (the rules require ONLY a code-file link): `src/majalis/llm.py`
+  (calls Qwen on `dashscope-intl.aliyuncs.com` via `DASHSCOPE_API_KEY`) + `src/majalis/api.py`
+  (the ECS-hosted backend). Optional extra credibility, not required: a short recording of the
+  ECS console + `curl /healthz` + `/ingest` + `/ask` from the public IP (47.237.187.157:8080).
 - Testing access: instance stays up through judging — submission deadline
   Jul 20, 2026 2:00pm PT; judging period ends Aug 11, 2026 2:00pm PT

@@ -30,7 +30,7 @@ abstract: |
   does not beat, the reactive threshold (an honest null; the reactive gate
   is 2× more debate-frugal at equal accuracy). A calibrated multi-horizon
   hazard curve gives the model a rollout, and maintenance policies audited
-  **entirely in imagination** (zero API) close 96% of the
+  **entirely in imagination** (zero API) close 95% of the
   no-maintenance→oracle gap under zero-latency serving. End-to-end, the society matches a
   single agent's accuracy (single: 480/480; heuristic gate: 303/304, one
   miss; learned gate: 448/448; planned gate: 320/320; zero-latency
@@ -50,7 +50,7 @@ abstract: |
   **零 LLM 调用**。在留出流上，学习门控以 12.4% 的触发率捕获 86.2% 的
   被污染信念（误触发 0.9%），全面优于其替代的手工门控（23.8% / 78.8% /
   15.1%）；被替换的固定参数生存先验仅达随机水平（AUROC 0.496 对 0.657）。
-  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 96% 的无维护→神谕差距；获胜策略已真实落地（majalis-maintain 模式）：7 个种子 112/112 全对，问答路径零辩论延迟。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
+  对 592 组（跳过, 辩论）配对反事实的挖掘表明：辩论纠正 4.6% 的答案且从不帮倒忙；基于该模型的双分支规划门控与反应式阈值准确率持平（诚实的零结果，反应式门控辩论开销低 2 倍）。多时域风险曲线赋予模型可展开的前向动态；维护策略完全在想象中评估（零 API 成本），在零延迟服务约束下弥合 95% 的无维护→神谕差距；获胜策略已真实落地（majalis-maintain 模式）：7 个种子 112/112 全对，问答路径零辩论延迟。端到端准确率与单智能体持平，而每问成本在流长度上保持平坦（$0.0049–
   0.0054/问），单智能体则线性增长（32 步时 $0.0137/问）；朴素 3×3 辩论
   成本高出 12.6 倍。全部实验基于 Qwen Cloud，代码与种子可完整复现。
 ---
@@ -468,7 +468,7 @@ zero LLM calls — on 100 held-out streams (seeds 5000–5099, n = 1,600):
 | hazard-discounted planned repair | 99.5% | [99.0, 99.7] |
 | oracle (labels) | 99.9% | [99.5, 100] |
 
-Learned-risk maintenance closes **96% of the no-maintenance→oracle gap**
+Learned-risk maintenance closes **95% of the no-maintenance→oracle gap**
 using 2.8× more repairs than the oracle needs — and the entire policy
 comparison cost nothing, which is precisely the world-model dividend:
 candidate policies are auditioned in imagination, and only the winner needs

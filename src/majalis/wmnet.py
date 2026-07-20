@@ -64,7 +64,14 @@ class LearnedWM:
 
 
 def _sigmoid(z: float) -> float:
-    return 1.0 / (1.0 + math.exp(-z))
+    # Numerically stable: the naive 1/(1+exp(-z)) overflows for z << 0
+    # (math.exp(-z) blows past the float range around z < -709, raising
+    # OverflowError). A large-magnitude logit off a real board hit exactly that
+    # in production. Split by sign so the exponent argument is always <= 0.
+    if z >= 0.0:
+        return 1.0 / (1.0 + math.exp(-z))
+    ez = math.exp(z)
+    return ez / (1.0 + ez)
 
 
 _cached: LearnedWM | None = None
