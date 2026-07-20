@@ -68,6 +68,12 @@ so only the winning policy needs live spend — and it then ships live:
 nulls (planned gate ⊁ reactive; hazard-planning ⊁ myopic) are reported at
 the same prominence as the wins.
 
+**Generality**: the identical society runs three domains — the synthetic
+evidence-stream benchmark families, an investment-committee due-diligence
+demo (rumor poisonings caught, planner-decomposed GO/NO-GO), and GSM8K with
+a zero-extra-call single-turn gate — re-parameterized per domain, never
+forked.
+
 **Originality vs the 2025–26 gating literature**: selective-debate systems — DOWN
 (arXiv:2504.05047), iMAD (arXiv:2511.11306), SELENE (EACL 2026 industry), ARMOR-MAD
 (arXiv:2606.13197) — gate per query, statelessly, on a fresh answer's confidence.
