@@ -68,6 +68,12 @@ so only the winning policy needs live spend — and it then ships live:
 nulls (planned gate ⊁ reactive; hazard-planning ⊁ myopic) are reported at
 the same prominence as the wins.
 
+**Practical scope**: the productizable core is belief-base hygiene for ANY evolving
+corpus (knowledge bases, CRM state, threat intel): maintenance mode repairs boards in
+windows at 112/112 with zero ask-time debates ($0.0092/q), the conformal accept bound
+(E[error | committed] ≤ α) is the SLA-style guarantee platform teams can actually
+deploy against, and the live `/ingest`+`/ask` API takes any evidence stream.
+
 **Generality**: the identical society runs three domains — the synthetic
 evidence-stream benchmark families, an investment-committee due-diligence
 demo (rumor poisonings caught, planner-decomposed GO/NO-GO), and GSM8K with

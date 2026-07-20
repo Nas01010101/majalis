@@ -72,6 +72,20 @@ majalis demo                                      # execs scripts/demo_company.p
 - **One society, three domains.** The same roles + board + world model run (1) the synthetic evidence-stream benchmark families, (2) an investment-committee due-diligence scenario ([`scripts/demo_company.py`](scripts/demo_company.py): rumor poisonings caught by the gate, a planner-decomposed GO/NO-GO), and (3) GSM8K with a zero-extra-call single-turn gate — re-parameterized per domain, never forked.
 - **Not another per-query debate-gater.** The 2025–26 gating literature — DOWN (arXiv:2504.05047), iMAD (arXiv:2511.11306), SELENE (EACL 2026), ARMOR-MAD (arXiv:2606.13197) — decides *per question, statelessly*, from the confidence of a fresh answer. Majalis gates on the **state of a persistent shared memory**: the world model estimates which *beliefs* are wrong now, forecasts which will be overturned next (multi-horizon hazards), auditions maintenance policies entirely in imagination, and controls the *commit* decision with a conformal guarantee. That's why its cost curve is **flat in stream length** rather than a percentage discount per query — and it is the classic **blackboard-architecture control problem** (Hearsay-II, 1970s: *which knowledge source should fire next?*) answered with a learned world model instead of hand-written scheduling rules.
 
+## What you'd use it for
+
+Majalis is not a benchmark toy — it's the general recipe for **keeping any evolving belief
+base correct at a cost that doesn't grow with the stream**. Every pattern maps to a shipped,
+measured surface:
+
+| You're running | The failure Majalis removes | Shipped, measured surface |
+|---|---|---|
+| A knowledge base / wiki / CRM fed by streams | stale or rumor-displaced facts served as truth | maintenance mode: `majalis-maintain` repairs boards in windows — **112/112, zero ask-time debates, $0.0092/q** |
+| Due-diligence, fact-checking, threat-intel triage | conflicting sources resolved by vibes | gate + docket adjudication: **86.2% corruption catch at 0.9% false-fire**; committee demo end-to-end |
+| Any multi-agent deployment with a token budget | debate cost scaling with usage | flat **$0.005/q** at 448/448 vs single-agent's linear growth (2.5× at 32 steps); vanilla MAD 12.6× |
+| A pipeline that must bound its error rate | "the LLM seemed confident" as QA | conformal accept: **E[error \| committed] ≤ α**, checked empirically (2.1% ≤ 5% on n=1,600) |
+| Your own evidence stream | all of the above, but yours | live `/ingest` + `/ask` API + society view on the deployed box; `majalis replay` for any recorded run |
+
 ## Track brief → mechanism → measurement
 
 The Track 3 brief asks for three things. Each maps to a shipped mechanism and a measured number:
