@@ -1,0 +1,33 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: install (package + dev/api extras)
+        run: pip install -e ".[dev]"
+      - name: pytest (deterministic; LLM calls mocked, no API key needed)
+        run: pytest -q
+
+  install-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: pip install -e . in a clean env
+        run: pip install -e .
+      - name: import + console entry-point smoke
+        run: |
+          python -c "import majalis; from majalis.beliefs import BeliefBoard"
+          majalis --help

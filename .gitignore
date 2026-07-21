@@ -32,3 +32,5 @@ data/wm_*.npz
 web/vendor/
 scratchpad/
 .autoresearch/
+docs/DEVPOST_FORM.md
+uv.lock
