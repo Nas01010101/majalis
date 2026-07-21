@@ -6,6 +6,21 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Anas", email = "anaselghoudane@gmail.com" }]
+keywords = [
+    "multi-agent", "agent-society", "world-model", "conformal-prediction",
+    "llm", "qwen", "debate", "calibration",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "openai>=1.40",
     "numpy>=1.26",
@@ -14,6 +29,11 @@ dependencies = [
 [project.optional-dependencies]
 api = ["fastapi>=0.110", "uvicorn>=0.29"]
 dev = ["pytest>=8", "majalis[api]"]  # dev pulls the API deps so the full suite (incl. tests/test_live_api.py) runs
+
+[project.urls]
+Homepage = "https://github.com/Nas01010101/majalis"
+Repository = "https://github.com/Nas01010101/majalis"
+Issues = "https://github.com/Nas01010101/majalis/issues"
 
 [project.scripts]
 majalis = "majalis.cli:main"

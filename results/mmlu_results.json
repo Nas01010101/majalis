@@ -1,0 +1,43 @@
+{
+  "arms": {
+    "single": {
+      "n": 150,
+      "correct": 144,
+      "accuracy": 0.96,
+      "wilson_95_ci": [
+        0.9155,
+        0.9815
+      ],
+      "mean_calls_per_q": 1.0,
+      "mean_cost_usd_per_q": 0.009158,
+      "total_cost_usd": 1.3738,
+      "gate_fire_rate": null
+    },
+    "majalis-gated": {
+      "n": 150,
+      "correct": 145,
+      "accuracy": 0.9667,
+      "wilson_95_ci": [
+        0.9243,
+        0.9857
+      ],
+      "mean_calls_per_q": 1.053,
+      "mean_cost_usd_per_q": 0.009421,
+      "total_cost_usd": 1.4131,
+      "gate_fire_rate": 0.0133
+    },
+    "mad": {
+      "n": 150,
+      "correct": 145,
+      "accuracy": 0.9667,
+      "wilson_95_ci": [
+        0.9243,
+        0.9857
+      ],
+      "mean_calls_per_q": 6.0,
+      "mean_cost_usd_per_q": 0.056132,
+      "total_cost_usd": 8.4198,
+      "gate_fire_rate": null
+    }
+  }
+}

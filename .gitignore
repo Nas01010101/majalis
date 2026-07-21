@@ -31,3 +31,4 @@ results/raw/*
 data/wm_*.npz
 web/vendor/
 scratchpad/
+.autoresearch/
