@@ -18,7 +18,6 @@ GATE_* constants and `_gate_decide` docstring for exactly what it sees.
 from __future__ import annotations
 
 import re
-from collections import Counter
 from dataclasses import dataclass
 
 from ..config import MODEL_FAST, MODEL_MID, MODEL_STRONG

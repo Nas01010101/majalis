@@ -14,7 +14,7 @@
   <p>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
     <img src="https://img.shields.io/badge/python-3.11%2B-blue" alt="Python 3.11+">
-    <img src="https://img.shields.io/badge/tests-129%20passing-brightgreen" alt="Tests">
+    <img src="https://img.shields.io/badge/tests-148%20passing-brightgreen" alt="Tests">
     <img src="https://img.shields.io/badge/gate%20decision-0%20LLM%20calls-blue" alt="Zero-call gate">
     <img src="https://img.shields.io/badge/Qwen%20Cloud-Track%203%3A%20Agent%20Society-8A2BE2" alt="Qwen Cloud Hackathon">
   </p>
@@ -176,17 +176,21 @@ the gate is allowed to see).
 | arm | n | accuracy (Wilson 95%) | calls/q | $/q | gate fires |
 |---|---|---|---|---|---|
 | single (qwen3.7-max, one-shot CoT) | 1,319 (full test set) | **1289/1319 = 97.7%** [96.8%, 98.4%] | 1.0 | $0.004372 | n/a |
-| majalis-gated | 700 (budget-capped subset, same fixed question order, a strict prefix of the 1,319 above) | **688/700 = 98.3%** [97.0%, 99.0%] | 1.051 | $0.004707 | 0.71% (5/700) |
+| majalis-gated | 1,319 (full test set) | **1292/1319 = 98.0%** [97.0%, 98.6%] | 1.047 | $0.004651 | 0.68% (9/1319) |
 
-Of the 5 questions the gate fired on (all triggered by k=2 self-consistency
-disagreement, never by low verbalized confidence alone), the debate
-corrected 4 to the right answer and left 1 still wrong, directionally the
-same story as the session eval (targeted debate on genuinely uncertain
-cases pays for itself), at a much lower fire rate: GSM8K questions are
-mostly easy for qwen3.7-max, so the honest single-turn gate mostly takes
-its zero-extra-call fast path. `majalis-gated`'s n=700 is a deliberate stop
-under a hard, real-money spend cap, not an interrupted run. See
-`results/gsm8k_results.json` and `results/gsm8k_spend_state.json` for the
+Both arms now cover the full test set. The gate fired on 9 of 1,319
+questions (8 triggered by k=2 self-consistency disagreement, 1 by low
+verbalized confidence); a further 13 questions paid only the cheap
+tiebreaker sample and were accepted without debate. On those 9 fired
+questions the debate corrected 4 answers and broke 1, a net +3, which is
+exactly the 1289 to 1292 difference between the two arms. That is the same
+story as the session eval (targeted debate on genuinely uncertain cases
+pays for itself) at a much lower fire rate: GSM8K questions are mostly easy
+for qwen3.7-max, so the honest single-turn gate mostly takes its
+zero-extra-call fast path. The accuracy gap is within noise, so the honest
+reading is that the gate matches a strong single agent while spending
+almost nothing extra, not that it beats it. See
+`results/gsm8k_results.json` and `results/raw/gsm8k_*_s0.jsonl` for the
 exact accounting.
 
 ```bash
@@ -197,6 +201,37 @@ exact accounting.
 ARMOR-MAD reports 96.5% on GSM8K with training-free heterogeneous-debate routing (arXiv:2606.13197); a Wald-SPRT compute governor reaches 97.0% at 4.06 calls/q versus 99.0% for fixed-5-round debate at 15 calls/q, a 3.7× call reduction for −2pp accuracy (arXiv:2605.19193); iMAD's debate-worth classifier cuts tokens 68–92% versus standard MAD while matching or beating its accuracy (arXiv:2511.11306). **Caveat: these numbers come from different model backbones and agent-team sizes than ours, so treat them as same-dataset reference points, not apples-to-apples comparisons.**
 
 **BrowseConf baseline (implemented, not run live).** Qwen's own confidence-guided test-time-scaling work, BrowseConf (arXiv:2510.23458; note: the task brief's arXiv:2510.24698 is a different paper, "ParallelMuse", corrected here after checking the abstract), reports a strong confidence/accuracy cliff for web agents (near-zero accuracy below ~70% verbalized confidence, 2×+ the average above ~95%) and gates re-attempts on a dedicated confidence call rather than reusing the answering call's own confidence. `src/majalis/bench/gsm8k.py::browseconf_arm` implements this as a baseline gate (confidence from a **separate** cheap call, below 0.70 triggers the same skeptic/judge debate) as a direct point of comparison against `majalis-gated`'s free (zero-extra-call) confidence signal. It is covered by stubbed unit tests (`tests/test_gsm8k.py`) but was not run against live Qwen calls in this pass: a budget directive stopped further live spend once the two arms above completed (total measured spend $9.06 of the $12/$15 caps).
+
+## MMLU: is a full debate ever worth its cost?
+
+GSM8K answers whether the gate keeps up with a single agent. It does not
+answer the question a judge actually cares about: **would you have been
+better off just running a normal multi-agent debate?** So on MMLU we add a
+third arm, a vanilla homogeneous 3-agent 2-round debate (`mad`), and pay
+for it in full. 150 questions across six reasoning-heavy subjects
+(high-school and college mathematics, high-school physics, formal logic,
+logical fallacies, professional law), same qwen3.7-max backbone.
+
+| arm | n | accuracy (Wilson 95%) | calls/q | $/q | total $ | gate fires |
+|---|---|---|---|---|---|---|
+| single | 150 | **144/150 = 96.0%** [91.6%, 98.2%] | 1.0 | $0.009158 | $1.37 | n/a |
+| majalis-gated | 150 | **145/150 = 96.7%** [92.4%, 98.6%] | 1.053 | $0.009421 | $1.41 | 1.33% (2/150) |
+| mad (vanilla 3x2 debate) | 150 | **145/150 = 96.7%** [92.4%, 98.6%] | 6.0 | $0.056132 | $8.42 | always |
+
+**Vanilla debate buys no accuracy over the cheap gate, at 6x the cost.**
+Both reach 96.7%; the gate gets there paying for debate on barely one
+question in eighty, while `mad` debates all 150 and spends $8.42 against
+$1.41. This is the honest headline of the whole project: on a strong
+backbone, debate is rarely worth it, and the contribution is knowing
+*when* to spend it rather than winning a raw accuracy race. The three arms
+are within each other's confidence intervals, so we claim a cost result,
+not an accuracy result.
+
+```bash
+.venv/bin/python scripts/mmlu_bench.py --arms single,majalis-gated,mad --n 150
+```
+
+See `results/mmlu_results.json` for the exact accounting.
 
 ## How it works
 

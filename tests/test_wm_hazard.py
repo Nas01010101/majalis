@@ -52,7 +52,6 @@ def test_imagine_plan_oracle_dominates_and_none_floors():
 
 def test_imagine_plan_repair_writes_truth():
     """A repaired key must afterwards hold the generator's gold value."""
-    import imagine_plan as ip
     from majalis.wmfeat import parse_line
     from majalis.beliefs import parse_date_ord
     board = BeliefBoard()

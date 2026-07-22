@@ -9,7 +9,6 @@ from __future__ import annotations
 import json
 
 from majalis import society
-from majalis.beliefs import BeliefBoard
 from majalis.society import MajalisSession
 
 
