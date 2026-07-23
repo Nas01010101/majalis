@@ -47,7 +47,7 @@ pre code{ background:none; border:none; padding:0; color:inherit; }
 .wrap{ max-width:1120px; margin:0 auto; padding:0 var(--sp-5); }
 .prose{ max-width:66ch; }
 h1,h2,h3,h4{ font-family:var(--serif); font-weight:600; line-height:1.15; color:var(--fg); }
-section{ padding:var(--sp-9) 0; border-top:1px solid var(--line-soft); position:relative; }
+section{ padding:var(--sp-9) 0; border-top:1px solid var(--line-soft); position:relative; overflow-x:clip; }
 .eyebrow{ font:600 12px/1 var(--mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--teal-bright); margin-bottom:var(--sp-3); display:flex; align-items:center; gap:10px; }
 .eyebrow .rule{ width:28px; height:1px; background:var(--gold-dim); display:inline-block; }
 h2.h-title{ font-size:clamp(28px,4vw,42px); max-width:22ch; margin-bottom:var(--sp-4); }
@@ -142,6 +142,17 @@ p.hero-sub{ font-size:clamp(16px,1.9vw,19.5px); color:var(--fg-dim); max-width:5
 .nulls p{ color:var(--fg-dim); font-size:14.5px; line-height:1.65; max-width:70ch; }
 .nulls p + p{ margin-top:10px; }
 
+/* ============ demo cards ============ */
+.demo-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:var(--sp-4); margin-top:var(--sp-6); }
+.dcard{ display:block; background:var(--ink-2); border:1px solid var(--line); border-radius:var(--r); padding:var(--sp-5); color:inherit; transition:border-color 160ms, transform 160ms, background 160ms; }
+.dcard:hover{ text-decoration:none; border-color:var(--gold-dim); background:var(--ink-3); transform:translateY(-2px); }
+.dcard:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; }
+.dcard .dk{ font:600 11px var(--mono); letter-spacing:0.1em; text-transform:uppercase; color:var(--teal-bright); }
+.dcard h4{ font-size:17.5px; margin:8px 0 8px; color:var(--fg); }
+.dcard h4 code{ font-size:0.9em; }
+.dcard p{ font-size:13.5px; color:var(--muted); line-height:1.6; }
+.dcard p em{ color:var(--fg-dim); }
+
 /* ============ interactive belief widget ============ */
 .widget{ background:var(--ink-2); border:1px solid var(--line); border-radius:var(--r); padding:var(--sp-5); margin-top:var(--sp-6); }
 .widget-grid{ display:grid; grid-template-columns:minmax(280px,1.1fr) minmax(220px,0.9fr); gap:var(--sp-5); }
@@ -210,6 +221,7 @@ tr.hl td:first-child{ border-left:2px solid var(--teal); }
 .blog p strong{ color:var(--fg); }
 .byline-block{ display:flex; align-items:center; gap:12px; margin-bottom:var(--sp-6); font-size:13.5px; color:var(--muted); }
 .byline-block .dot{ width:5px; height:5px; border-radius:50%; background:var(--faint); }
+.blog .pull{ font-family:var(--serif); font-style:italic; font-size:20px; line-height:1.5; color:var(--gold-bright); border-left:2px solid var(--gold-dim); padding:4px 0 4px 20px; margin:var(--sp-5) 0; }
 
 /* ============ limits ============ */
 .limit-list{ margin-top:var(--sp-5); display:grid; gap:var(--sp-3); }
@@ -241,13 +253,14 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
       Majalis
     </a>
     <div class="navlinks">
-      <a href="#thesis">Thesis</a>
+      <a href="#thesis" class="opt">Thesis</a>
       <a href="#society" class="opt">Society</a>
       <a href="#worldmodel">World model</a>
+      <a href="#demo">Live demo</a>
       <a href="#results">Results</a>
-      <a href="#blog" class="opt">Field notes</a>
+      <a href="#blog" class="opt">Blog</a>
       <a href="#limits" class="opt">Limits</a>
-      <a href="#cite" class="opt">Cite</a>
+      <a href="#paper">Paper</a>
       <a class="gh" href="https://github.com/Nas01010101/majalis">GitHub</a>
     </div>
   </div>
@@ -262,13 +275,11 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
         <div class="hero-kicker"><b>مجلس</b> (majlis): an assembly, a council, a place where things are deliberated</div>
         <h1 class="hero-title">A learned world model<br>for <em>agent societies.</em></h1>
         <p class="hero-sub">Majalis gives a council of Qwen agents a model of its own shared mind: what it believes, how sure it should be, and what breaks next if nobody checks. The model plans repairs in imagination before spending a single token, and governs debate under a conformal guarantee.</p>
-        <div class="hero-byline">By <a href="https://github.com/Nas01010101">Anas</a> &middot; Qwen Cloud Hackathon 2026, Track 3: Agent Society</div>
+        <div class="hero-byline">By <a href="https://github.com/Nas01010101">Anas Elghoudane</a> &middot; Qwen Cloud Hackathon 2026, Track 3: Agent Society</div>
         <div class="cta-row">
-          <a class="btn primary" href="https://github.com/Nas01010101/majalis">GitHub</a>
-          <a class="btn" href="https://github.com/Nas01010101/majalis/blob/main/docs/paper/majalis.pdf">Paper (PDF)</a>
-          <a class="btn teal" href="http://47.237.187.157:8080/">Live dashboard</a>
-          <a class="btn teal" href="http://47.237.187.157:8080/live">Live view</a>
-          <a class="btn" href="http://47.237.187.157:8080/docs">API docs</a>
+          <a class="btn primary" href="paper/majalis.pdf">&#128196; Paper (PDF)</a>
+          <a class="btn teal" href="#demo">&#9654; Live demo</a>
+          <a class="btn" href="https://github.com/Nas01010101/majalis">GitHub</a>
         </div>
         <div class="chip-strip">
           <div class="chip"><div class="cv g">448/448</div><div class="ck">correct, flat $0.0049 to $0.0054/question across all stream lengths</div></div>
@@ -391,8 +402,44 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
     </div>
   </div>
 
+  <div class="nulls">
+    <h3>Two honest nulls, reported at full prominence</h3>
+    <p><strong>Null one.</strong> A "planned" gate that looks two branches ahead, weighting the skip-versus-debate decision by the hazard forecast, never beats the plain reactive threshold gate. It matches it, 320/320 correct, at nearly twice the spend ($0.0059/q against the reactive gate's flat $0.0049 to $0.0054/q). The extra lookahead bought nothing.</p>
+    <p><strong>Null two.</strong> Discounting maintenance-window repair priority by the hazard curve, instead of the raw wrongness estimate, never beats simple myopic risk repair. Both land at 99.5% on the same 1,600 held-out questions. At the horizons this society operates over, the model's decision value concentrates in calibrated state estimation, not long-horizon planning. We report that because it is true.</p>
+  </div>
+</section>
+
+<section class="wrap" id="demo">
+  <svg class="watermark" viewBox="0 0 100 100" aria-hidden="true"><rect x="18" y="18" width="64" height="64" fill="none" stroke-width="0.8"/><rect x="18" y="18" width="64" height="64" fill="none" stroke-width="0.8" transform="rotate(45 50 50)"/></svg>
+  <div class="eyebrow"><span class="rule"></span>Live demo</div>
+  <h2 class="h-title">Sit in the majlis: watch the society govern itself</h2>
+  <p class="lede">Three ways in: the simulator below runs in your browser with zero install, the deployed society runs live on Alibaba Cloud, and <code>majalis replay</code> renders a recorded run in any terminal, no API key.</p>
+
+  <div class="demo-cards">
+    <a class="dcard" href="http://47.237.187.157:8080/" target="_blank" rel="noopener">
+      <div class="dk">deployed &middot; alibaba cloud</div>
+      <h4>Live dashboard</h4>
+      <p>The society's cockpit: board state, gate decisions, spend ledger, per-arm accuracy, refreshed from the running system.</p>
+    </a>
+    <a class="dcard" href="http://47.237.187.157:8080/live" target="_blank" rel="noopener">
+      <div class="dk">deployed &middot; replay or live</div>
+      <h4>Society view</h4>
+      <p>Watch a full session unfold agent by agent, or switch to <em>live, try it</em>: paste dated evidence lines and the real deployed society builds beliefs, re-scores them, and spends debate only where P(wrong) spikes.</p>
+    </a>
+    <a class="dcard" href="http://47.237.187.157:8080/docs" target="_blank" rel="noopener">
+      <div class="dk">deployed &middot; openapi</div>
+      <h4>API playground</h4>
+      <p>The live <code>/ingest</code> and <code>/ask</code> endpoints, self-documented. Feed it any evidence stream, no code required. Anonymous callers share a small daily budget.</p>
+    </a>
+    <a class="dcard" href="https://github.com/Nas01010101/majalis#cli" target="_blank" rel="noopener">
+      <div class="dk">terminal &middot; zero api key</div>
+      <h4><code>majalis replay</code></h4>
+      <p>Renders a recorded trace as a conflict-to-consensus timeline: evidence lands, a belief is poisoned, the gate fires and says why, the judge rules, the fix is written back.</p>
+    </a>
+  </div>
+
   <div class="widget">
-    <div class="wtitle">Watch it happen: a belief gets poisoned, then repaired</div>
+    <div class="wtitle">In-browser simulator: a belief gets poisoned, then repaired</div>
     <div class="wticker">
       <span>Answered instantly from board:</span>
       <span class="big" id="score">0/0</span>
@@ -403,7 +450,8 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
         <div class="wtitle">Belief board &middot; P(wrong) scored by the world model, 0 LLM calls</div>
         <div id="skeys"></div>
         <div class="wbtns">
-          <button class="act" id="batchBtn">Next evidence batch</button>
+          <button class="act" id="storyBtn">&#9654; Run the whole story</button>
+          <button class="act ghost" id="batchBtn">Next evidence batch</button>
           <button class="act danger" id="rumorBtn">Inject a rumor</button>
           <button class="act ghost" id="maintBtn">Open maintenance window</button>
           <button class="act ghost" id="simReset">Reset</button>
@@ -415,12 +463,6 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
       </div>
     </div>
     <p class="widget-note">The meters mirror the real system's state-estimation features (source disagreement, trust, staleness); the hazard chips are the forward-dynamics rollout, h(1) &le; h(2) &le; h(4), P(overturned within k batches). In the shipped system these are trained heads (<code>wrong_now</code> 0.937 AUROC; hazards 0.63/0.66/0.70, ECE &lt; 0.01) and maintenance runs a real skeptic-to-judge debate on Qwen.</p>
-  </div>
-
-  <div class="nulls">
-    <h3>Two honest nulls, reported at full prominence</h3>
-    <p><strong>Null one.</strong> A "planned" gate that looks two branches ahead, weighting the skip-versus-debate decision by the hazard forecast, never beats the plain reactive threshold gate. It matches it, 320/320 correct, at nearly twice the spend ($0.0059/q against the reactive gate's flat $0.0049 to $0.0054/q). The extra lookahead bought nothing.</p>
-    <p><strong>Null two.</strong> Discounting maintenance-window repair priority by the hazard curve, instead of the raw wrongness estimate, never beats simple myopic risk repair. Both land at 99.5% on the same 1,600 held-out questions. At the horizons this society operates over, the model's decision value concentrates in calibrated state estimation, not long-horizon planning. We report that because it is true.</p>
   </div>
 </section>
 
@@ -473,16 +515,28 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
   <table>
     <tr><th>arm</th><th class="n">n</th><th class="n">accuracy (Wilson 95%)</th><th class="n">calls/q</th><th class="n">$/q</th><th class="n">gate fires</th></tr>
     <tr><td>single, qwen3.7-max, one-shot CoT</td><td class="n">1,319</td><td class="n">1289/1319 = 97.7% [96.8, 98.4]</td><td class="n">1.0</td><td class="n">$0.004372</td><td class="n">n/a</td></tr>
-    <tr class="hl"><td><strong>majalis-gated</strong></td><td class="n">700</td><td class="n">688/700 = 98.3% [97.0, 99.0]</td><td class="n">1.051</td><td class="n">$0.004707</td><td class="n">0.71% (5/700)</td></tr>
+    <tr class="hl"><td><strong>majalis-gated</strong></td><td class="n">1,319</td><td class="n">1292/1319 = 98.0% [97.0, 98.6]</td><td class="n">1.047</td><td class="n">$0.004651</td><td class="n">0.68% (9/1319)</td></tr>
   </table>
   </div>
-  <p class="tnote">majalis-gated's n=700 is a deliberate stop under a hard, real-money spend cap ($9.06 of $12 to $15), not an interrupted run. Of the 5 questions the gate fired on, debate corrected 4 and left 1 wrong. Source: <code>results/gsm8k_results.json</code>, <code>results/gsm8k_spend_state.json</code>.</p>
+  <p class="tnote">Both arms cover the full 1,319-question test set. The gate fired on 9 questions (8 by k=2 self-consistency disagreement, 1 by low verbalized confidence); debate corrected 4 answers and broke 1, a net +3, exactly the 1289&rarr;1292 difference. The accuracy gap is within noise, so the honest reading is that the gate matches a strong single agent while spending almost nothing extra. Source: <code>results/gsm8k_results.json</code>.</p>
+
+  <h3 style="font-family:var(--serif);font-size:19px;margin-top:var(--sp-7);color:var(--fg)">MMLU: is a full debate ever worth its cost?</h3>
+  <p class="prose" style="color:var(--fg-dim);font-size:14.5px;margin-top:8px">GSM8K asks whether the gate keeps up with a single agent. MMLU asks the question a judge actually cares about: would you have been better off just running a normal multi-agent debate? So we add a third arm, a vanilla homogeneous 3-agent 2-round debate, and pay for it in full: 150 questions across six reasoning-heavy subjects, same qwen3.7-max backbone.</p>
+  <div class="tscroll">
+  <table>
+    <tr><th>arm</th><th class="n">n</th><th class="n">accuracy (Wilson 95%)</th><th class="n">calls/q</th><th class="n">$/q</th><th class="n">total $</th><th class="n">gate fires</th></tr>
+    <tr><td>single</td><td class="n">150</td><td class="n">144/150 = 96.0% [91.6, 98.2]</td><td class="n">1.0</td><td class="n">$0.009158</td><td class="n">$1.37</td><td class="n">n/a</td></tr>
+    <tr class="hl"><td><strong>majalis-gated</strong></td><td class="n">150</td><td class="n">145/150 = 96.7% [92.4, 98.6]</td><td class="n">1.053</td><td class="n">$0.009421</td><td class="n">$1.41</td><td class="n">1.33% (2/150)</td></tr>
+    <tr><td>mad, vanilla 3&times;2 debate</td><td class="n">150</td><td class="n">145/150 = 96.7% [92.4, 98.6]</td><td class="n">6.0</td><td class="n">$0.056132</td><td class="n">$8.42</td><td class="n">always</td></tr>
+  </table>
+  </div>
+  <p class="tnote"><strong style="color:var(--fg)">Vanilla debate buys no accuracy over the cheap gate, at 6&times; the cost.</strong> Both reach 96.7%; the gate gets there paying for debate on barely one question in eighty, while <code>mad</code> debates all 150 and spends $8.42 against $1.41. This is the honest headline of the whole project: on a strong backbone, debate is rarely worth it, and the contribution is knowing <em>when</em> to spend it. The three arms sit within each other's confidence intervals, so we claim a cost result, not an accuracy result. Source: <code>results/mmlu_results.json</code>.</p>
 </section>
 
 <section class="wrap" id="blog">
   <div class="eyebrow"><span class="rule"></span>Field notes</div>
   <h2 class="h-title">Building a world model for a council of agents</h2>
-  <div class="byline-block">By Anas <span class="dot"></span> Qwen Cloud Hackathon 2026 <span class="dot"></span> ~9 min read</div>
+  <div class="byline-block">By Anas Elghoudane <span class="dot"></span> Qwen Cloud Hackathon 2026 <span class="dot"></span> ~9 min read</div>
   <div class="blog">
     <h3>Why debate needed a governor</h3>
     <p>We started, like most people wrestling with agent societies in 2025 and 2026, staring at a paper that stung: on a single model backbone, multi-agent debate mostly re-buys self-consistency at ten times the cost. Sample the same model a few times, take a vote, and you get most of what a full debate gets you for a fraction of the price. That finding kills a certain kind of demo, three agents arguing dramatically on stage, and it should. But it also asks a sharper question that the "gate per query" literature of the last year mostly ducks: if debate is rarely worth it, when exactly is it worth it, and who decides?</p>
@@ -498,7 +552,8 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
     <p>The last organ is the one we're proudest of: planning in imagination. Once you can estimate state, forecast risk, and predict the outcome of an action, you can audition policies without spending a token. Under zero-latency serving, questions answered instantly from the board, repairs saved for maintenance windows, which policy should get a fixed repair budget? We ran the question 1,600 times inside the model alone, at $0: doing nothing holds 92.2% accuracy, ranking repairs by learned risk lifts that to 99.5%, and an oracle that can see the future tops out at 99.9%. Ninety-five percent of the reachable gap, closed before a single live call. Then we shipped the winning policy for real: <code>majalis-maintain</code> runs it live and holds 112 out of 112 across seven seeds with zero debates at ask time.</p>
 
     <h3>The two nulls we kept</h3>
-    <p>Two results from this project didn't work, and they're on this page at the same size as the wins, because a world model you only report when it flatters you isn't a model you can trust.</p>
+    <p class="pull">A world model you only report when it flatters you isn't a model you can trust.</p>
+    <p>Two results from this project didn't work, and they're on this page at the same size as the wins.</p>
     <p>First: we built a "planned" gate that looks two branches ahead, weighting the skip-versus-debate decision by the hazard forecast instead of just the current-wrongness estimate. It never beats the plain reactive gate. It matches it, 320 out of 320 correct, at nearly twice the cost ($0.0059 per question against the reactive gate's flat $0.0049 to $0.0054). The extra lookahead bought nothing.</p>
     <p>Second: we tried discounting maintenance-window repair priority by the hazard curve instead of the raw wrongness estimate. It never beats simple myopic repair, ranking by "how wrong is this right now" and fixing the worst offenders first. Both land at 99.5% on the same 1,600 held-out questions.</p>
     <p>Read together, the two nulls say something specific about this environment: at the horizons this society actually operates over, the decision value is concentrated in knowing what's wrong right now, calibrated state estimation, not in forecasting further ahead. That's a real finding, and it tells us where to spend the next round of modeling effort, better state estimation rather than deeper lookahead, which is exactly what a world model is supposed to be for.</p>
@@ -519,12 +574,18 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
   </div>
 </section>
 
-<section class="wrap" id="cite">
-  <div class="eyebrow"><span class="rule"></span>Cite this work</div>
-  <h2 class="h-title">BibTeX</h2>
+<section class="wrap" id="paper">
+  <div class="eyebrow"><span class="rule"></span>The paper</div>
+  <h2 class="h-title">Read the full write-up</h2>
+  <p class="lede">The paper covers the society design, all four world-model organs with their training recipes, the conformal accept machinery, the full evaluation ledger, and both honest nulls, with every number traced to a committed evidence artifact in <code>results/</code>.</p>
+  <div class="cta-row" style="margin:var(--sp-5) 0 0">
+    <a class="btn primary" href="paper/majalis.pdf">&#128196; Paper (PDF)</a>
+    <a class="btn" href="https://github.com/Nas01010101/majalis/blob/main/docs/architecture.md">Architecture notes</a>
+  </div>
+  <h3 style="font-family:var(--serif);font-size:19px;margin-top:var(--sp-7);color:var(--fg)">Cite this work</h3>
   <div class="cite-card">
 <pre><code>@misc{majalis2026,
-  author       = {Anas},
+  author       = {Elghoudane, Anas},
   title        = {Majalis: A Learned World Model for Agent Societies},
   year         = {2026},
   howpublished = {\url{https://github.com/Nas01010101/majalis}},
@@ -539,13 +600,13 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
   <div class="wrap">
     <div>
       <strong style="color:var(--fg)">Majalis</strong> &middot; Qwen Cloud Hackathon 2026, Track 3 &middot; MIT license<br>
-      128 tests passing &middot; every number on this page traces to a committed evidence artifact in <code>results/</code>
+      148 tests passing &middot; every number on this page traces to a committed evidence artifact in <code>results/</code>
     </div>
     <div class="flinks">
       <a href="https://github.com/Nas01010101/majalis">GitHub</a>
-      <a href="https://github.com/Nas01010101/majalis/blob/main/docs/paper/majalis.pdf">Paper</a>
+      <a href="paper/majalis.pdf">Paper (PDF)</a>
+      <a href="#demo">Live demo</a>
       <a href="https://github.com/Nas01010101/majalis/blob/main/docs/architecture.md">Architecture</a>
-      <a href="http://47.237.187.157:8080/">Live dashboard</a>
     </div>
   </div>
 </footer>
@@ -825,6 +886,28 @@ document.getElementById("maintBtn").addEventListener("click", ()=>{
   renderWidget();
 });
 document.getElementById("simReset").addEventListener("click", initSim);
+
+/* run the whole story: batches -> rumor -> batch (misses) -> maintenance -> batch (clean) */
+let storyTimers = [];
+function clearStory(){ storyTimers.forEach(clearTimeout); storyTimers = []; storyBtn.disabled = false; storyBtn.innerHTML = "&#9654; Run the whole story"; }
+const storyBtn = document.getElementById("storyBtn");
+storyBtn.addEventListener("click", () => {
+  clearStory(); initSim();
+  const beats = [
+    () => document.getElementById("batchBtn").click(),
+    () => document.getElementById("batchBtn").click(),
+    () => document.getElementById("rumorBtn").click(),
+    () => document.getElementById("batchBtn").click(),
+    () => document.getElementById("maintBtn").click(),
+    () => document.getElementById("batchBtn").click(),
+    () => { wlog("story complete: poisoned belief caught by the world model, repaired in a maintenance window, board clean", "t-good"); clearStory(); },
+  ];
+  const reduceM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const gap = reduceM ? 60 : 1100;
+  storyBtn.disabled = true; storyBtn.textContent = "Running…";
+  beats.forEach((fn, i) => storyTimers.push(setTimeout(fn, 400 + i * gap)));
+});
+
 initSim();
 
 /* ============================================================

@@ -7,9 +7,11 @@
 
   <h3>A society of Qwen agents governed by a learned model of its own shared mind, not hand-written rules.</h3>
 
-  <p>
-    <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
-  </p>
+  <h3>
+    <a href="https://nas01010101.github.io/majalis/">🌐&nbsp;Website</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="docs/paper/majalis.pdf">📄&nbsp;Paper&nbsp;(PDF)</a>
+  </h3>
 
   <p>
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT">
@@ -20,11 +22,7 @@
   </p>
 
   <p>
-    <a href="http://47.237.187.157:8080/">Live dashboard</a> ·
-    <a href="http://47.237.187.157:8080/live">Society view (replay or live)</a> ·
-    <a href="http://47.237.187.157:8080/docs">API playground</a> ·
-    <a href="docs/paper/majalis.pdf">Paper (PDF)</a> ·
-    <a href="docs/architecture.md">Architecture</a>
+    <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
   </p>
 </div>
 
@@ -46,6 +44,9 @@ board.assert_fact("acme::ceo", "John Roe", parse_date_ord("Mar 2026"), source="R
 wm = load_wm()
 wm.wrong_now(board, "acme::ceo")   # ~1.0 (a rumor displaced a filing: debate-worthy)
 ```
+
+The deployed society (live dashboard, society replay/live view, API playground) and the
+interactive demo are all on the **[website](https://nas01010101.github.io/majalis/)**.
 
 ## CLI
 
