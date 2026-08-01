@@ -87,7 +87,7 @@ measured surface:
 | Due-diligence, fact-checking, threat-intel triage | conflicting sources resolved by vibes | gate + docket adjudication: **86.2% corruption catch at 0.9% false-fire**; committee demo end-to-end |
 | Any multi-agent deployment with a token budget | debate cost scaling with usage | flat **$0.005/q** at 448/448 vs single-agent's linear growth (2.5× at 32 steps); vanilla MAD 12.6× the heuristic-gate arm |
 | A pipeline that must bound its error rate | "the LLM seemed confident" as QA | conformal accept: **E[error \| committed] ≤ α**, checked empirically (2.1% ≤ 5% on n=1,600) |
-| Your own evidence stream | all of the above, but yours | live `/ingest` + `/ask` API + society view on the deployed box; `majalis replay` for any recorded run |
+| Your own evidence stream | all of the above, but yours | `/ingest` + `/ask` API + society view, self-hosted (`docs/deploy-alicloud.md`); `majalis replay` for any recorded run |
 
 ## Track brief → mechanism → measurement
 
@@ -141,7 +141,7 @@ full (if deliberately small) world model, each organ carrying its own number:
 ```bash
 python scripts/offline_bench.py                                    # gate quality + coverage, $0
 python -m majalis.bench.session --arms single,majalis,mad --seeds 0,1,2,3,4
-python scripts/e2e_live.py                                         # 14 invariants vs the deployed box (~$0.05)
+python scripts/e2e_live.py                                         # 14 invariants vs a self-hosted box (~$0.05, needs your own key)
 ```
 
 **Reproducing an arm.** `--arms majalis` runs the heuristic gate and
