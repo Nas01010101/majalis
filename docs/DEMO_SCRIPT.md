@@ -65,7 +65,7 @@ Screen: `docs/architecture.md` diagram.
 | beat | time | on screen | how |
 |---|---|---|---|
 | Hook | 0:00–0:18 | title card / talking head | voiceover only |
-| Poison → gate → overturn | 0:18–1:20 | `majalis replay examples/sample_trace.jsonl --speed 0` (zero key) **or** live society view on `http://47.237.187.157:8080/live` | replay is deterministic & safe; the live view is more impressive but pre-load it |
+| Poison → gate → overturn | 0:18–1:20 | `majalis replay examples/sample_trace.jsonl --speed 0` (zero key) **or** the hosted society view at `https://nas01010101.github.io/majalis/demo/live.html` | both are deterministic & safe; pre-load the hosted page |
 | Efficiency table | 1:20–1:55 | README results table | static scroll |
 | Architecture | 1:55–2:30 | `docs/architecture.md` diagram | static |
 | Impact + nulls | 2:30–2:55 | README "Why Majalis" / results | static |
@@ -99,6 +99,7 @@ Full live alternative for the wow (needs `DASHSCOPE_API_KEY`, ~3 min, real Qwen 
 - **Presentation (15):** the poison → catch → overturn happens *on screen*.
 
 ## AliCloud proof (for the separate/optional deploy shot + the form field)
-Live backend on Alibaba Cloud ECS: `http://47.237.187.157:8080` (`/healthz`, `/board`, `/ask`).
+Hosted static demo: `https://nas01010101.github.io/majalis/demo/` (dashboard + society view, replay only).
+The Alibaba Cloud ECS backend that served `/healthz`, `/board` and `/ask` was retired after judging.
 Code-file proof: `src/majalis/llm.py` (`dashscope-intl.aliyuncs.com` via DASHSCOPE_API_KEY) +
 `src/majalis/api.py` (the ECS service).

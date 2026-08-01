@@ -3,6 +3,7 @@
 All offline — the society is faked; no Qwen calls.
 """
 import importlib
+from pathlib import Path
 
 import pytest
 
@@ -149,8 +150,23 @@ def test_input_limits(client):
     assert client.post("/ask", json={"question": "q" * 401}).status_code == 422
 
 
-def test_live_page_has_live_mode():
+def test_live_page_ships_replay_only():
+    """The committed page must not be able to spend money.
+
+    live.html is served publicly (GitHub Pages as well as this API), so the
+    default build carries no call path at all: no fetch, no token field, no
+    ingest/ask controls. Live mode is opt-in via --live-backend; the CSS for it
+    stays behind, which is why these assert on element ids, not bare names.
+    """
     importlib.import_module("majalis.api")
     page = (api.Path(api.__file__).resolve().parents[2] / "dashboard" / "live.html").read_text()
-    for needle in ("mode-live", "ingest-btn", "X-Majalis-Token", "livebar"):
-        assert needle in page, needle
+    for absent in ("fetch(", 'id="mode-live"', 'id="ingest-btn"', "X-Majalis-Token"):
+        assert absent not in page, absent
+
+
+def test_live_mode_is_still_buildable():
+    """Opt-in live mode stays wired: the generator still holds the whole path."""
+    src = (Path(__file__).resolve().parents[1] / "scripts" / "build_live.py").read_text()
+    live_js = src.split("LIVE_JS_TEMPLATE = ")[1]
+    for needle in ("fetch(", "X-Majalis-Token", "ingest-btn", "__LIVE_BASE__"):
+        assert needle in live_js, needle

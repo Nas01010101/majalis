@@ -20,9 +20,8 @@
   </p>
 
   <p>
-    <a href="http://47.237.187.157:8080/zh">在线仪表盘</a> ·
-    <a href="http://47.237.187.157:8080/zh/live">社会实况 — 回放或实时体验</a> ·
-    <a href="http://47.237.187.157:8080/docs">API 演练场</a> ·
+    <a href="https://nas01010101.github.io/majalis/demo/index.zh.html">在线仪表盘</a> ·
+    <a href="https://nas01010101.github.io/majalis/demo/live.zh.html">社会实况 — 运行回放</a> ·
     <a href="docs/paper/majalis.pdf">论文（双语摘要）</a> ·
     <a href="docs/architecture.md">架构文档</a>
   </p>
@@ -67,7 +66,7 @@ majalis demo                                      # 执行 scripts/demo_company.
 - **辩论是一笔开销决策。** 两个训练头——`wrong_now`：P(信念当前是错的)（AUROC **0.999 对 0.79**（被替换的手工门控）；在从未见过的**真实 LLM 信念板上 0.937**）与 `superseded_next`：P(即将被推翻)（**0.657 对 0.496 = 随机水平**的固定先验）——以 **0 次 LLM 调用**决定"直接提交还是辩论"。
 - **有校准，不靠感觉。** ACCEPT 阈值在学习分数上做分裂共形校准，覆盖率实测验证：1,600 个留出问题上 accepted-error 2.1% ≤ α=0.05。
 - **世界模型你可以自己重训。** `python scripts/gen_wm_dataset.py && python train/train_wm.py`——端到端约 2 分钟（torch 训练，numpy 推理）。被替换的手工启发式保留为消融项（`MAJALIS_WM=heuristic`）。
-- **实时喂入你自己的证据。** 在[社会实况](http://47.237.187.157:8080/zh/live)切换到"实况 — 试一试"：粘贴带日期的证据行，观看抽取器构建信念、世界模型实时重新打分、门控只在 P(wrong) 飙升处发起辩论——全部经由真实部署的社会。（匿名访问共享每日小额预算。）
+- **逐步观看全过程。** 在[社会实况](https://nas01010101.github.io/majalis/demo/live.zh.html)播放或拖动真实录制的运行：抽取器构建信念、世界模型重新打分、门控只在 P(wrong) 飙升处发起辩论。想喂入你自己的证据，请在本地运行：`pip install -e . && python examples/quickstart.py`。
 - **一个社会，三个领域。** 同一套角色 + 信念板 + 世界模型运行：(1) 合成证据流基准族；(2) 投委会尽调场景（[`scripts/demo_company.py`](scripts/demo_company.py)：门控捕获谣言投毒、规划器分解 GO/NO-GO）；(3) 带零额外调用单轮门控的 GSM8K——按领域重新参数化，从不分叉。
 - **不是又一个"按题门控辩论"。** 2025–26 的门控文献——DOWN（arXiv:2504.05047）、iMAD（arXiv:2511.11306）、SELENE（EACL 2026）、ARMOR-MAD（arXiv:2606.13197）——都是*逐题、无状态*地基于一次新回答的置信度做决定。Majalis 门控的是**一份持久共享记忆的状态**：世界模型估计哪些*信念*当下已错、预测哪些即将被推翻（多时程风险曲线）、完全在想象中试演维护策略，并以保形保证控制*提交*决定。这正是它的成本曲线**随流长保持平坦**（而非逐题打折）的原因——也是经典黑板架构（Hearsay-II，1970 年代："下一个该触发哪个知识源？"）的控制难题，用学到的世界模型而非手写调度规则给出的解答。
 

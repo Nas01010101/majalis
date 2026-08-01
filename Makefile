@@ -20,3 +20,11 @@ test:
 
 smoke:
 	$(PY) scripts/smoke_test.py
+
+# Rebuild the static demo and publish it into the Pages site (docs/demo/).
+# No --live-backend: the published pages are pure replay and cannot bill.
+site:
+	$(PY) scripts/build_dashboard.py
+	$(PY) scripts/build_live.py
+	$(PY) scripts/translate_zh.py
+	cp dashboard/index.html dashboard/index.zh.html dashboard/live.html dashboard/live.zh.html docs/demo/

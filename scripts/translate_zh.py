@@ -22,9 +22,7 @@ DASH = ROOT / "dashboard"
 COMMON = [
     ('<html lang="en">', '<html lang="zh-CN">'),
     ('Skip to content', '跳转到正文'),
-    ('<a href="/">Benchmarks</a>', '<a href="/zh">基准结果</a>'),
-    ('API playground (try /ingest and /ask)', 'API 演练场（试试 /ingest 和 /ask）'),
-    ('>API playground<', '>API 演练场<'),
+    ('<a href="index.html">Benchmarks</a>', '<a href="index.zh.html">基准结果</a>'),
 ]
 
 INDEX = [
@@ -41,9 +39,12 @@ INDEX = [
      '一群 Qwen 智能体共享一块信念板；两个<strong>在社会自身运行日志上训练的</strong>预测头'),
     (') plus a conformal threshold route debate only\nwhere the board is likely corrupted — at <strong>zero LLM calls per gate\ndecision</strong>.',
      '）加上共形阈值，只在信念板可能被污染的地方触发辩论——<strong>每次门控决策零 LLM 调用</strong>。'),
-    ('Society view — watch a live run', '社会实况 — 观看真实运行回放'),
-    ('<a href="/healthz">health</a>', '<a href="/healthz">健康检查</a>'),
-    ('<a href="/zh" hreflang="zh-CN" lang="zh-CN">中文</a>', '<a href="/" hreflang="en" lang="en">English</a>'),
+    ('<a href="live.html">Society view — watch a recorded run</a>',
+     '<a href="live.zh.html">社会实况 — 观看真实运行回放</a>'),
+    # Both zh pages must stay inside the zh side of the site.
+    ('<a href="live.html">Watch this run', '<a href="live.zh.html">Watch this run'),
+    ('<a href="index.zh.html" hreflang="zh-CN" lang="zh-CN">中文</a>',
+     '<a href="index.html" hreflang="en" lang="en">English</a>'),
     ('# try it — one command, no API key', '# 一条命令即可体验 — 无需 API key'),
     ('learned-gate accuracy, live session eval (majalis-wm)', '学习门控准确率（majalis-wm，线上会话评测）'),
     ('LLM calls per gate decision', '每次门控决策的 LLM 调用数'),
@@ -113,7 +114,8 @@ LIVE = [
     ('steps ·\n', '步 · '),
     ('correct ·', '正确 ·'),
     ('total · recorded', '总成本 · 录制于'),
-    ('<a href="/zh/live" hreflang="zh-CN" lang="zh-CN">中文</a>', '<a href="/live" hreflang="en" lang="en">English</a>'),
+    ('<a href="live.zh.html" hreflang="zh-CN" lang="zh-CN">中文</a>',
+     '<a href="live.html" hreflang="en" lang="en">English</a>'),
     ('A real recorded run\n(not a mock): dated filings, stale echoes and rumors arrive on the left of the\nfeed; the belief board\'s <strong>learned world model</strong> re-scores every\nbelief as they land; the gate spends debate only where P(wrong) spikes.\nSpace = play/pause, arrows = step.',
      '一次真实录制的运行（并非模拟数据）：带日期的公告、过期回声与谣言依次到达；信念板的<strong>学习世界模型</strong>随之为每条信念实时重新打分；门控只在 P(wrong) 飙升处发起辩论。空格 = 播放/暂停，方向键 = 逐帧。'),
     ('>Play<', '>播放<'),

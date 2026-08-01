@@ -23,7 +23,7 @@ def test_translate_zh_generates_pages():
     # Code identifiers survive untranslated (the chart keys series by them).
     assert "majalis-wm" in zh_index and "wrong_now" in zh_index
     # Each page links back to its English twin.
-    assert 'href="/"' in zh_index and 'href="/live"' in zh_live
+    assert 'href="index.html"' in zh_index and 'href="live.html"' in zh_live
 
 
 def test_replay_json_survives_translation():

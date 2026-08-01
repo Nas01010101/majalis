@@ -1,6 +1,6 @@
 """Real end-to-end smoke test against the DEPLOYED Majalis service.
 
-    python scripts/e2e_live.py [--base http://47.237.187.157:8080]
+    python scripts/e2e_live.py --base http://localhost:8080
 
 Spends ~$0.05 of real Qwen calls (2 ingests + 3 asks) through the live
 box — the whole pipeline: extractor -> board -> learned WM -> gate ->
@@ -44,7 +44,10 @@ def check(name: str, ok: bool, detail: str = "") -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--base", default="http://47.237.187.157:8080")
+    # No default: this script spends real Qwen credit on every run, so the
+    # target must be named explicitly rather than inherited from a stale deploy.
+    ap.add_argument("--base", required=True,
+                    help="Base URL of the Majalis service to smoke-test, e.g. http://localhost:8080")
     args = ap.parse_args()
     token = _token()
     sid = f"e2e-{int(time.time())}"

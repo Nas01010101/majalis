@@ -354,11 +354,9 @@ society · learned world model</p>
 where the board is likely corrupted — at <strong>zero LLM calls per gate
 decision</strong>.</p>
 <nav class="links" aria-label="Product links">
-<a href="/live">Society view — watch a live run</a>
-<a href="/docs">API playground (try /ingest and /ask)</a>
+<a href="live.html">Society view — watch a recorded run</a>
 <a href="https://github.com/Nas01010101/majalis">GitHub</a>
-<a href="/healthz">health</a>
-<a href="/zh" hreflang="zh-CN" lang="zh-CN">中文</a>
+<a href="index.zh.html" hreflang="zh-CN" lang="zh-CN">中文</a>
 </nav>
 <pre class="try"><span class="c"># try it — one command, no API key</span>
 <span class="p">$</span> git clone https://github.com/Nas01010101/majalis &amp;&amp; cd majalis &amp;&amp; pip install -e . &amp;&amp; python examples/quickstart.py</pre>
@@ -404,7 +402,7 @@ calibrated.</p>
 <h2>Gate decisions, question by question</h2>
 <p class="sub">Every question the deployed society answered, with the gate's
 decision and reason. It debated exactly the weak-source displacements —
-rumor-poisoned beliefs — and nothing else. <a href="/live">Watch this run
+rumor-poisoned beliefs — and nothing else. <a href="live.html">Watch this run
 play out in the society view →</a></p>
 {gate_table(RESULTS / "raw" / "session_majalis-wm_s0_t16.jsonl")}</div>
 </main>

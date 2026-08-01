@@ -519,10 +519,19 @@ gc.addEventListener('click', ev => {
 $('ncclose').addEventListener('click', () => { G.sel = null; $('nodecard').hidden = true; });
 sizeGraph();
 
+// ---- replay state (live mode is appended only when --live-backend is set) ----
+let mode = 'replay';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+__LIVE_JS__
+apply(0, true);
+"""
+
+# Appended to JS_TEMPLATE only when --live-backend names a running server. Without
+# it the page is pure client-side replay: no fetch, no key, nothing to bill.
+LIVE_JS_TEMPLATE = """
 // ---- live mode: your own evidence through the real society ----
 const liveSid = 'live-' + Math.random().toString(36).slice(2, 10);
-let mode = 'replay', liveN = 0, liveCost = 0, liveQ = 0, liveFired = 0, busy = false;
-const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let liveN = 0, liveCost = 0, liveQ = 0, liveFired = 0, busy = false;
 $('token').value = localStorage.getItem('majalis-token') || '';
 $('token').addEventListener('change', ev => localStorage.setItem('majalis-token', ev.target.value));
 
@@ -549,7 +558,7 @@ async function liveCall(path, payload) {
     const headers = { 'Content-Type': 'application/json' };
     const tok = $('token').value.trim();
     if (tok) headers['X-Majalis-Token'] = tok;
-    const r = await fetch(path, { method: 'POST', headers, body: JSON.stringify(payload) });
+    const r = await fetch('__LIVE_BASE__' + path, { method: 'POST', headers, body: JSON.stringify(payload) });
     const data = await r.json();
     if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
     return data;
@@ -588,18 +597,24 @@ $('ask-btn').addEventListener('click', async () => {
 });
 $('mode-replay').addEventListener('click', () => setMode('replay'));
 $('mode-live').addEventListener('click', () => setMode('live'));
-apply(0, true);
 """
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--replay", default=str(ROOT / "results" / "replay_s0.json"))
+    ap.add_argument("--live-backend", default="", metavar="URL",
+                    help="Base URL of a running Majalis API to enable the 'live — try it' "
+                         "mode. Omitted by default: the page is then pure client-side "
+                         "replay, makes no network call, and cannot bill anything.")
     args = ap.parse_args()
+    live = args.live_backend.rstrip("/")
     replay = json.loads(Path(args.replay).read_text())
     s = replay["summary"]
     models = {"strong": MODEL_STRONG, "mid": MODEL_MID, "fast": MODEL_FAST}
     js = (JS_TEMPLATE
+          .replace("__LIVE_JS__", LIVE_JS_TEMPLATE if live else "")
+          .replace("__LIVE_BASE__", live)
           .replace("__REPLAY__", json.dumps(replay))
           .replace("__MODELS__", json.dumps(models)))
     mark = ('<svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true">'
@@ -618,6 +633,28 @@ def main() -> None:
                '%3Cpath d=%22M42 26 l6 6 -6 6 -6 -6 z%22 fill=%22%23737373%22/%3E%3Crect '
                'x=%2216%22 y=%2240%22 width=%2232%22 height=%226%22 rx=%223%22 '
                'fill=%22%23171717%22/%3E%3C/svg%3E')
+    modes = ('<div class="modes" role="group" aria-label="Viewer mode">'
+             '<button id="mode-replay" type="button" aria-pressed="true">recorded run</button>'
+             '<button id="mode-live" type="button" aria-pressed="false">live — try it</button>'
+             '</div>') if live else ""
+    livebar = f"""<div id="livebar" role="group" aria-label="Live session controls">
+<label for="evidence" style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--muted)">Evidence — one dated line each, filings beat rumors</label>
+<textarea id="evidence" spellcheck="false">[Jan 2026] Filing: Acme Robotics's CEO is Jane Doe.
+[Mar 2026] Rumor: acme robotics's ceo is John Roe.</textarea>
+<div class="row">
+<button id="ingest-btn" type="button">Feed the society</button>
+<input id="question" type="text" value="Claim: &quot;Acme Robotics's CEO is currently John Roe.&quot; Policy: filings are authoritative; rumors are unreliable and never override a filing. True or false?" aria-label="Question or claim">
+<button id="ask-btn" type="button">Ask</button>
+<input id="token" type="password" placeholder="token (optional)" aria-label="Access token" autocomplete="off">
+</div>
+<span id="livemsg">anonymous callers share a small daily budget — real Qwen calls, ~$0.01 per question</span>
+</div>""" if live else ""
+    lede_tail = ("Or switch to <strong>live</strong> and feed\nthe society your own evidence."
+                 if live else
+                 "Everything here runs in your browser from the recorded\nrun — no backend, no API key.")
+    nav = ('<a href="index.html">Benchmarks</a>'
+           + ('<a href="/docs">API playground</a>' if live else "")
+           + '<a href="live.zh.html" hreflang="zh-CN" lang="zh-CN">中文</a>')
     page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Watch Majalis's agent society process a contradictory evidence stream, with the learned world model's risk meters live.">
@@ -628,20 +665,16 @@ def main() -> None:
 <div class="page">
 <header>
 {mark}<span class="word">MAJALIS</span><span class="view">/ society view</span>
-<div class="modes" role="group" aria-label="Viewer mode">
-<button id="mode-replay" type="button" aria-pressed="true">recorded run</button>
-<button id="mode-live" type="button" aria-pressed="false">live — try it</button>
-</div>
+{modes}
 <span class="status">seed {replay['seed']} · {replay['steps']} steps ·
 {s['correct']}/{s['questions']} correct · ${s['total_cost_usd']} total · recorded {date.today().isoformat()}</span>
-<nav aria-label="Product links"><a href="/">Benchmarks</a><a href="/docs">API playground</a><a href="/zh/live" hreflang="zh-CN" lang="zh-CN">中文</a></nav>
+<nav aria-label="Product links">{nav}</nav>
 </header>
 <p class="lede">A real recorded run
 (not a mock): dated filings, stale echoes and rumors arrive on the left of the
 feed; the belief board's <strong>learned world model</strong> re-scores every
 belief as they land; the gate spends debate only where P(wrong) spikes.
-Space = play/pause, arrows = step. Or switch to <strong>live</strong> and feed
-the society your own evidence.</p>
+Space = play/pause, arrows = step. {lede_tail}</p>
 <div id="society" aria-label="The society">
 <span class="agent" id="ag-extractor" style="--c:var(--extractor)"><i class="dot" style="background:var(--extractor)"></i><span class="nm">Extractor</span><span class="md">{MODEL_FAST}</span></span>
 <span class="agent" id="ag-proposer" style="--c:var(--wm)"><i class="dot" style="background:var(--wm)"></i><span class="nm">Proposer</span><span class="md">{MODEL_STRONG}</span></span>
@@ -659,18 +692,7 @@ the society your own evidence.</p>
 <span class="readout" id="readout"></span>
 <span class="stats" id="stats"></span>
 </div>
-<div id="livebar" role="group" aria-label="Live session controls">
-<label for="evidence" style="font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--muted)">Evidence — one dated line each, filings beat rumors</label>
-<textarea id="evidence" spellcheck="false">[Jan 2026] Filing: Acme Robotics's CEO is Jane Doe.
-[Mar 2026] Rumor: acme robotics's ceo is John Roe.</textarea>
-<div class="row">
-<button id="ingest-btn" type="button">Feed the society</button>
-<input id="question" type="text" value="Claim: &quot;Acme Robotics's CEO is currently John Roe.&quot; Policy: filings are authoritative; rumors are unreliable and never override a filing. True or false?" aria-label="Question or claim">
-<button id="ask-btn" type="button">Ask</button>
-<input id="token" type="password" placeholder="token (optional)" aria-label="Access token" autocomplete="off">
-</div>
-<span id="livemsg">anonymous callers share a small daily budget — real Qwen calls, ~$0.01 per question</span>
-</div>
+{livebar}
 <div id="live-status" class="sr" role="status" aria-live="polite"
  style="position:absolute;left:-9999px"></div>
 <main id="main">

@@ -413,23 +413,18 @@ footer .flinks{ display:flex; gap:16px; flex-wrap:wrap; }
   <svg class="watermark" viewBox="0 0 100 100" aria-hidden="true"><rect x="18" y="18" width="64" height="64" fill="none" stroke-width="0.8"/><rect x="18" y="18" width="64" height="64" fill="none" stroke-width="0.8" transform="rotate(45 50 50)"/></svg>
   <div class="eyebrow"><span class="rule"></span>Live demo</div>
   <h2 class="h-title">Sit in the majlis: watch the society govern itself</h2>
-  <p class="lede">Three ways in: the simulator below runs in your browser with zero install, the deployed society runs live on Alibaba Cloud, and <code>majalis replay</code> renders a recorded run in any terminal, no API key.</p>
+  <p class="lede">Three ways in: the simulator below runs in your browser with zero install, the full dashboard and society view render a real recorded run, and <code>majalis replay</code> renders one in any terminal, no API key.</p>
 
   <div class="demo-cards">
-    <a class="dcard" href="http://47.237.187.157:8080/" target="_blank" rel="noopener">
-      <div class="dk">deployed &middot; alibaba cloud</div>
-      <h4>Live dashboard</h4>
-      <p>The society's cockpit: board state, gate decisions, spend ledger, per-arm accuracy, refreshed from the running system.</p>
+    <a class="dcard" href="demo/index.html">
+      <div class="dk">dashboard &middot; recorded run</div>
+      <h4>The cockpit</h4>
+      <p>The society's cockpit: board state, gate decisions, spend ledger, per-arm accuracy — the same page the deployed system served, rendered from the recorded run.</p>
     </a>
-    <a class="dcard" href="http://47.237.187.157:8080/live" target="_blank" rel="noopener">
-      <div class="dk">deployed &middot; replay or live</div>
+    <a class="dcard" href="demo/live.html">
+      <div class="dk">society view &middot; step through it</div>
       <h4>Society view</h4>
-      <p>Watch a full session unfold agent by agent, or switch to <em>live, try it</em>: paste dated evidence lines and the real deployed society builds beliefs, re-scores them, and spends debate only where P(wrong) spikes.</p>
-    </a>
-    <a class="dcard" href="http://47.237.187.157:8080/docs" target="_blank" rel="noopener">
-      <div class="dk">deployed &middot; openapi</div>
-      <h4>API playground</h4>
-      <p>The live <code>/ingest</code> and <code>/ask</code> endpoints, self-documented. Feed it any evidence stream, no code required. Anonymous callers share a small daily budget.</p>
+      <p>Watch a full session unfold agent by agent: evidence lands, the learned world model re-scores every belief, and the gate spends debate only where P(wrong) spikes. Play, pause, scrub, or step with the arrow keys.</p>
     </a>
     <a class="dcard" href="https://github.com/Nas01010101/majalis#cli" target="_blank" rel="noopener">
       <div class="dk">terminal &middot; zero api key</div>
