@@ -8,6 +8,7 @@ board and the gate decide. The dashboard's live view drives this API.
 from __future__ import annotations
 
 import os
+import secrets
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,7 +21,9 @@ from .bench.tasks import Task
 from .society import MajalisSession
 from .wmnet import load_wm
 
-app = FastAPI(title="Majalis", version="0.1.0")
+# docs_url/openapi_url off: the schema was served publicly next to unauthenticated
+# billable endpoints, advertising exactly how to spend the owner's credits.
+app = FastAPI(title="Majalis", version="0.1.0", docs_url=None, openapi_url=None)
 _sessions: dict[str, MajalisSession] = {}
 _WM = load_wm()
 
@@ -31,8 +34,22 @@ _spent = {"day": "", "calls": 0}
 
 def _spend_guard(token: str | None) -> None:
     secret = os.environ.get("MAJALIS_LIVE_TOKEN", "")
-    if secret and token == secret:
+    if secret:
+        # A token is configured: it authenticates, it does not merely exempt.
+        # compare_digest so a wrong guess leaks nothing through response timing.
+        if token is None or not secrets.compare_digest(token, secret):
+            raise HTTPException(401, detail="X-Majalis-Token required")
         return
+    # No token configured. One /ask fans out to several Qwen calls (propose,
+    # samplers, skeptic/adjudicate rounds), all billed to the owner, so an open
+    # deployment is opt-in rather than the default. The cap below is a courtesy
+    # brake, NOT a control: it is per-process, resets on restart, and is counted
+    # separately by every uvicorn worker.
+    if os.environ.get("MAJALIS_LIVE_OPEN", "") != "1":
+        raise HTTPException(401, detail=(
+            "this endpoint spends model credits and is closed by default — set "
+            "MAJALIS_LIVE_TOKEN and send X-Majalis-Token, or set MAJALIS_LIVE_OPEN=1 "
+            "to accept an open, billable endpoint"))
     cap = int(os.environ.get("MAJALIS_LIVE_DAILY_CAP", "25"))
     today = datetime.now(timezone.utc).date().isoformat()
     if _spent["day"] != today:
@@ -73,6 +90,18 @@ def _session(sid: str) -> MajalisSession:
         if len(_sessions) >= 64:  # drop the oldest live session, not the box
             _sessions.pop(next(iter(_sessions)))
         _sessions[sid] = MajalisSession(seed=0)
+    return _sessions[sid]
+
+
+def _existing_session(sid: str) -> MajalisSession:
+    """Read-only lookup: never creates.
+
+    /board is a GET and takes the session id straight from the query string. If it
+    created sessions, an unauthenticated caller could spin up 64 of them with no
+    body and no model spend and evict every real session from the dict.
+    """
+    if sid not in _sessions:
+        raise HTTPException(404, detail="no such session")
     return _sessions[sid]
 
 
@@ -146,7 +175,7 @@ def ask(body: AskBody,
 
 @app.get("/board")
 def board(session_id: str = "default") -> dict:
-    s = _session(session_id)
+    s = _existing_session(session_id)
     b: BeliefBoard = s.board
     return {
         "beliefs": [

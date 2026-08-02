@@ -54,9 +54,13 @@ class _FakeSession:
 def client(monkeypatch):
     fake = _FakeSession()
     monkeypatch.setattr(api, "_session", lambda sid: fake)
+    monkeypatch.setattr(api, "_existing_session", lambda sid: fake)
     api._spent.update(day="", calls=0)
     monkeypatch.delenv("MAJALIS_LIVE_TOKEN", raising=False)
     monkeypatch.delenv("MAJALIS_LIVE_DAILY_CAP", raising=False)
+    # Billable endpoints are closed unless a token is set or the operator opts in.
+    # These tests exercise everything downstream of that gate, so opt in explicitly.
+    monkeypatch.setenv("MAJALIS_LIVE_OPEN", "1")
     return TestClient(api.app)
 
 
@@ -95,9 +99,28 @@ def test_spend_guard_cap_and_token(client, monkeypatch):
     ok = client.post("/ask", json={"question": "q"},
                      headers={"X-Majalis-Token": "s3cret"})
     assert ok.status_code == 200
+    # A configured token authenticates: a wrong or missing one is rejected outright
+    # rather than falling through to the shared anonymous budget.
     bad = client.post("/ask", json={"question": "q"},
                       headers={"X-Majalis-Token": "wrong"})
-    assert bad.status_code == 429
+    assert bad.status_code == 401
+    assert client.post("/ask", json={"question": "q"}).status_code == 401
+
+
+def test_billable_endpoints_closed_without_token_or_optin(client, monkeypatch):
+    """No token and no explicit opt-in: /ingest and /ask must not spend."""
+    monkeypatch.delenv("MAJALIS_LIVE_OPEN", raising=False)
+    assert client.post("/ask", json={"question": "q"}).status_code == 401
+    assert client.post(
+        "/ingest", json={"lines": ["Filing: Acme's arr is $1M."]}).status_code == 401
+
+
+def test_board_does_not_create_sessions(monkeypatch):
+    """GET /board must not instantiate: that was an unauthenticated eviction lever."""
+    monkeypatch.setattr(api, "_sessions", {})
+    c = TestClient(api.app)
+    assert c.get("/board", params={"session_id": "nope"}).status_code == 404
+    assert api._sessions == {}
 
 
 class _FailingSession(_FakeSession):
@@ -115,9 +138,13 @@ class _FailingSession(_FakeSession):
 def failing_client(monkeypatch):
     fake = _FailingSession()
     monkeypatch.setattr(api, "_session", lambda sid: fake)
+    monkeypatch.setattr(api, "_existing_session", lambda sid: fake)
     api._spent.update(day="", calls=0)
     monkeypatch.delenv("MAJALIS_LIVE_TOKEN", raising=False)
     monkeypatch.delenv("MAJALIS_LIVE_DAILY_CAP", raising=False)
+    # Billable endpoints are closed unless a token is set or the operator opts in.
+    # These tests exercise everything downstream of that gate, so opt in explicitly.
+    monkeypatch.setenv("MAJALIS_LIVE_OPEN", "1")
     return TestClient(api.app)
 
 
