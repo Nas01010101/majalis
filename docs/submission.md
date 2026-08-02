@@ -120,6 +120,6 @@ residual non-weak error class (~2.5%) sits inside the calibrated band.
 - Proof of AliCloud deploy (the rules require ONLY a code-file link): `src/majalis/llm.py`
   (calls Qwen on `dashscope-intl.aliyuncs.com` via `DASHSCOPE_API_KEY`) + `src/majalis/api.py`
   (the ECS-hosted backend). Optional extra credibility, not required: a short recording of the
-  ECS console + `curl /healthz` + `/ingest` + `/ask` from the public IP (47.237.187.157:8080). That deployment has since been retired.
+  ECS console + `curl /healthz` + `/ingest` + `/ask` from the public IP (<your-ecs-ip>:8080). That deployment has since been retired.
 - Testing access: instance stays up through judging — submission deadline
   Jul 20, 2026 2:00pm PT; judging period ends Aug 11, 2026 2:00pm PT

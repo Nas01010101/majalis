@@ -27,6 +27,10 @@ After=network.target
 [Service]
 WorkingDirectory=/root/majalis
 ExecStart=/root/majalis/.venv/bin/uvicorn majalis.api:app --host 0.0.0.0 --port 8080
+# --host 0.0.0.0 binds every interface. /ingest and /ask spend model credits per call,
+# so if the security group leaves 8080 open to 0.0.0.0/0 the endpoint is world-callable
+# and anyone can bill your account. Restrict 8080 to your own IP in the security group,
+# or front it with auth, before pointing anything public at this box.
 Restart=on-failure
 [Install]
 WantedBy=multi-user.target
